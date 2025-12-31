@@ -1,0 +1,55 @@
+services:
+  dev:
+    volumes:
+      - type: bind
+        source: __HOME__/.bash_history
+        target: /home/${UNAME:-vscode}/.bash_history
+        consistency: cached
+      - type: bind
+        source: __HOME__/.git
+        target: /home/${UNAME:-vscode}/.git
+        consistency: cached
+      - type: bind
+        source: __HOME__/.ssh
+        target: /home/${UNAME:-vscode}/.ssh
+        consistency: cached
+      - type: bind
+        source: __HOME__/.gitconfig
+        target: /home/${UNAME:-vscode}/.gitconfig
+        consistency: cached
+      - type: bind
+        source: __HOME__/.aws
+        target: /home/${UNAME:-vscode}/.aws
+        consistency: cached
+      - type: bind
+        source: __HOME__/.claude
+        target: /home/${UNAME:-vscode}/.claude
+        consistency: cached
+      - type: bind
+        source: __HOME__/.claude.json
+        target: /home/${UNAME:-vscode}/.claude.json
+        consistency: cached
+      - type: bind
+        source: __HOME__/.config/code-server
+        target: /home/${UNAME:-vscode}/.config/code-server
+        consistency: cached
+      - type: bind
+        source: __HOME__/.config/gh
+        target: /home/${UNAME:-vscode}/.config/gh
+        consistency: cached
+      - type: bind
+        source: __HOME__/.config/gcloud
+        target: /home/${UNAME:-vscode}/.config/gcloud
+        consistency: cached
+      - type: bind
+        source: __HOME__/.config/atuin
+        target: /home/${UNAME:-vscode}/.config/atuin
+        consistency: cached
+      - type: bind
+        source: __HOME__/.local/share/atuin
+        target: /home/${UNAME:-vscode}/.local/share/atuin
+        consistency: cached
+      - type: bind
+        source: __HOME__/.cursor
+        target: /home/${UNAME:-vscode}/.cursor
+        consistency: cached
