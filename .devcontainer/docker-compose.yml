@@ -1,0 +1,28 @@
+services:
+  dev:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+        UNAME: ${UNAME:-vscode}
+        GNAME: ${GNAME:-vscode}
+    volumes:
+      - type: volume
+        source: repos
+        target: /home/${UNAME:-vscode}/repos
+    working_dir: /home/${UNAME:-vscode}
+    ports:
+      - "4035:4035"
+      - "8035:8035"
+      - "8036:8036"
+      - "8037:8037"
+      - "8038:8038"
+    user: "${UID:-1000}:${GID:-1000}"
+    tty: true
+    command: code-server --bind-addr 0.0.0.0:4035 --auth password
+
+volumes:
+  repos:
+    external: true
