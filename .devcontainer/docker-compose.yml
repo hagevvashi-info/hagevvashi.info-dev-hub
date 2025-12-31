@@ -1,0 +1,45 @@
+services:
+  dev:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+        UNAME: ${UNAME:-vscode}
+        GNAME: ${GNAME:-vscode}
+    volumes:
+      - type: volume
+        source: repos
+        target: /home/${UNAME:-vscode}/repos
+      - type: bind
+        source: ..
+        target: /home/${UNAME:-vscode}/repos/prep-station
+        consistency: cached
+      - type: volume
+        target: /home/${UNAME:-vscode}/repos/prep-station/node_modules
+      - type: volume
+        target: /home/${UNAME:-vscode}/repos/prep-station/.circleci/node_modules
+      - type: volume
+        target: /home/${UNAME:-vscode}/repos/prep-station/ai-review-system/node_modules
+      - type: volume
+        target: /home/${UNAME:-vscode}/repos/prep-station/analysis-tools/node_modules
+      - type: volume
+        target: /home/${UNAME:-vscode}/repos/prep-station/data-platform/node_modules
+      - type: volume
+        target: /home/${UNAME:-vscode}/repos/prep-station/data-platform/apps/kpi-workbench/.next
+    working_dir: /home/${UNAME:-vscode}/repos/prep-station
+    ports:
+      - "4035:4035"
+      - "8035:8035"
+      - "8036:8036"
+      - "8037:8037"
+      - "8038:8038"
+    user: "${UID:-1000}:${GID:-1000}"
+    tty: true
+    command: code-server --bind-addr 0.0.0.0:4035 --auth password
+
+volumes:
+  repos:
+    external: true
+  prep-station-redis-data:

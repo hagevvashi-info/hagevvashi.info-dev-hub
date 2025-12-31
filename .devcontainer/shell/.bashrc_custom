@@ -1,0 +1,26 @@
+# ステップ1: Bash履歴の基本挙動を設定
+export HISTSIZE=10000
+export HISTFILESIZE=20000
+shopt -s histappend
+export HISTCONTROL=ignoredups:erasedups
+
+# ステップ2: 真の複数行履歴を有効化（最重要）
+shopt -s cmdhist
+shopt -s lithist
+
+# ステップ3: 複数行履歴の永続化を有効化（最重要）
+export HISTTIMEFORMAT="%F %T "
+
+# ステップ4: 事前実行フックフレームワークの読み込み
+[ -f ~/.bash_preexec ] && source ~/.bash_preexec
+
+# ステップ5: Atuinの初期化
+if command -v atuin >/dev/null 2>&1; then
+  eval "$(atuin init bash)"
+fi
+
+eval "$(tfenv init -)"
+
+. ~/.asdf/asdf.sh
+
+. ~/.asdf/completions/asdf.bash

@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "anysphere.remote-containers",
+    "SpecStory.specstory-vscode",
+    "EditorConfig.EditorConfig",
+    "4ops.terraform",
+    "GitHub.vscode-pull-request-github",
+    "GitHub.copilot",
+    "GitHub.copilot-chat",
+    "Anthropic.claude-code"
+  ]
+}

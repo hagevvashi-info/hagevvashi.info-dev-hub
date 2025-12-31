@@ -1,0 +1,59 @@
+{
+  "name": "Development Environment",
+
+  "runArgs": [
+    "--platform",
+    "__PLATFORM__"
+  ],
+
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "dev",
+  "workspaceFolder": "/home/__UNAME__/repos/prep-station",
+  "initializeCommand": "./.devcontainer/generate-env.sh",
+
+  "mounts": [
+    "source=__HOME__/.bash_history,target=/home/__UNAME__/.bash_history,type=bind,consistency=cached",
+    "source=__HOME__/.git,target=/home/__UNAME__/.git,type=bind,consistency=cached",
+    "source=__HOME__/.ssh,target=/home/__UNAME__/.ssh,type=bind,consistency=cached",
+    "source=__HOME__/.gitconfig,target=/home/__UNAME__/.gitconfig,type=bind,consistency=cached",
+    "source=__HOME__/.aws,target=/home/__UNAME__/.aws,type=bind,consistency=cached",
+    "source=__HOME__/.claude,target=/home/__UNAME__/.claude,type=bind,consistency=cached",
+    "source=__HOME__/.claude.json,target=/home/__UNAME__/.claude.json,type=bind,consistency=cached",
+    "source=__HOME__/.config/code-server,target=/home/__UNAME__/.config/code-server,type=bind,consistency=cached",
+    "source=__HOME__/.config/gh,target=/home/__UNAME__/.config/gh,type=bind,consistency=cached",
+    "source=__HOME__/.config/gcloud,target=/home/__UNAME__/.config/gcloud,type=bind,consistency=cached",
+    "source=__HOME__/.config/atuin,target=/home/__UNAME__/.config/atuin,type=bind,consistency=cached",
+    "source=__HOME__/.local/share/atuin,target=/home/__UNAME__/.local/share/atuin,type=bind,consistency=cached",
+    "source=__HOME__/.cursor,target=/home/__UNAME__/.cursor,type=bind,consistency=cached",
+    "source=prep-station-redis-data,target=/home/__UNAME__/redis-data,type=volume"
+  ],
+
+  "features": {
+    "ghcr.io/devcontainers/features/docker-from-docker:1": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "EditorConfig.EditorConfig",
+        "ms-azuretools.vscode-docker",
+        "4ops.terraform",
+        "GitHub.vscode-pull-request-github",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "Anthropic.claude-code"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash",
+            "args": [
+              "-l"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
