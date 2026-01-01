@@ -3,7 +3,8 @@ description:
 globs: 
 alwaysApply: true
 ---
-# コミットメッセージ作成指針
+
+# Rules - commit-messages-guidelines(コミットメッセージ作成指針)
 
 - このファイルが読み込まれたら「commit_message_guideline.mdcを読み込みました！」と作業着手前にユーザーに必ず伝えてください。
 
