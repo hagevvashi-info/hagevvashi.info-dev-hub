@@ -8,6 +8,7 @@
 
   "dockerComposeFile": "docker-compose.yml",
   "service": "dev",
+  "workspaceFolder": "/home/__UNAME__",
   "initializeCommand": "./.devcontainer/generate-env.sh",
 
   "mounts": [
@@ -23,7 +24,8 @@
     "source=__HOME__/.config/gcloud,target=/home/__UNAME__/.config/gcloud,type=bind,consistency=cached",
     "source=__HOME__/.config/atuin,target=/home/__UNAME__/.config/atuin,type=bind,consistency=cached",
     "source=__HOME__/.local/share/atuin,target=/home/__UNAME__/.local/share/atuin,type=bind,consistency=cached",
-    "source=__HOME__/.cursor,target=/home/__UNAME__/.cursor,type=bind,consistency=cached"
+    "source=${localWorkspaceFolder}/.cursor,target=/home/__UNAME__/.cursor,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/.vscode,target=/home/__UNAME__/.vscode,type=bind,consistency=cached"
   ],
 
   "features": {
