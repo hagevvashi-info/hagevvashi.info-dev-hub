@@ -42,7 +42,8 @@
         "GitHub.vscode-pull-request-github",
         "GitHub.copilot",
         "GitHub.copilot-chat",
-        "Anthropic.claude-code"
+        "Anthropic.claude-code",
+        "RooVeterinaryInc.roo-cline"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
