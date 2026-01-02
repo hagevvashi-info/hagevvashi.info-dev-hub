@@ -15,3 +15,6 @@ devcontainer.json
 # Cursor files
 .cursor/projects
 .cursor/ide_state.json
+
+# Product repositories (managed via Docker Volume)
+repos/

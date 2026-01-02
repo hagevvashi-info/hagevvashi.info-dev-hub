@@ -8,8 +8,9 @@
 
   "dockerComposeFile": "docker-compose.yml",
   "service": "dev",
-  "workspaceFolder": "/home/__UNAME__",
+  "workspaceFolder": "/home/__UNAME__/__REPO_NAME__",
   "initializeCommand": "./.devcontainer/generate-env.sh",
+  "postCreateCommand": "bash /home/__UNAME__/__REPO_NAME__/.devcontainer/post-create.sh",
 
   "mounts": [
     "source=__HOME__/.bash_history,target=/home/__UNAME__/.bash_history,type=bind,consistency=cached",

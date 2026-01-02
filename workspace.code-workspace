@@ -1,0 +1,29 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "hagevvashi.info-dev-hub"
+    }
+    // 以下、repos/ 配下のプロダクトリポジトリを追加
+    // 例:
+    // {
+    //   "path": "repos/product-a",
+    //   "name": "product-a"
+    // },
+    // {
+    //   "path": "repos/product-b",
+    //   "name": "product-b"
+    // }
+  ],
+  "settings": {
+    "files.exclude": {
+      ".DS_Store": true,
+      "**/.DS_Store": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/.git": true,
+      "**/.vscode": true
+    }
+  }
+}
