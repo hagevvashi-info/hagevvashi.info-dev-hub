@@ -15,6 +15,10 @@ Pull Request を作成してください
     - Pull Request 作成時の base と head は下記です
         - base: `upstream/main`
         - head: `origin/<新規ブランチ>`
+    - **注意**: forkされたリポジトリからupstreamへPRを作成する場合
+        - `gh pr create --title "タイトル" --body "本文" --base main --head <fork-owner>:<branch-name>`
+        - 例: `gh pr create --title "docs: clarify assistant modes" --base main --head hagevvashi:docs/clarify-assistant-modes`
+        - 事前に `gh repo set-default <upstream-repo>` でデフォルトリポジトリを設定
 
 ## Pull Request のタイトルと本文のルール
 
