@@ -9,6 +9,12 @@ services:
         UNAME: ${UNAME:-vscode}
         GNAME: ${GNAME:-vscode}
     volumes:
+      # hagevvashi.info-dev-hub リポジトリ全体をバインドマウント
+      - type: bind
+        source: ..
+        target: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}
+        consistency: cached
+      # repos/ を Docker Volume で直接マウント（I/Oパフォーマンス）
       - type: volume
         source: repos
         target: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}/repos
