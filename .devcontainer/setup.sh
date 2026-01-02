@@ -33,10 +33,14 @@ case "$(uname -m)" in
     ;;
 esac
 
-# devcontainer.jsonのみ生成（UNAMEとHOMEとPLATFORMを置換）
+# リポジトリ名を取得（ディレクトリ名から）
+REPO_NAME=$(basename "${REPOSITORY_ROOT}")
+
+# devcontainer.jsonのみ生成（UNAMEとHOMEとPLATFORMとREPO_NAMEを置換）
 sed -e "s/__UNAME__/$(whoami)/g" \
     -e "s|__HOME__|${HOME}|g" \
     -e "s|__PLATFORM__|${PLATFORM}|g" \
+    -e "s|__REPO_NAME__|${REPO_NAME}|g" \
     ./.devcontainer/devcontainer.json.template > ./.devcontainer/devcontainer.json
 # docker-compose.dev-vm.ymlのみ生成（HOMEを置換）
 sed -e "s|__HOME__|${HOME}|g" \

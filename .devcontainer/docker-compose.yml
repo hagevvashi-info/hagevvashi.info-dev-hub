@@ -11,8 +11,8 @@ services:
     volumes:
       - type: volume
         source: repos
-        target: /home/${UNAME:-vscode}/repos
-    working_dir: /home/${UNAME:-vscode}
+        target: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}/repos
+    working_dir: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}
     ports:
       - "4035:4035"
       - "8035:8035"
