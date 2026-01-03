@@ -4,6 +4,7 @@ ARG GID
 ARG GNAME
 ARG UID
 ARG UNAME
+ARG TARGETARCH
 
 # ローカルのdebian.sourcesファイルをイメージ内にコピー
 COPY .devcontainer/debian.sources /etc/apt/sources.list.d/debian.sources
@@ -77,9 +78,24 @@ RUN apt-get update \
       peco \
       # redis
       redis-tools \
+      # Process management: supervisord (PID 1)
+      supervisor \
     # Clean up apt
     && apt-get -y clean \
     && rm -rf /var/lib/apt/lists/*
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Process management: supervisord
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# デフォルト設定をコピー（フォールバック用）
+COPY .devcontainer/supervisord/supervisord.conf /etc/supervisor/supervisord.conf.default
+
+# ★★★ 注意: ここでの検証は「デフォルト設定」のみ ★★★
+# ★★★ 実際に使われるマウント設定は起動時に検証される ★★★
+RUN echo "🔍 Validating default supervisord configuration..." && \
+    supervisord -c /etc/supervisor/supervisord.conf.default -t && \
+    echo "✅ Default supervisord configuration is valid"
 
 # Create python symlink
 RUN ln -s $(which python3) /usr/bin/python
@@ -94,22 +110,50 @@ RUN curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh && \
 
 # Atuin init for interactive shells is configured in ~/.bashrc below
 
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Process management: process-compose
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Install process-compose
+ARG PROCESS_COMPOSE_VERSION=1.85.0
+RUN ARCH=$(case "${TARGETARCH}" in \
+        "amd64") echo "amd64" ;; \
+        "arm64") echo "arm64" ;; \
+        *) echo "amd64" ;; \
+    esac) && \
+    curl -L "https://github.com/F1bonacc1/process-compose/releases/download/v${PROCESS_COMPOSE_VERSION}/process-compose_linux_${ARCH}.tar.gz" \
+    -o /tmp/process-compose.tar.gz && \
+    tar -xzf /tmp/process-compose.tar.gz -C /usr/local/bin && \
+    chmod +x /usr/local/bin/process-compose && \
+    rm /tmp/process-compose.tar.gz
+
+# デフォルト設定をコピー（フォールバック用）
+RUN mkdir -p /etc/process-compose
+COPY .devcontainer/process-compose/process-compose.yaml /etc/process-compose/process-compose.yaml.default
+
 # Install code-server
 RUN curl -fsSL https://code-server.dev/install.sh | sh
 
 # DuckDBとxsvバイナリをシステム全体にインストール
 # DuckDB CLI をダウンロードして /usr/local/bin に配置
-RUN curl -L -o /tmp/duckdb.zip https://github.com/duckdb/duckdb/releases/download/v1.0.0/duckdb_cli-linux-amd64.zip && \
+RUN DUCKDB_ARCH=$(case "${TARGETARCH}" in \
+        "amd64") echo "amd64" ;; \
+        "arm64") echo "aarch64" ;; \
+        *) echo "amd64" ;; \
+    esac) && \
+    curl -L -o /tmp/duckdb.zip https://github.com/duckdb/duckdb/releases/download/v1.0.0/duckdb_cli-linux-${DUCKDB_ARCH}.zip && \
     cd /tmp && unzip duckdb.zip && \
     mv duckdb /usr/local/bin/ && \
     chmod +x /usr/local/bin/duckdb && \
-    # xsv をダウンロードして /usr/local/bin に配置
-    curl -L -o /tmp/xsv.tar.gz https://github.com/BurntSushi/xsv/releases/download/0.13.0/xsv-0.13.0-x86_64-unknown-linux-musl.tar.gz && \
-    cd /tmp && tar -zxf xsv.tar.gz && \
-    mv xsv /usr/local/bin/ && \
-    chmod +x /usr/local/bin/xsv && \
-    # クリーンアップ
-    rm -f /tmp/duckdb.zip /tmp/xsv.tar.gz
+    rm -f /tmp/duckdb.zip && \
+    # xsv をダウンロードして /usr/local/bin に配置 (amd64 のみ)
+    if [ "${TARGETARCH}" = "amd64" ]; then \
+        curl -L -o /tmp/xsv.tar.gz https://github.com/BurntSushi/xsv/releases/download/0.13.0/xsv-0.13.0-x86_64-unknown-linux-musl.tar.gz && \
+        cd /tmp && tar -zxf xsv.tar.gz && \
+        mv xsv /usr/local/bin/ && \
+        chmod +x /usr/local/bin/xsv && \
+        rm -f /tmp/xsv.tar.gz; \
+    fi
 
 # ENTRYPOINTスクリプトをコピー
 COPY .devcontainer/docker-entrypoint.sh /usr/local/bin/
@@ -211,7 +255,24 @@ ENV DIFIT_PORT=8035
 ENV VITE_PREVIEW_PORT=8036
 ENV REVIEW_KNOWLEDGE_RAG_SERVER_PORT=8037
 ENV KPI_WORKBENCH_PORT=8038
-EXPOSE $DIFIT_PORT $VITE_PREVIEW_PORT $REVIEW_KNOWLEDGE_RAG_SERVER_PORT $CODE_SERVER_PORT $KPI_WORKBENCH_PORT
+ENV SUPERVISORD_PORT=9001
+ENV PROCESS_COMPOSE_PORT=8080
+EXPOSE $DIFIT_PORT $VITE_PREVIEW_PORT $REVIEW_KNOWLEDGE_RAG_SERVER_PORT $CODE_SERVER_PORT $KPI_WORKBENCH_PORT $SUPERVISORD_PORT $PROCESS_COMPOSE_PORT
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# デバッグモード用エントリーポイント
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+COPY .devcontainer/debug-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/debug-entrypoint.sh
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Entrypoint & CMD
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-# docker composeでCMD命令を上書きしている
-CMD ["sh", "-c", "code-server --bind-addr 0.0.0.0:${CODE_SERVER_PORT} --auth password"]
+
+# CMD: DEBUG_MODE で切り替え
+# 通常モード: supervisord をPID 1として起動
+# デバッグモード: bashシェルを起動してコンテナを維持
+CMD [ "/bin/bash", "-c", "if [ \"${DEBUG_MODE:-false}\" = \"true\" ]; then exec /usr/local/bin/debug-entrypoint.sh; else exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf; fi" ]

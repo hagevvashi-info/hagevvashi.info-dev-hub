@@ -25,9 +25,31 @@ services:
       - "8036:8036"
       - "8037:8037"
       - "8038:8038"
+      - "9001:9001"
+      - "8080:8080"
     user: "${UID:-1000}:${GID:-1000}"
     tty: true
-    command: code-server --bind-addr 0.0.0.0:4035 --auth password
+    stdin_open: true
+
+    environment:
+      - DEBUG_MODE=false  # true にするとデバッグモード
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Healthcheck: supervisord の動作状態を監視
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    healthcheck:
+      test: |
+        if [ "$DEBUG_MODE" = "true" ]; then
+          # DEBUG_MODE 時はヘルスチェックをパス（常に healthy）
+          exit 0
+        else
+          # 通常モード: supervisorctl で code-server の状態を確認
+          supervisorctl status code-server | grep -q RUNNING || exit 1
+        fi
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
 volumes:
   repos:
