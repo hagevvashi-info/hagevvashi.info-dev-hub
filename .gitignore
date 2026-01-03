@@ -9,6 +9,7 @@ Thumbs.db
 
 # Dev container files
 devcontainer.json
+docker-compose.dev-vm.yml
 .env
 .specstory
 
