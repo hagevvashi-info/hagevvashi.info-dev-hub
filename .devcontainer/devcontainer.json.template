@@ -18,6 +18,7 @@
     "source=__HOME__/.ssh,target=/home/__UNAME__/.ssh,type=bind,consistency=cached",
     "source=__HOME__/.gitconfig,target=/home/__UNAME__/.gitconfig,type=bind,consistency=cached",
     "source=__HOME__/.aws,target=/home/__UNAME__/.aws,type=bind,consistency=cached",
+    "source=__HOME__/.gemini,target=/home/__UNAME__/.gemini,type=bind,consistency=cached",
     "source=__HOME__/.claude,target=/home/__UNAME__/.claude,type=bind,consistency=cached",
     "source=__HOME__/.claude.json,target=/home/__UNAME__/.claude.json,type=bind,consistency=cached",
     "source=__HOME__/.config/code-server,target=/home/__UNAME__/.config/code-server,type=bind,consistency=cached",
