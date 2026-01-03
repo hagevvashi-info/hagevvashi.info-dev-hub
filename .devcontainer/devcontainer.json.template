@@ -24,9 +24,7 @@
     "source=__HOME__/.config/gh,target=/home/__UNAME__/.config/gh,type=bind,consistency=cached",
     "source=__HOME__/.config/gcloud,target=/home/__UNAME__/.config/gcloud,type=bind,consistency=cached",
     "source=__HOME__/.config/atuin,target=/home/__UNAME__/.config/atuin,type=bind,consistency=cached",
-    "source=__HOME__/.local/share/atuin,target=/home/__UNAME__/.local/share/atuin,type=bind,consistency=cached",
-    "source=${localWorkspaceFolder}/.cursor,target=/home/__UNAME__/.cursor,type=bind,consistency=cached",
-    "source=${localWorkspaceFolder}/.vscode,target=/home/__UNAME__/.vscode,type=bind,consistency=cached"
+    "source=__HOME__/.local/share/atuin,target=/home/__UNAME__/.local/share/atuin,type=bind,consistency=cached"
   ],
 
   "features": {
@@ -43,7 +41,9 @@
         "GitHub.copilot",
         "GitHub.copilot-chat",
         "Anthropic.claude-code",
-        "RooVeterinaryInc.roo-cline"
+        "RooVeterinaryInc.roo-cline",
+        "google.gemini-cli-vscode-ide-companion",
+        "Google.geminicodeassist"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",

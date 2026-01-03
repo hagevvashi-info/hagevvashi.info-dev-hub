@@ -22,14 +22,16 @@ services:
     ports:
       - "4035:4035"
       - "8035:8035"
-      - "8036:8036"
-      - "8037:8037"
-      - "8038:8038"
       - "9001:9001"
       - "8080:8080"
     user: "${UID:-1000}:${GID:-1000}"
     tty: true
     stdin_open: true
+
+    tmpfs:
+      - /run
+      - /run/lock
+      - /tmp
 
     environment:
       - DEBUG_MODE=false  # true にするとデバッグモード

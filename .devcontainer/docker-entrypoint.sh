@@ -110,74 +110,115 @@ fi
 echo "✅ Atuin initialization complete"
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# Phase 4: supervisord設定ファイルの検証
+# Phase 4: supervisord設定ファイルの検証とフォールバック
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 echo ""
 echo "🔍 Phase 4: Validating supervisord configuration..."
 
-# 環境変数から値を取得（フォールバック付き）
 UNAME=${UNAME:-$(whoami)}
 REPO_NAME=${REPO_NAME:-"hagevvashi.info-dev-hub"}
 
-# マウントされた設定ファイルのパス
-SUPERVISORD_CONF_SOURCE="/home/${UNAME}/${REPO_NAME}/.devcontainer/supervisord/supervisord.conf"
-SUPERVISORD_CONF_TARGET="/etc/supervisor/supervisord.conf"
+PROJECT_CONF="/home/${UNAME}/${REPO_NAME}/workloads/supervisord/project.conf"
+SEED_CONF="/etc/supervisor/seed.conf"
+TARGET_CONF="/etc/supervisor/supervisord.conf"
 
-# 設定ファイルの存在確認
-if [ ! -f "${SUPERVISORD_CONF_SOURCE}" ]; then
-    echo "❌ Error: supervisord.conf not found at ${SUPERVISORD_CONF_SOURCE}"
+if [ -f "${PROJECT_CONF}" ]; then
+    echo "  ✅ Found: ${PROJECT_CONF}"
+
+    sudo ln -sf "${PROJECT_CONF}" "${TARGET_CONF}"
+
+    if supervisord -c "${TARGET_CONF}" -t 2>&1; then
+        echo "  ✅ project.conf is valid"
+    else
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "⚠️   WARNING: SUPERVISORD FALLBACK MODE"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "workloads/supervisord/project.conf validation failed."
+        echo "Using seed config (code-server only)."
+        echo ""
+        echo "To fix and reload:"
+        echo "  1. Fix: workloads/supervisord/project.conf"
+        echo "  2. Restart: s6-svc -t /run/service/supervisord"
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+
+        sudo ln -sf "${SEED_CONF}" "${TARGET_CONF}"
+    fi
+else
     echo ""
-    echo "Please ensure:"
-    echo "  1. The repository is properly bind-mounted"
-    echo "  2. The file exists in .devcontainer/supervisord/supervisord.conf"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "⚠️   WARNING: SUPERVISORD FALLBACK MODE"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
-    exit 1
+    echo "workloads/supervisord/project.conf not found."
+    echo "Using seed config (code-server only)."
+    echo ""
+    echo "To create and load:"
+    echo "  1. Create: workloads/supervisord/project.conf"
+    echo "  2. Restart: s6-svc -t /run/service/supervisord"
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+
+    sudo ln -sf "${SEED_CONF}" "${TARGET_CONF}"
 fi
 
-echo "  ✅ Found: ${SUPERVISORD_CONF_SOURCE}"
-
-# シンボリックリンク作成
-echo "  Creating symlink: ${SUPERVISORD_CONF_TARGET} -> ${SUPERVISORD_CONF_SOURCE}"
-sudo ln -sf "${SUPERVISORD_CONF_SOURCE}" "${SUPERVISORD_CONF_TARGET}"
-
-# ★★★ 起動前の必須検証（Fail Fast） ★★★
-echo "  Validating configuration syntax..."
-if ! supervisord -c "${SUPERVISORD_CONF_TARGET}" -t 2>&1; then
-    echo ""
-    echo "❌ Error: supervisord.conf validation failed"
-    echo ""
-    echo "Please check the configuration file:"
-    echo "  ${SUPERVISORD_CONF_SOURCE}"
-    echo ""
-    echo "Common issues:"
-    echo "  - Syntax errors in .conf file"
-    echo "  - Missing required sections ([supervisord], etc.)"
-    echo "  - Invalid program commands"
-    echo ""
-    exit 1
-fi
-
-echo "  ✅ supervisord.conf is valid"
+echo "  Using config: ${TARGET_CONF}"
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# Phase 5: process-compose設定ファイルのセットアップ
+# Phase 5: process-compose設定ファイルの検証とフォールバック
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 echo ""
-echo "🔍 Phase 5: Setting up process-compose configuration..."
+echo "🔍 Phase 5: Validating process-compose configuration..."
 
-PROCESS_COMPOSE_YAML_SOURCE="/home/${UNAME}/${REPO_NAME}/.devcontainer/process-compose/process-compose.yaml"
-PROCESS_COMPOSE_YAML_TARGET="/etc/process-compose/process-compose.yaml"
+UNAME=${UNAME:-$(whoami)}
+REPO_NAME=${REPO_NAME:-"hagevvashi.info-dev-hub"}
 
-if [ -f "${PROCESS_COMPOSE_YAML_SOURCE}" ]; then
-    echo "  ✅ Found: ${PROCESS_COMPOSE_YAML_SOURCE}"
+PROJECT_YAML="/home/${UNAME}/${REPO_NAME}/workloads/process-compose/project.yaml"
+SEED_YAML="/etc/process-compose/seed.yaml"
+TARGET_YAML="/etc/process-compose/process-compose.yaml"
+
+if [ -f "${PROJECT_YAML}" ]; then
+    echo "  ✅ Found: ${PROJECT_YAML}"
+
     sudo mkdir -p /etc/process-compose
-    sudo ln -sf "${PROCESS_COMPOSE_YAML_SOURCE}" "${PROCESS_COMPOSE_YAML_TARGET}"
-    echo "  ✅ process-compose.yaml symlink created"
+    sudo ln -sf "${PROJECT_YAML}" "${TARGET_YAML}"
+
+    # YAML構文チェック（簡易）
+    if grep -q "^version:" "${PROJECT_YAML}" && grep -q "^processes:" "${PROJECT_YAML}"; then
+        echo "  ✅ project.yaml appears valid"
+    else
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "⚠️   WARNING: PROCESS-COMPOSE FALLBACK MODE"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "workloads/process-compose/project.yaml validation failed."
+        echo "Using seed config (minimal setup)."
+        echo ""
+        echo "To fix and reload:"
+        echo "  1. Fix: workloads/process-compose/project.yaml"
+        echo "  2. Restart: s6-svc -t /run/service/process-compose"
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+
+        sudo ln -sf "${SEED_YAML}" "${TARGET_YAML}"
+    fi
 else
-    echo "  ⚠️  Warning: ${PROCESS_COMPOSE_YAML_SOURCE} not found"
+    echo "  ⚠️  workloads/process-compose/project.yaml not found"
+    echo "  Using seed config (minimal setup)"
+
+    sudo mkdir -p /etc/process-compose
+    sudo ln -sf "${SEED_YAML}" "${TARGET_YAML}"
 fi
+
+echo "  Using config: ${TARGET_YAML}"
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Phase 6: 元のコマンドを実行

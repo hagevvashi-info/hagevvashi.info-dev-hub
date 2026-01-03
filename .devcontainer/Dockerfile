@@ -73,7 +73,7 @@ RUN apt-get update \
       # Timezone data
       tzdata \
       # Archive tools
-      zip unzip \
+      zip unzip xz-utils \
       # peco
       peco \
       # redis
@@ -89,13 +89,32 @@ RUN apt-get update \
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # デフォルト設定をコピー（フォールバック用）
-COPY .devcontainer/supervisord/supervisord.conf /etc/supervisor/supervisord.conf.default
+COPY .devcontainer/supervisord/seed.conf /etc/supervisor/seed.conf
 
-# ★★★ 注意: ここでの検証は「デフォルト設定」のみ ★★★
-# ★★★ 実際に使われるマウント設定は起動時に検証される ★★★
-RUN echo "🔍 Validating default supervisord configuration..." && \
-    supervisord -c /etc/supervisor/supervisord.conf.default -t && \
-    echo "✅ Default supervisord configuration is valid"
+# ★★★ ユーザー作成前に検証するとエラーになるため、ここでは実行しない ★★★
+# RUN echo "🔍 Validating default supervisord configuration..." && \
+#     supervisord -c /etc/supervisor/seed.conf -t && \
+#     echo "✅ Default supervisord configuration is valid"
+
+ARG S6_OVERLAY_VERSION=3.1.6.2
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
+RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
+    rm /tmp/s6-overlay-noarch.tar.xz
+
+# アーキテクチャ別のバイナリ
+RUN ARCH=$(case "${TARGETARCH}" in \
+        "amd64") echo "x86_64" ;; \
+        "arm64") echo "aarch64" ;; \
+        *) echo "x86_64" ;; \
+    esac) && \
+    curl -L "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCH}.tar.xz" \
+    -o /tmp/s6-overlay-arch.tar.xz && \
+    tar -C / -Jxpf /tmp/s6-overlay-arch.tar.xz && \
+    rm /tmp/s6-overlay-arch.tar.xz
+
+# s6-rc service definitions
+COPY .devcontainer/s6-rc.d /etc/s6-rc.d
+RUN find /etc/s6-rc.d -name "run" -exec chmod +x {} \;
 
 # Create python symlink
 RUN ln -s $(which python3) /usr/bin/python
@@ -129,7 +148,7 @@ RUN ARCH=$(case "${TARGETARCH}" in \
 
 # デフォルト設定をコピー（フォールバック用）
 RUN mkdir -p /etc/process-compose
-COPY .devcontainer/process-compose/process-compose.yaml /etc/process-compose/process-compose.yaml.default
+COPY .devcontainer/process-compose/seed.yaml /etc/process-compose/seed.yaml
 
 # Install code-server
 RUN curl -fsSL https://code-server.dev/install.sh | sh
@@ -159,6 +178,10 @@ RUN DUCKDB_ARCH=$(case "${TARGETARCH}" in \
 COPY .devcontainer/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+# デバッグモード用ENTRYPOINTスクリプトをコピー
+COPY .devcontainer/debug-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/debug-entrypoint.sh
+
 #  外部化したシェル設定ファイルをコンテナにコピー
 # このレイヤーは、コピー元のシェルスクリプトファイルが変更された場合にのみ無効化される
 COPY .devcontainer/shell/.bash_profile /etc/skel/.bash_profile
@@ -183,17 +206,22 @@ RUN echo '\n# Load custom dev container configurations' >> /etc/skel/.bashrc && 
 
 # User and group setup
     # Create docker group
-RUN groupadd -g 999 docker && \
-    # Check if group exists, create only if it doesn't
-    if ! getent group ${GNAME} > /dev/null 2>&1; then \
+RUN groupadd -g 999 docker
+RUN if ! getent group ${GNAME} > /dev/null 2>&1; then \
         groupadd -o -g ${GID} ${GNAME}; \
-    fi && \
-    useradd -o -l -u ${UID} -g ${GNAME} -G docker -m ${UNAME} && \
-    chown ${UNAME}:${GNAME} /home/${UNAME} && \
-    mkdir -p /home/${UNAME}/repos && \
-    chown -R ${UID}:${GID} /home/${UNAME}/repos && \
-    # Sudoers access
-    echo "${UNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    fi
+RUN useradd -o -l -u ${UID} -g ${GNAME} -G docker -m ${UNAME}
+RUN chown ${UNAME}:${GNAME} /home/${UNAME}
+RUN mkdir -p /home/${UNAME}/repos
+RUN chown -R ${UID}:${GID} /home/${UNAME}/repos
+RUN echo "${UNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# ★★★ supervisord検証について ★★★
+# ビルド時に `supervisord -t` を実行すると、実際にsupervisordが起動して
+# プロセスをspawnするため、ビルドがハングする問題が発生する。
+# seed.confはフォールバック用の最小限設定であり、頻繁に変更されないため、
+# 実行時エラーに任せる方針とする。
+# 詳細: initiatives/20251229--dev-hub-concept/25_4_3_docker_build_debug_log.md Part 3
 
 USER ${UNAME}
 
@@ -252,27 +280,14 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 ENV CODE_SERVER_PORT=4035
 # difitのポート設定（デフォルト: 8035）
 ENV DIFIT_PORT=8035
-ENV VITE_PREVIEW_PORT=8036
-ENV REVIEW_KNOWLEDGE_RAG_SERVER_PORT=8037
-ENV KPI_WORKBENCH_PORT=8038
 ENV SUPERVISORD_PORT=9001
 ENV PROCESS_COMPOSE_PORT=8080
-EXPOSE $DIFIT_PORT $VITE_PREVIEW_PORT $REVIEW_KNOWLEDGE_RAG_SERVER_PORT $CODE_SERVER_PORT $KPI_WORKBENCH_PORT $SUPERVISORD_PORT $PROCESS_COMPOSE_PORT
-
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# デバッグモード用エントリーポイント
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-COPY .devcontainer/debug-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/debug-entrypoint.sh
+EXPOSE $DIFIT_PORT $CODE_SERVER_PORT $SUPERVISORD_PORT $PROCESS_COMPOSE_PORT
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Entrypoint & CMD
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-
-# CMD: DEBUG_MODE で切り替え
-# 通常モード: supervisord をPID 1として起動
-# デバッグモード: bashシェルを起動してコンテナを維持
-CMD [ "/bin/bash", "-c", "if [ \"${DEBUG_MODE:-false}\" = \"true\" ]; then exec /usr/local/bin/debug-entrypoint.sh; else exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf; fi" ]
+# s6-overlay を PID 1 として起動
+# s6-overlay が docker-entrypoint, supervisord, process-compose を管理
+ENTRYPOINT ["/init"]
