@@ -11,14 +11,18 @@ Pull Request を作成してください
 - Commit作成
     - 複数回に分けてもいいです
 - `origin/<新規ブランチ>` に push
+- **【重要】Pull Request作成先のデフォルトリポジトリ設定**
+    - `upstream`リポジトリの情報を`git remote -v`で確認する
+        - 例: `upstream`のリポジトリが `hagevvashi-info/hagevvashi.info-dev-hub` の場合
+    - **`gh repo set-default <upstream-owner>/<upstream-repo>`** コマンドで、Pull Requestを作成するターゲットリポジトリを明示的に設定します。
+        - 例: `gh repo set-default hagevvashi-info/hagevvashi.info-dev-hub`
+    - **設定の確認**: `gh repo view --json defaultBranchRef` を実行し、`"name": "main"` が表示され、現在のデフォルトリポジトリが`upstream`リポジトリであることを確認します。
 - gh コマンドで Pull Request 作成
     - Pull Request 作成時の base と head は下記です
-        - base: `upstream/main`
-        - head: `origin/<新規ブランチ>`
-    - **注意**: forkされたリポジトリからupstreamへPRを作成する場合
-        - `gh pr create --title "タイトル" --body "本文" --base main --head <fork-owner>:<branch-name>`
-        - 例: `gh pr create --title "docs: clarify assistant modes" --base main --head hagevvashi:docs/clarify-assistant-modes`
-        - 事前に `gh repo set-default <upstream-repo>` でデフォルトリポジトリを設定
+        - base: `main` (※ 事前に設定したデフォルトリポジトリのmainブランチを指します)
+        - head: `<fork-owner>:<branch-name>` (※ あなたのフォークリポジトリのブランチを指定)
+    - 例: `gh pr create --title "fix: ..." --body "..." --base main --head hagevvashi:fix/your-branch-name`
+    - **再度注意**: `gh pr create`実行前に、必ず`gh repo view`で現在のデフォルトリポジトリが`upstream`リポジトリになっていることを確認してください。
 
 ## Pull Request のタイトルと本文のルール
 
