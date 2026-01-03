@@ -24,6 +24,40 @@
       "**/node_modules": true,
       "**/.git": true,
       "**/.vscode": true
-    }
+    },
+    "[markdown]": {
+      "editor.wordWrap": "on",
+      "files.trimTrailingWhitespace": false
+    },
+    "git.autofetch": true,
+    "git.detectSubmodules": true,
+    "explorer.excludeGitIgnore": false,
+    "editor.rulers": [80, 120],
+    "editor.semanticHighlighting.enabled": true,
+    "terminal.integrated.minimumContrastRatio": 1,
+    "workbench.colorTheme": "Quiet Light",
+    "workbench.preferredLightColorTheme": "Quiet Light",
+    "workbench.preferredDarkColorTheme": "Cursor Dark",
+    "files.autoSave": "afterDelay",
+    "editor.tabSize": 2,
+    "specstory.autoSave.enabled": true,
+    "specstory.helpUsImprove": false,
+    "specstory.coordinatedUniversalTimezone": false,
+    "search.followSymlinks": false
+  },
+  "extensions": {
+    "recommendations": [
+      "anysphere.remote-containers",
+      "SpecStory.specstory-vscode",
+      "EditorConfig.EditorConfig",
+      "4ops.terraform",
+      "GitHub.vscode-pull-request-github",
+      "GitHub.copilot",
+      "GitHub.copilot-chat",
+      "Anthropic.claude-code",
+      "RooVeterinaryInc.roo-cline",
+      "google.gemini-cli-vscode-ide-companion",
+      "Google.geminicodeassist"
+    ]
   }
 }
