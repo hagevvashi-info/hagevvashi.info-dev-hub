@@ -661,3 +661,70 @@ ls -la /etc/supervisor/supervisord.conf
 ---
 
 **このドキュメントは、Geminiの批判的フィードバックを真摯に受け止め、証拠ベースの分析とプロセス改善を含む実用的なアプローチを提示するものです。**
+
+---
+
+## 11. 追跡調査: supervisordフォールバック問題（2026-01-04）
+
+v2で提案された修正を適用後、`25_6_3_docker_entrypoint_fix_implementation_tracker.md` に基づく統合検証（セクションE-2）を実施したところ、新たな問題が判明した。
+
+### 11.1 検証で判明した事実
+
+1.  **s6-rcサービスは登録済み**:
+    ```bash
+    $ /command/s6-rc -d list
+    docker-entrypoint
+    supervisord
+    process-compose
+    ...
+    ```
+    → `docker-entrypoint` はs6-overlayにサービスとして正しく認識されている。
+
+2.  **`supervisorctl` コマンドが失敗**:
+    ```bash
+    $ supervisorctl status
+    Error: .ini file does not include supervisorctl section
+    ```
+    → supervisordが読み込んでいる設定ファイルに `[supervisorctl]` セクションがない。
+
+3.  **シンボリックリンクの確認**:
+    ```bash
+    $ ls -l /etc/supervisor/supervisord.conf
+    lrwxrwxrwx 1 root root ... -> /etc/supervisor/seed.conf
+    ```
+    → supervisordの設定が、実運用設定 (`workloads/supervisord/project.conf`) ではなく、フォールバック用の `seed.conf` を参照している。
+
+### 11.2 問題の再定義
+
+当初の「`docker-entrypoint.sh` が実行されていない」という仮説は誤りであった。
+より正確な問題定義は以下の通りである。
+
+**「`docker-entrypoint.sh` は実行されているが、Phase 4のsupervisord設定検証で失敗し、`seed.conf` へのフォールバックが発生している。その結果、`[supervisorctl]` セクションが含まれていない設定が読み込まれ、`supervisorctl` コマンドが使用できなくなっている」**
+
+### 11.3 根本原因の特定
+
+なぜPhase 4の検証が失敗したのかを特定する必要がある。しかし、以下の理由により原因の特定が困難であった。
+
+- `journalctl` コマンドがコンテナ内に存在しない。
+- `s6-log` コマンドで `docker-entrypoint.sh`（oneshotサービス）のログを直接参照する方法が確立できていない。
+- `/run/s6/` 配下を探索したが、明確なログファイルを発見できなかった。
+
+### 11.4 次のアプローチ：デバッグ情報の強制出力
+
+ログ追跡が困難であるため、より確実な方法として、`docker-entrypoint.sh` スクリプト自体を修正し、実行内容をすべてファイルにリダイレクトする。
+
+#### 具体的な修正案
+
+`.devcontainer/docker-entrypoint.sh` の冒頭（`set -euo pipefail` の直前）に以下の2行を追加する。
+
+```bash
+exec > /tmp/entrypoint.log 2>&1
+set -x
+```
+
+- **`exec > /tmp/entrypoint.log 2>&1`**: スクリプト全体の標準出力と標準エラー出力を `/tmp/entrypoint.log` にリダイレクトする。
+- **`set -x`**: 実行される各コマンドをトレースログとして出力する。
+
+これにより、コンテナを再ビルド＆起動した後、`/tmp/entrypoint.log` を確認すれば、どのコマンドで失敗し、なぜフォールバックが発生したのかを確実に特定できる。
+
+**次のアクション**: この修正を適用し、DevContainerを再ビルドしてログファイルを分析する。

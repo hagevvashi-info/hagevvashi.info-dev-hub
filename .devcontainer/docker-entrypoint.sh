@@ -2,6 +2,9 @@
 
 echo "=== docker-entrypoint.sh STARTED at $(date) ===" >&2
 
+exec > /tmp/entrypoint.log 2>&1
+set -x
+
 set -euo pipefail
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
