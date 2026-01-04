@@ -23,21 +23,21 @@
 
 #### A-1: type ファイルの修正
 
-- [ ] `.devcontainer/s6-rc.d/docker-entrypoint/type` を `oneshot` に変更
+- [x] `.devcontainer/s6-rc.d/docker-entrypoint/type` を `oneshot` に変更
   - **現状**: `longrun`
   - **修正コマンド**: `echo "oneshot" > .devcontainer/s6-rc.d/docker-entrypoint/type`
   - **確認方法**: `cat .devcontainer/s6-rc.d/docker-entrypoint/type` の出力が `oneshot`
 
 #### A-2: run ファイルの削除
 
-- [ ] `.devcontainer/s6-rc.d/docker-entrypoint/run` を削除
+- [x] `.devcontainer/s6-rc.d/docker-entrypoint/run` を削除
   - **現状**: 空ファイルが存在
   - **削除コマンド**: `rm .devcontainer/s6-rc.d/docker-entrypoint/run`
   - **確認方法**: `ls .devcontainer/s6-rc.d/docker-entrypoint/run` がエラーを返す（File not found）
 
 #### A-3: up スクリプトの作成
 
-- [ ] `.devcontainer/s6-rc.d/docker-entrypoint/up` を作成
+- [x] `.devcontainer/s6-rc.d/docker-entrypoint/up` を作成
   - **内容**:
     ```bash
     #!/command/execlineb -P
@@ -58,7 +58,7 @@
 
 #### A-4: user/contents.d/ への登録
 
-- [ ] `.devcontainer/s6-rc.d/user/contents.d/docker-entrypoint` を作成
+- [x] `.devcontainer/s6-rc.d/user/contents.d/docker-entrypoint` を作成
   - **内容**: 空ファイル
   - **作成コマンド**: `touch .devcontainer/s6-rc.d/user/contents.d/docker-entrypoint`
   - **確認方法**: `test -f .devcontainer/s6-rc.d/user/contents.d/docker-entrypoint && echo "OK"`
@@ -69,7 +69,7 @@
 
 #### B-1: docker-entrypoint.sh へのデバッグログ追加
 
-- [ ] `docker-entrypoint.sh` の冒頭（shebang の直後）にデバッグログを追加
+- [x] `docker-entrypoint.sh` の冒頭（shebang の直後）にデバッグログを追加
   - **追加内容**:
     ```bash
     echo "=== docker-entrypoint.sh STARTED at $(date) ===" >&2
@@ -88,7 +88,7 @@
 
 #### C-1: 変更のステージング
 
-- [ ] 変更をステージング
+- [x] 変更をステージング
   - **コマンド**:
     ```bash
     git add .devcontainer/s6-rc.d/docker-entrypoint/ \
@@ -312,20 +312,20 @@ git revert HEAD
 
 | セクション | タスク数 | 完了数 | 進捗率 | ステータス |
 |-----------|---------|-------|--------|----------|
-| A: サービス定義修正 | 4 | ___ | ___% | 未開始/進行中/完了 |
-| B: デバッグログ追加 | 1 | ___ | ___% | 未開始/進行中/完了 |
-| C: git commit | 2 | ___ | ___% | 未開始/進行中/完了 |
-| D: 検証 | 6 | ___ | ___% | 未開始/進行中/完了 |
-| E: トラッカー改善 | 2 | ___ | ___% | 未開始/進行中/完了 |
-| **全体** | **15** | **___** | **___%** | **未開始/進行中/完了** |
+| A: サービス定義修正 | 4 | 4 | 100% | 完了 |
+| B: デバッグログ追加 | 1 | 1 | 100% | 完了 |
+| C: git commit | 2 | 1 | 50% | 進行中 |
+| D: 検証 | 6 | 0 | 0% | 未開始 |
+| E: トラッカー改善 | 2 | 0 | 0% | 未開始 |
+| **全体** | **15** | **6** | **40%** | **進行中** |
 
 ### 作業ログ
 
-**開始日時**: ________________
+**開始日時**: 2026-01-04
 
 | 日時 | セクション | 内容 | 結果 | 備考 |
 |------|-----------|------|------|------|
-|      |           |      |      |      |
+| 2026-01-04 | A, B | ファイルベースの修正を実施 | 完了 | Gemini Agentによる確認 |
 |      |           |      |      |      |
 |      |           |      |      |      |
 
