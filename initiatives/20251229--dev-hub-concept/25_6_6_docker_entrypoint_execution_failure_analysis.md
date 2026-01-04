@@ -471,3 +471,356 @@ s6-overlay 環境では、以下のデバッグ手法を採用すべき:
 ---
 
 **次のアクション**: docker-entrypoint.sh から exec リダイレクトと set -x を完全に削除し、再ビルド・検証を実施する。
+
+---
+
+## 14. アプローチ3の検証結果（2026-01-04 22:53）
+
+### 14.1 実施した修正
+
+`docker-entrypoint.sh` から exec リダイレクトと set -x を完全に削除し、DevContainer を再ビルド:
+
+```bash
+#!/usr/bin/env bash
+
+echo "=== docker-entrypoint.sh STARTED at $(date) ===" >&2
+
+# exec 2>> /tmp/entrypoint.log  # 削除
+# set -x  # 削除
+
+set -euo pipefail
+```
+
+### 14.2 検証結果
+
+#### シンボリックリンクの状態
+
+```bash
+$ ls -l /etc/supervisor/supervisord.conf
+lrwxrwxrwx 1 root root 25 Jan  4 22:53 /etc/supervisor/supervisord.conf -> /etc/supervisor/seed.conf
+
+$ ls -l /etc/process-compose/process-compose.yaml
+lrwxrwxrwx 1 root root 79 Jan  4 22:53 /etc/process-compose/process-compose.yaml -> /home/hagevvashi/hagevvashi.info-dev-hub/workloads/process-compose/project.yaml
+```
+
+**結果**:
+- ❌ supervisord.conf は seed.conf を指している（フォールバック発生）
+- ✅ process-compose.yaml は正しく project.yaml を指している
+
+#### 重要な発見
+
+**docker-entrypoint.sh は最後まで実行されている！**
+
+- Phase 4 (supervisord) でフォールバックが発生
+- Phase 5 (process-compose) は成功
+- Phase 6 まで完了
+
+つまり、**exec リダイレクトが原因で途中終了していたわけではなく、Phase 4 の supervisord 検証で失敗していた**ことが判明。
+
+### 14.3 Phase 4 失敗の根本原因
+
+docker-entrypoint.sh の Phase 4 検証コード（135行目）:
+
+```bash
+if supervisord -c "${TARGET_CONF}" -t 2>&1; then
+```
+
+このコマンドを手動で実行すると:
+
+```bash
+$ supervisord -c /home/hagevvashi/hagevvashi.info-dev-hub/workloads/supervisord/project.conf -t
+Error: Can't drop privilege as nonroot user
+For help, use /usr/bin/supervisord -h
+```
+
+**問題**: `supervisord -t` (検証モード) は root 権限が必要だが、コマンドに `sudo` が付いていない。
+
+docker-entrypoint.sh は非 root ユーザー（hagevvashi）として実行されるため、supervisord の検証が失敗し、フォールバックが発生していた。
+
+### 14.4 修正案
+
+docker-entrypoint.sh の135行目を以下のように修正:
+
+```bash
+# 修正前
+if supervisord -c "${TARGET_CONF}" -t 2>&1; then
+
+# 修正後
+if sudo supervisord -c "${TARGET_CONF}" -t 2>&1; then
+```
+
+### 14.5 まとめ
+
+1. **exec リダイレクトは赤いニシンだった**: 実際の問題は sudo の欠如
+2. **docker-entrypoint.sh は正常に実行されていた**: Phase 1-6 すべて実行され、Phase 4 のみフォールバック
+3. **process-compose は正常に動作**: Phase 5 の検証は成功している
+
+---
+
+## 15. 最終的な修正と検証計画
+
+### 15.1 修正内容
+
+`.devcontainer/docker-entrypoint.sh` の135行目:
+
+```bash
+if sudo supervisord -c "${TARGET_CONF}" -t 2>&1; then
+```
+
+### 15.2 検証手順
+
+1. DevContainer を再ビルド
+2. シンボリックリンクを確認:
+   ```bash
+   ls -l /etc/supervisor/supervisord.conf
+   # 期待: -> /home/hagevvashi/hagevvashi.info-dev-hub/workloads/supervisord/project.conf
+   ```
+3. supervisorctl が動作することを確認:
+   ```bash
+   supervisorctl status
+   # 期待: プロセスリストが表示される（エラーなし）
+   ```
+
+---
+
+## 16. 教訓（最終版）
+
+### 16.1 デバッグの罠: 早まった仮説
+
+- 初期の仮説「docker-entrypoint.sh が実行されていない」は誤りだった
+- exec リダイレクトが原因という仮説も誤りだった
+- 実際の問題は単純な `sudo` の欠如だった
+
+### 16.2 証拠ベースの分析の重要性
+
+- シンボリックリンクの状態を正確に確認すれば、Phase 5 が成功していることから docker-entrypoint.sh が最後まで実行されていたことがわかった
+- エラーメッセージを直接確認することで、権限エラーを特定できた
+
+### 16.3 s6-overlay の実行環境
+
+- s6-overlay の oneshot サービスは、bash の exec リダイレクトに関係なく正常に動作する
+- 問題は s6-overlay ではなく、スクリプト内部のロジックにあった
+
+---
+
+**次のアクション**: docker-entrypoint.sh の135行目に `sudo` を追加し、再ビルド・検証を実施する。
+
+---
+
+## 17. Geminiによる客観的レビューとツッコミ（2026-01-04）
+
+Claudeによるセクション14の根本原因分析（`supervisord -t`実行時の`sudo`欠如）は、提示された証拠に基づき論理的かつ妥当である。
+
+ここでは、より高い視点から「`docker-entrypoint.sh`における`sudo`の利用は果たして正しい姿なのか？」という問いについて客観的なレビューを行う。
+
+### `sudo`利用の妥当性評価
+
+`docker-entrypoint.sh`における`sudo`の使われ方は、以下の3つに分類できる。
+
+#### 1. Phase 4/5の`sudo`（シンボリックリンクと検証）: **妥当**
+
+- **内容**: `sudo ln -sf` による `/etc` 配下へのシンボリックリンク作成と、`sudo supervisord -t` による検証。
+- **評価**: `/etc` のようなシステムディレクトリへの書き込みには `root` 権限が必須。また、`supervisord` の検証プロセスが `root` を要求する仕様であるため、ここでの `sudo` の利用は**設計上やむを得ず、妥当**である。
+
+#### 2. Phase 1の`sudo`（ホームディレクトリ内の所有者変更）: **条件付きで許容**
+
+- **内容**: `sudo chown` による `~/.config` 等の所有者変更。
+- **評価**: これはDocker開発で頻発する「ホストとコンテナのUID/GID不整合」問題に対する**一般的なワークアラウンド（回避策）**である。本来はコンテナビルド時にUID/GIDをホストに合わせることで防ぐべきだが、運用上発生しうる不整合をエントリーポイントで強制的に修正することは、開発環境の安定性を高める上で**現実的かつ許容可能な対策**と言える。
+
+#### 3. Phase 2の`sudo`（Dockerソケットのパーミッション変更）: **再検討を強く推奨**
+
+- **内容**: `sudo chmod 666 /var/run/docker.sock`
+- **評価**: これは**重大なセキュリティリスク**を伴う。Dockerソケットへの書き込み権限は、実質的にホストOSのroot権限を掌握できることと同義である。開発環境の利便性のためとはいえ、この方法は避けるべき「アンチパターン」である。
+- **代替案**: よりセキュアな方法として、**コンテナ内の`docker`グループのGIDを、ホスト側のDockerソケットのGIDに動的に合わせる**アプローチがある。具体的には、エントリーポイント内でホストのDockerソケットのGIDを`stat`コマンドで取得し、コンテナ内の`docker`グループのGIDを`groupmod`でそれに変更する。これにより、パーミッションを危険な`666`にすることなく、コンテナ内のユーザーがDockerコマンドを実行できるようになる。
+- **結論**: この`sudo chmod`は**「正しい姿」とは言えず、将来的に修正すべき技術的負債**である。
+
+### 総括
+
+Claudeが特定した`sudo`の欠如というバグの修正は正しい。しかし、同時にPhase 2で使われている`sudo chmod 666`は、より安全な方法で置き換えることを強く推奨する。今回の修正と並行して、このセキュリティ改善を今後のタスクとして起票すべきである。
+
+---
+
+## 18. Geminiによる追加調査と修正（2026-01-04）
+
+セクション17でレビューした`sudo`追加の修正後もコンテナが`unhealthy`となる問題が継続したため、`docker logs`を基に追加調査と修正を実施した。
+
+### 18.1 仮説
+
+`docker logs` の出力結果を分析したところ、以下の2つの異なるエラーが繰り返し発生していることが判明した。
+
+1.  **`supervisord` の権限エラー**: `PermissionError: [Errno 13] Permission denied: '/var/log/supervisor/supervisord.log'` が多発。`supervisord`がログファイルに書き込めず、クラッシュと再起動を繰り返している。
+2.  **`process-compose` のコマンドエラー**: `Error: unknown command "/etc/process-compose/process-compose.yaml"` が多発。`process-compose`の起動コマンドの引数が誤っている。
+
+これらのプロセスが正常に起動しないことが、コンテナが `unhealthy` となる直接の原因であると仮説を立てた。
+
+### 18.2 調査
+
+上記仮説に基づき、関連する設定ファイルを調査した。
+
+1.  **`supervisord` の設定調査**:
+    *   `workloads/supervisord/project.conf` を確認したところ、ログで示唆された別の問題を発見した。ファイル内に `[program:docker-entrypoint]` セクションが存在していた。
+    *   **原因特定**: s6-overlayがコンテナ初期化のために `docker-entrypoint.sh` を一度実行した後、プロセス管理デーモンである `supervisord` が、この設定に基づき `docker-entrypoint.sh` を再度プロセスとして起動しようとしていた。この**二重実行**が、権限エラーを含む予期せぬ動作の根本原因であると特定した。
+
+2.  **`process-compose` の設定調査**:
+    *   `.devcontainer/s6-rc.d/process-compose/run` ファイルを確認した。
+    *   **原因特定**: 起動コマンドが `exec /usr/local/bin/process-compose -config /etc/process-compose/process-compose.yaml` となっていた。`process-compose` の正しいコマンドラインフラグは `-f` であり、`-config` は不正なフラグであった。
+
+### 18.3 修正
+
+上記調査に基づき、以下の2点の修正を実施した。
+
+1.  **エントリーポイントの二重実行の解消**:
+    *   **ファイル**: `workloads/supervisord/project.conf`
+    *   **内容**: `[program:docker-entrypoint]` セクション全体を削除した。これにより、`docker-entrypoint.sh` は s6-overlay によってコンテナ起動時に一度だけ実行されるようになった。
+
+2.  **`process-compose` 起動コマンドの修正**:
+    *   **ファイル**: `.devcontainer/s6-rc.d/process-compose/run`
+    *   **内容**: `exec` 行の `-config` フラグを正しい `-f` に修正した。
+
+### 18.4 結論
+
+これらの修正により、`supervisord` と `process-compose` が正常に起動し、コンテナが `healthy` 状態に移行することが期待される。次のステップは、再度DevContainerを再ビルドし、コンテナの状態を検証することである。
+
+---
+
+## 18. セクション15.2の検証結果（2026-01-04 23:24）
+
+### 18.1 実施した検証
+
+DevContainerを再ビルド後、以下の検証を実施:
+
+#### 1. シンボリックリンクの確認
+
+```bash
+$ ls -l /etc/supervisor/supervisord.conf
+lrwxrwxrwx 1 root root 75 Jan  4 23:10 /etc/supervisor/supervisord.conf -> /home/hagevvashi/hagevvashi.info-dev-hub/workloads/supervisord/project.conf
+
+$ ls -l /etc/process-compose/process-compose.yaml
+ls: cannot access '/etc/process-compose/process-compose.yaml': No such file or directory
+
+$ ls -la /etc/process-compose/
+total 16
+drwxr-xr-x 1 root root 4096 Jan  4 23:07 .
+drwxr-xr-x 1 root root 4096 Jan  4 23:10 ..
+-rw-r--r-- 1 root root   30 Jan  4 07:46 seed.yaml
+```
+
+**結果**:
+- ✅ supervisord.conf は正しく project.conf を指している（sudo修正が成功）
+- ❌ process-compose.yaml のシンボリックリンクが作成されていない
+
+#### 2. supervisord サービスの状態確認
+
+```bash
+$ ps aux | grep supervisord
+hagevva+    29  0.0  0.0    220    80 ?        S    23:10   0:00 s6-supervise supervisord
+root       324  0.0  0.0   5828  3480 ?        S    23:10   0:00 sudo supervisord -c /etc/supervisor/supervisord.conf -t
+root       325  0.0  0.2  41328 30476 ?        S    23:10   0:00 /usr/bin/python3 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf -t
+
+$ /command/s6-svstat /run/service/supervisord
+down (exitcode 2) 0 seconds, normally up, want up, ready 0 seconds
+```
+
+**結果**:
+- ❌ supervisord サービスは down 状態（exitcode 2）
+- 実行中のプロセスは検証モード（`-t` フラグ付き）のものであり、これはdocker-entrypoint.shからの検証コマンド
+
+#### 3. supervisorctl による動作確認
+
+```bash
+$ supervisorctl status
+error: <class 'PermissionError'>, [Errno 13] Permission denied: file: /usr/lib/python3/dist-packages/supervisor/xmlrpc.py line: 557
+```
+
+**結果**: supervisord サービスが起動していないため、supervisorctl もエラー
+
+### 18.2 根本原因の特定
+
+supervisord を手動で起動してみると:
+
+```bash
+$ sudo /usr/bin/supervisord -c /etc/supervisor/supervisord.conf -n
+Traceback (most recent call last):
+  File "/usr/bin/supervisord", line 33, in <module>
+    sys.exit(load_entry_point('supervisor==4.2.5', 'console_scripts', 'supervisord')())
+  File "/usr/lib/python3/dist-packages/supervisor/supervisord.py", line 359, in main
+    go(options)
+  File "/usr/lib/python3/dist-packages/supervisor/supervisord.py", line 369, in go
+    d.main()
+  File "/usr/lib/python3/dist-packages/supervisor/supervisord.py", line 72, in main
+    self.options.make_logger()
+  File "/usr/lib/python3/dist-packages/supervisor/options.py", line 1488, in make_logger
+    loggers.handle_file(
+  File "/usr/lib/python3/dist-packages/supervisor/loggers.py", line 417, in handle_file
+    handler = FileHandler(filename)
+  File "/usr/lib/python3/dist-packages/supervisor/loggers.py", line 160, in __init__
+    self.stream = open(filename, mode)
+OSError: [Errno 6] No such device or address: '/dev/stdout'
+```
+
+**問題点**:
+
+`workloads/supervisord/project.conf` の13行目に以下の設定がある:
+
+```ini
+[supervisord]
+logfile=/dev/stdout
+```
+
+s6-overlay の execlineb 実行環境では、`/dev/stdout` が正常に動作しない。これが supervisord サービスが exitcode 2 で終了する原因。
+
+### 18.3 process-compose シンボリックリンクの問題
+
+docker-entrypoint.sh の Phase 5 では以下のようにシンボリックリンクを作成しているはずだが:
+
+```bash
+sudo ln -sf "${PROJECT_YAML}" "${TARGET_YAML}"
+```
+
+実際にはシンボリックリンクが作成されていない。これは:
+
+1. docker-entrypoint.sh の実行タイミングの問題、または
+2. Phase 5 の検証ロジックに問題がある可能性
+
+### 18.4 次のアクション
+
+#### 優先度1: supervisord の `/dev/stdout` 問題の解決
+
+**アプローチA（推奨）**: ログファイルパスを実ファイルに変更
+
+```ini
+# 修正前
+logfile=/dev/stdout
+
+# 修正後
+logfile=/var/log/supervisord/supervisord.log
+```
+
+**アプローチB**: s6-overlay 用の execlineb ラッパーを使用して `/dev/stdout` を扱えるようにする（複雑）
+
+#### 優先度2: process-compose シンボリックリンク問題の調査
+
+docker-entrypoint.sh が Phase 5 でどのような動作をしたか、ログを確認する必要がある。
+
+---
+
+## 19. まとめ（暫定）
+
+### 19.1 解決した問題
+
+✅ セクション15で修正した sudo の追加により、supervisord.conf のシンボリックリンクが正しく project.conf を指すようになった
+
+### 19.2 新たに発見した問題
+
+❌ **問題1**: supervisord サービスが起動しない
+- 原因: `project.conf` の `logfile=/dev/stdout` が s6-overlay 環境で動作しない
+- 影響: supervisord で管理されるべきプロセス（code-server等）が起動していない
+
+❌ **問題2**: process-compose.yaml のシンボリックリンクが作成されていない
+- 原因: 不明（docker-entrypoint.sh Phase 5 の動作を要調査）
+
+### 19.3 次のステップ
+
+1. supervisord の logfile 設定を実ファイルパスに変更
+2. docker-entrypoint.sh の実行ログを確認して process-compose シンボリックリンクが作成されない原因を特定
+3. 修正後に全体の統合検証を実施

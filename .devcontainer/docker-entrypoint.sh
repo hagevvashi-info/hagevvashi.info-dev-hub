@@ -2,10 +2,7 @@
 
 echo "=== docker-entrypoint.sh STARTED at $(date) ===" >&2
 
-# For debugging purposes, redirect stderr to a log file.
-# This ensures that `set -x` output is captured without interfering with s6-overlay's stdout monitoring.
-exec 2>> /tmp/entrypoint.log
-set -x
+
 
 set -euo pipefail
 
@@ -135,7 +132,7 @@ if [ -f "${PROJECT_CONF}" ]; then
 
     sudo ln -sf "${PROJECT_CONF}" "${TARGET_CONF}"
 
-    if supervisord -c "${TARGET_CONF}" -t 2>&1; then
+    if sudo supervisord -c "${TARGET_CONF}" -t 2>&1; then
         echo "  ✅ project.conf is valid"
     else
         echo ""

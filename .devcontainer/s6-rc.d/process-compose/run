@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 set -euo pipefail
-exec /usr/local/bin/process-compose -config /etc/process-compose/process-compose.yaml
+exec /usr/local/bin/process-compose -f /etc/process-compose/process-compose.yaml
