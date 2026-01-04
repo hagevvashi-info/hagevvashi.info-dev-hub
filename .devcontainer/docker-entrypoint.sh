@@ -2,7 +2,9 @@
 
 echo "=== docker-entrypoint.sh STARTED at $(date) ===" >&2
 
-exec > /tmp/entrypoint.log 2>&1
+# For debugging purposes, redirect stderr to a log file.
+# This ensures that `set -x` output is captured without interfering with s6-overlay's stdout monitoring.
+exec 2>> /tmp/entrypoint.log
 set -x
 
 set -euo pipefail

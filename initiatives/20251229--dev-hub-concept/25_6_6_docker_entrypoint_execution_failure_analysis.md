@@ -344,21 +344,130 @@ s6-overlay v3 では、longrun サービス（supervisord, process-compose）の
 
 ---
 
-## 11. 教訓
+## 11. アプローチ1の検証結果（2026-01-04 22:32）
 
-### 11.1 デバッグ手法の選択
+### 11.1 実施した修正
 
-`exec > /tmp/entrypoint.log 2>&1` のような全出力リダイレクトは、通常のシェルスクリプトでは有効だが、**s6-overlay のような特殊な実行環境では予期しない副作用を引き起こす可能性がある**。
+`docker-entrypoint.sh` の冒頭を以下のように修正し、DevContainer を再ビルド:
 
-デバッグ時は、以下を考慮すべき:
-1. **最小限のリダイレクト**: 標準エラー出力のみをリダイレクト
-2. **tee の活用**: 出力を複製して、元の出力先も維持
-3. **段階的なテスト**: リダイレクトを無効化した状態で動作確認
+```bash
+# For debugging purposes, redirect stderr to a log file.
+# This ensures that `set -x` output is captured without interfering with s6-overlay's stdout monitoring.
+exec 2>> /tmp/entrypoint.log
+set -x
+```
 
-### 11.2 s6-overlay の理解の深化
+### 11.2 検証結果
 
-s6-overlay の oneshot サービスは、単純な「スクリプトを一度実行する」というものではなく、**execlineb による厳格な実行管理下にある**。標準入出力の扱いも含めて、s6-overlay の設計思想を理解する必要がある。
+#### シンボリックリンクの状態
+
+```bash
+$ ls -l /etc/supervisor/supervisord.conf
+-rw-r--r-- 1 root root 1178 Dec 28  2022 /etc/supervisor/supervisord.conf
+
+$ ls -l /etc/process-compose/process-compose.yaml
+ls: cannot access '/etc/process-compose/process-compose.yaml': No such file or directory
+```
+
+**結果**: ❌ シンボリックリンクは作成されていない
+
+#### ログファイルの状態
+
+```bash
+$ wc -l /tmp/entrypoint.log
+43 /tmp/entrypoint.log
+
+$ tail -3 /tmp/entrypoint.log
++ '[' -e /home/hagevvashi/.claude ']'
++ echo '  Updating ownership for /home/hagevvashi/.claude'
+++ id -u
+++ id -g
++ sudo chown -R 501:20 /home/hagevvashi/.claude
+```
+
+**結果**: ❌ ログは Phase 1 の途中（43行目）で終了。`exec 2>>` 修正前（55行目）よりさらに短くなった。
+
+#### サービスの起動状態
+
+```bash
+$ ps aux | grep -E "(supervisord|process-compose)" | grep -v grep
+hagevva+    29  0.0  0.0    220    80 ?        S    22:32   0:00 s6-supervise supervisord
+hagevva+    30  0.0  0.0    220    80 ?        S    22:32   0:00 s6-supervise process-compose
+hagevva+  7337  100  0.2  37992 27064 ?        Rs   22:39   0:00 /usr/bin/python3 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+```
+
+**結果**:
+- ✅ supervisord プロセスは起動している（ただし CPU 100%で異常）
+- ❌ process-compose プロセスは起動していない
+
+### 11.3 分析
+
+1. **アプローチ1は効果がなかった**: `exec 2>> /tmp/entrypoint.log` への変更では、問題は解決しなかった。むしろログがさらに短くなった。
+
+2. **リダイレクトの種類は問題ではない**: `exec >` も `exec 2>>` も同様に失敗することから、**exec によるリダイレクト自体が s6-overlay の oneshot サービスと互換性がない**可能性が高い。
+
+3. **supervisord は独立して起動する**: docker-entrypoint とは別に、s6-overlay の longrun サービスとして supervisord は起動する。ただし、シンボリックリンクが作成されていないため、古い設定ファイルを読み込んでいる可能性がある（CPU 100%の異常状態）。
+
+### 11.4 新たな仮説
+
+**execlineb の厳格な実行制御が、bash の exec ビルトインコマンドと衝突している可能性**
+
+`.devcontainer/s6-rc.d/docker-entrypoint/up` は以下の通り:
+
+```bash
+#!/command/execlineb -P
+/usr/local/bin/docker-entrypoint.sh
+```
+
+execlineb は、実行するプログラム（docker-entrypoint.sh）の標準入出力を厳格に管理する。しかし、docker-entrypoint.sh 内で `exec 2>>` を使用すると、bash が自身のファイルディスクリプタを変更しようとし、execlineb の管理下から逸脱する可能性がある。
 
 ---
 
-**このドキュメントは、exec リダイレクトが s6-overlay の oneshot サービス実行を妨げた問題を分析し、標準エラー出力のみをリダイレクトする修正を提案するものです。**
+## 12. 次のアプローチ: アプローチ3（リダイレクト完全削除）の実施
+
+### 12.1 方針
+
+exec リダイレクトを完全に削除し、s6-overlay の標準的なログメカニズムを活用する。
+
+### 12.2 実施内容
+
+1. **docker-entrypoint.sh からリダイレクトを削除**:
+   ```bash
+   # 削除する行
+   # exec 2>> /tmp/entrypoint.log
+   # set -x
+   ```
+
+2. **s6-overlay のログを確認する方法を調査**:
+   - `docker logs <container>` で標準出力を確認
+   - `/run/s6/` 配下のログディレクトリを探索
+
+3. **デバッグ情報は echo で明示的に出力**:
+   - 各 Phase の開始/終了を echo で出力
+   - 重要な変数値を echo で出力
+
+### 12.3 期待される結果
+
+- docker-entrypoint.sh が最後まで実行される
+- シンボリックリンクが正しく作成される
+- `docker logs` または s6-overlay ログに Phase 1-6 のすべての出力が記録される
+
+---
+
+## 13. 教訓（暫定）
+
+### 13.1 exec リダイレクトと execlineb の非互換性
+
+bash の `exec` ビルトインコマンドによるリダイレクトは、execlineb の実行環境では使用すべきではない。execlineb は、起動するプログラムの標準入出力を厳格に制御するため、プログラム内部での exec リダイレクトが予期しない動作を引き起こす。
+
+### 13.2 s6-overlay でのデバッグ手法
+
+s6-overlay 環境では、以下のデバッグ手法を採用すべき:
+1. **リダイレクトを使用しない**: 標準出力/標準エラー出力をそのまま使用
+2. **docker logs を活用**: コンテナのログから実行結果を確認
+3. **明示的な echo**: 各処理の開始/終了を echo で出力
+4. **set -x は使用しない**: トレースログは execlineb 環境では不要かつ有害の可能性
+
+---
+
+**次のアクション**: docker-entrypoint.sh から exec リダイレクトと set -x を完全に削除し、再ビルド・検証を実施する。
