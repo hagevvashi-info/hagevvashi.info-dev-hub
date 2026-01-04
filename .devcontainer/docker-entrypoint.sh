@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "=== docker-entrypoint.sh STARTED at $(date) ===" >&2
+
 set -euo pipefail
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
