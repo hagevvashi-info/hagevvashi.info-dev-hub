@@ -23,7 +23,9 @@ RUN apt-get update \
       gnupg2 \
       lsb-release \
       ca-certificates \
-      locales
+      locales \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Configure locales for Japanese support
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
@@ -81,8 +83,8 @@ RUN apt-get update \
       # Process management: supervisord (PID 1)
       supervisor \
     # Clean up apt
-    && apt-get -y clean \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Process management: supervisord
@@ -113,8 +115,37 @@ RUN ARCH=$(case "${TARGETARCH}" in \
     rm /tmp/s6-overlay-arch.tar.xz
 
 # s6-rc service definitions
-COPY .devcontainer/s6-rc.d /etc/s6-rc.d
-RUN find /etc/s6-rc.d -name "run" -exec chmod +x {} \;
+COPY .devcontainer/s6-rc.d /etc/s6-overlay/s6-rc.d
+RUN find /etc/s6-overlay/s6-rc.d -name "run" -exec chmod +x {} \; && \
+    find /etc/s6-overlay/s6-rc.d -name "up" -exec chmod +x {} \;
+
+# Validate s6-rc service definitions
+# Note: s6-overlay compiles services at runtime, so we validate source structure here
+RUN echo "🔍 Validating s6-rc service definitions..." && \
+    # Check that user bundle exists
+    test -d /etc/s6-overlay/s6-rc.d/user || { echo "❌ user bundle not found"; exit 1; } && \
+    # Check that each service in user/contents.d has a corresponding service directory
+    for service in $(ls /etc/s6-overlay/s6-rc.d/user/contents.d/ 2>/dev/null || true); do \
+        if [ ! -d "/etc/s6-overlay/s6-rc.d/$service" ]; then \
+            echo "❌ Service directory for '$service' not found in /etc/s6-overlay/s6-rc.d/"; \
+            exit 1; \
+        fi; \
+        if [ ! -f "/etc/s6-overlay/s6-rc.d/$service/type" ]; then \
+            echo "❌ Service '$service' missing type file"; \
+            exit 1; \
+        fi; \
+        TYPE=$(cat /etc/s6-overlay/s6-rc.d/$service/type); \
+        if [ "$TYPE" = "oneshot" ] && [ ! -x "/etc/s6-overlay/s6-rc.d/$service/up" ]; then \
+            echo "❌ Oneshot service '$service' missing executable 'up' script"; \
+            exit 1; \
+        fi; \
+        if [ "$TYPE" = "longrun" ] && [ ! -x "/etc/s6-overlay/s6-rc.d/$service/run" ]; then \
+            echo "❌ Longrun service '$service' missing executable 'run' script"; \
+            exit 1; \
+        fi; \
+        echo "✅ Service '$service' validated"; \
+    done && \
+    echo "✅ All s6-rc service definitions are valid"
 
 # Create python symlink
 RUN ln -s $(which python3) /usr/bin/python
