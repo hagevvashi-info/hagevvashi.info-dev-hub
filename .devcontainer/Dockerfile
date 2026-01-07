@@ -6,26 +6,6 @@ ARG UID
 ARG UNAME
 ARG TARGETARCH
 
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# s6-overlay: PID 1 保護・プロセス監視
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-ARG S6_OVERLAY_VERSION=3.1.6.2
-ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
-RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
-    rm /tmp/s6-overlay-noarch.tar.xz
-
-# アーキテクチャ別のバイナリ
-RUN ARCH=$(case "${TARGETARCH}" in \
-        "amd64") echo "x86_64" ;; \
-        "arm64") echo "aarch64" ;; \
-        *) echo "x86_64" ;; \
-    esac) && \
-    curl -L "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCH}.tar.xz" \
-    -o /tmp/s6-overlay-arch.tar.xz && \
-    tar -C / -Jxpf /tmp/s6-overlay-arch.tar.xz && \
-    rm /tmp/s6-overlay-arch.tar.xz
-
 # ローカルのdebian.sourcesファイルをイメージ内にコピー
 COPY .devcontainer/debian.sources /etc/apt/sources.list.d/debian.sources
 
@@ -105,6 +85,26 @@ RUN apt-get update \
     # Clean up apt
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# s6-overlay: PID 1 保護・プロセス監視
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ARG S6_OVERLAY_VERSION=3.1.6.2
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
+RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
+    rm /tmp/s6-overlay-noarch.tar.xz
+
+# アーキテクチャ別のバイナリ
+RUN ARCH=$(case "${TARGETARCH}" in \
+        "amd64") echo "x86_64" ;; \
+        "arm64") echo "aarch64" ;; \
+        *) echo "x86_64" ;; \
+    esac) && \
+    curl -L "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCH}.tar.xz" \
+    -o /tmp/s6-overlay-arch.tar.xz && \
+    tar -C / -Jxpf /tmp/s6-overlay-arch.tar.xz && \
+    rm /tmp/s6-overlay-arch.tar.xz
 
 # /etc/s6-rc ディレクトリを早期に作成
 RUN mkdir -p /etc/s6-rc
