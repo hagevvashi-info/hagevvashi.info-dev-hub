@@ -33,7 +33,7 @@ for item in "${CONFIG_ITEMS[@]}"; do
     # Check if the file or directory exists before changing ownership
     if [ -e "$item" ]; then
         echo "  Updating ownership for $item"
-        sudo chown -R $(id -u):$(id -g) "$item"
+        chown -R ${UNAME}:${GNAME} "$item"
     fi
 done
 echo "✅ Permissions fixed."
@@ -52,11 +52,11 @@ if [ -S /var/run/docker.sock ]; then
     echo "  Docker socket GID: $DOCKER_SOCK_GID, Mode: $DOCKER_SOCK_MODE"
 
     # Docker Socket に書き込み権限を付与
-    sudo chmod 666 /var/run/docker.sock
+    chmod 666 /var/run/docker.sock
 
     # ユーザーのグループにdockerグループを追加（必要に応じて）
     if ! groups | grep -q docker; then
-        sudo usermod -a -G docker $(whoami)
+        usermod -a -G docker ${UNAME}
     fi
 
     echo "  Docker socket permissions updated"
@@ -113,6 +113,8 @@ EOF
 fi
 echo "✅ Atuin initialization complete"
 
+
+
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Phase 4: supervisord設定ファイルの検証とフォールバック
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -130,9 +132,9 @@ TARGET_CONF="/etc/supervisor/supervisord.conf"
 if [ -f "${PROJECT_CONF}" ]; then
     echo "  ✅ Found: ${PROJECT_CONF}"
 
-    sudo ln -sf "${PROJECT_CONF}" "${TARGET_CONF}"
+    ln -sf "${PROJECT_CONF}" "${TARGET_CONF}"
 
-    if sudo supervisord -c "${TARGET_CONF}" -t 2>&1; then
+    if supervisord -c "${TARGET_CONF}" -t 2>&1; then
         echo "  ✅ project.conf is valid"
     else
         echo ""
@@ -150,7 +152,7 @@ if [ -f "${PROJECT_CONF}" ]; then
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo ""
 
-        sudo ln -sf "${SEED_CONF}" "${TARGET_CONF}"
+        ln -sf "${SEED_CONF}" "${TARGET_CONF}"
     fi
 else
     echo ""
@@ -168,7 +170,7 @@ else
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
 
-    sudo ln -sf "${SEED_CONF}" "${TARGET_CONF}"
+    ln -sf "${SEED_CONF}" "${TARGET_CONF}"
 fi
 
 echo "  Using config: ${TARGET_CONF}"
@@ -190,8 +192,8 @@ TARGET_YAML="/etc/process-compose/process-compose.yaml"
 if [ -f "${PROJECT_YAML}" ]; then
     echo "  ✅ Found: ${PROJECT_YAML}"
 
-    sudo mkdir -p /etc/process-compose
-    sudo ln -sf "${PROJECT_YAML}" "${TARGET_YAML}"
+    mkdir -p /etc/process-compose
+    ln -sf "${PROJECT_YAML}" "${TARGET_YAML}"
 
     # YAML構文チェック（簡易）
     if grep -q "^version:" "${PROJECT_YAML}" && grep -q "^processes:" "${PROJECT_YAML}"; then
@@ -212,14 +214,14 @@ if [ -f "${PROJECT_YAML}" ]; then
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo ""
 
-        sudo ln -sf "${SEED_YAML}" "${TARGET_YAML}"
+        ln -sf "${SEED_YAML}" "${TARGET_YAML}"
     fi
 else
     echo "  ⚠️  workloads/process-compose/project.yaml not found"
     echo "  Using seed config (minimal setup)"
 
-    sudo mkdir -p /etc/process-compose
-    sudo ln -sf "${SEED_YAML}" "${TARGET_YAML}"
+    mkdir -p /etc/process-compose
+    ln -sf "${SEED_YAML}" "${TARGET_YAML}"
 fi
 
 echo "  Using config: ${TARGET_YAML}"
@@ -235,5 +237,3 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo "🚀 Starting supervisord..."
 
-# 元のコマンドを実行
-exec "$@"

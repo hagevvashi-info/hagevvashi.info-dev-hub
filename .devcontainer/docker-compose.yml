@@ -24,7 +24,7 @@ services:
       - "8035:8035"
       - "9001:9001"
       - "8080:8080"
-    user: "${UID:-1000}:${GID:-1000}"
+    
     tty: true
     stdin_open: true
 
@@ -35,6 +35,9 @@ services:
 
     environment:
       - DEBUG_MODE=false  # true にするとデバッグモード
+      - UNAME=${UNAME:-vscode}
+      - REPO_NAME=${REPO_NAME:-dev-hub}
+      - GNAME=${GNAME:-vscode}
 
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     # Healthcheck: supervisord の動作状態を監視

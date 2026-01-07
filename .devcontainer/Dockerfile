@@ -6,6 +6,26 @@ ARG UID
 ARG UNAME
 ARG TARGETARCH
 
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# s6-overlay: PID 1 保護・プロセス監視
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ARG S6_OVERLAY_VERSION=3.1.6.2
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
+RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
+    rm /tmp/s6-overlay-noarch.tar.xz
+
+# アーキテクチャ別のバイナリ
+RUN ARCH=$(case "${TARGETARCH}" in \
+        "amd64") echo "x86_64" ;; \
+        "arm64") echo "aarch64" ;; \
+        *) echo "x86_64" ;; \
+    esac) && \
+    curl -L "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCH}.tar.xz" \
+    -o /tmp/s6-overlay-arch.tar.xz && \
+    tar -C / -Jxpf /tmp/s6-overlay-arch.tar.xz && \
+    rm /tmp/s6-overlay-arch.tar.xz
+
 # ローカルのdebian.sourcesファイルをイメージ内にコピー
 COPY .devcontainer/debian.sources /etc/apt/sources.list.d/debian.sources
 
@@ -86,6 +106,9 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# /etc/s6-rc ディレクトリを早期に作成
+RUN mkdir -p /etc/s6-rc
+
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Process management: supervisord
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -98,54 +121,8 @@ COPY .devcontainer/supervisord/seed.conf /etc/supervisor/seed.conf
 #     supervisord -c /etc/supervisor/seed.conf -t && \
 #     echo "✅ Default supervisord configuration is valid"
 
-ARG S6_OVERLAY_VERSION=3.1.6.2
-ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
-RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
-    rm /tmp/s6-overlay-noarch.tar.xz
 
-# アーキテクチャ別のバイナリ
-RUN ARCH=$(case "${TARGETARCH}" in \
-        "amd64") echo "x86_64" ;; \
-        "arm64") echo "aarch64" ;; \
-        *) echo "x86_64" ;; \
-    esac) && \
-    curl -L "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCH}.tar.xz" \
-    -o /tmp/s6-overlay-arch.tar.xz && \
-    tar -C / -Jxpf /tmp/s6-overlay-arch.tar.xz && \
-    rm /tmp/s6-overlay-arch.tar.xz
 
-# s6-rc service definitions
-COPY .devcontainer/s6-rc.d /etc/s6-overlay/s6-rc.d
-RUN find /etc/s6-overlay/s6-rc.d -name "run" -exec chmod +x {} \; && \
-    find /etc/s6-overlay/s6-rc.d -name "up" -exec chmod +x {} \;
-
-# Validate s6-rc service definitions
-# Note: s6-overlay compiles services at runtime, so we validate source structure here
-RUN echo "🔍 Validating s6-rc service definitions..." && \
-    # Check that user bundle exists
-    test -d /etc/s6-overlay/s6-rc.d/user || { echo "❌ user bundle not found"; exit 1; } && \
-    # Check that each service in user/contents.d has a corresponding service directory
-    for service in $(ls /etc/s6-overlay/s6-rc.d/user/contents.d/ 2>/dev/null || true); do \
-        if [ ! -d "/etc/s6-overlay/s6-rc.d/$service" ]; then \
-            echo "❌ Service directory for '$service' not found in /etc/s6-overlay/s6-rc.d/"; \
-            exit 1; \
-        fi; \
-        if [ ! -f "/etc/s6-overlay/s6-rc.d/$service/type" ]; then \
-            echo "❌ Service '$service' missing type file"; \
-            exit 1; \
-        fi; \
-        TYPE=$(cat /etc/s6-overlay/s6-rc.d/$service/type); \
-        if [ "$TYPE" = "oneshot" ] && [ ! -x "/etc/s6-overlay/s6-rc.d/$service/up" ]; then \
-            echo "❌ Oneshot service '$service' missing executable 'up' script"; \
-            exit 1; \
-        fi; \
-        if [ "$TYPE" = "longrun" ] && [ ! -x "/etc/s6-overlay/s6-rc.d/$service/run" ]; then \
-            echo "❌ Longrun service '$service' missing executable 'run' script"; \
-            exit 1; \
-        fi; \
-        echo "✅ Service '$service' validated"; \
-    done && \
-    echo "✅ All s6-rc service definitions are valid"
 
 # Create python symlink
 RUN ln -s $(which python3) /usr/bin/python
@@ -217,8 +194,8 @@ RUN chmod +x /usr/local/bin/debug-entrypoint.sh
 # このレイヤーは、コピー元のシェルスクリプトファイルが変更された場合にのみ無効化される
 COPY .devcontainer/shell/.bash_profile /etc/skel/.bash_profile
 COPY .devcontainer/shell/.bashrc_custom /etc/skel/.bashrc_custom
-COPY .devcontainer/shell/paths.sh /etc/skel/paths.sh
-COPY .devcontainer/shell/env.sh /etc/skel/env.sh
+COPY .devcontainer/shell/paths.sh /etc/skel/.bashrc.d/paths.sh
+COPY .devcontainer/shell/env.sh /etc/skel/.bashrc.d/env.sh
 COPY .devcontainer/shell/.profile /etc/skel/.profile
 # 他のカスタムファイルがあればここに追加 (e.g. aliases.sh)
 # COPY.devcontainer/shell/aliases.sh /etc/skel/.aliases.sh
@@ -254,7 +231,10 @@ RUN echo "${UNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 # 実行時エラーに任せる方針とする。
 # 詳細: initiatives/20251229--dev-hub-concept/25_4_3_docker_build_debug_log.md Part 3
 
-USER ${UNAME}
+COPY .devcontainer/supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
+
 
 WORKDIR /home/${UNAME}
 
@@ -275,30 +255,12 @@ RUN pipx ensurepath && \
 
 # COPY --chown=${UNAME}:${GNAME} package.json ./
     # sdkman のインストール
-RUN curl -s "https://get.sdkman.io" | bash \
-    # sdk コマンドを使えるようにして java 11 をインストール
-    && bash -c "source /home/${UNAME}/.sdkman/bin/sdkman-init.sh && sdk install java 11.0.26-tem && sdk use java 11.0.26-tem && sdk default java 11.0.26-tem"
+RUN su - ${UNAME} -c "bash -c \"curl -s 'https://get.sdkman.io' | bash && source /home/${UNAME}/.sdkman/bin/sdkman-init.sh && sdk install java 11.0.26-tem && sdk use java 11.0.26-tem && sdk default java 11.0.26-tem\""
     # # cmak 3.0.0.6 のインストール
     # && rm -rf cmak && curl -sL https://github.com/yahoo/CMAK/releases/download/3.0.0.6/cmak-3.0.0.6.zip -o cmak.zip && unzip -o cmak.zip && rm cmak.zip && mv cmak-3.0.0.6 cmak
 
 # asdf install
-RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.13.1
-
-ENV PATH="/home/${UNAME}/.asdf/bin:/home/${UNAME}/.asdf/shims:${PATH}"
-
-# Node.jsプラグインをインストール
-RUN asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git && \
-    # Node.js インストール
-    asdf install nodejs 22.17.0 && \
-    asdf install nodejs 24.9.0 && \
-    asdf global nodejs 22.17.0 && \
-    corepack enable npm && \
-    # corepack で npm のバージョンを固定
-    npm -v && \
-    npm install -g @anthropic-ai/claude-code && \
-    npm install -g @google/gemini-cli && \
-    npm install -g difit && \
-    npm install -g dotenv-cli
+RUN su - ${UNAME} -c "bash -c \"git clone https://github.com/asdf-vm/asdf.git /home/${UNAME}/.asdf --branch v0.13.1 && . /home/${UNAME}/.asdf/asdf.sh && asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git && asdf install nodejs 22.17.0 && asdf install nodejs 24.9.0 && asdf global nodejs 22.17.0 && corepack enable npm && npm -v && npm install -g @anthropic-ai/claude-code && npm install -g @google/gemini-cli && npm install -g difit && npm install -g dotenv-cli\""
 
 # ENTRYPOINT は非インタラクティブシェルとして実行され、通常はシェルの初期化ファイルを読み込みまない
 # これにより、ログインシェルで bash を用いて bash シェルを手動で実行したときとは異なる環境になる
@@ -309,11 +271,30 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 # WORKDIR /home/${UNAME}/cmak
 # code-serverのポート設定（デフォルト: 4035）
 ENV CODE_SERVER_PORT=4035
-# difitのポート設定（デフォルト: 8035）
 ENV DIFIT_PORT=8035
 ENV SUPERVISORD_PORT=9001
 ENV PROCESS_COMPOSE_PORT=8080
 EXPOSE $DIFIT_PORT $CODE_SERVER_PORT $SUPERVISORD_PORT $PROCESS_COMPOSE_PORT
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# s6-overlay: PID 1 保護・プロセス監視
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ARG S6_OVERLAY_VERSION=3.1.6.2
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
+RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
+    rm /tmp/s6-overlay-noarch.tar.xz
+
+# アーキテクチャ別のバイナリ
+RUN ARCH=$(case "${TARGETARCH}" in \
+        "amd64") echo "x86_64" ;; \
+        "arm64") echo "aarch64" ;; \
+        *) echo "x86_64" ;; \
+    esac) && \
+    curl -L "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCH}.tar.xz" \
+    -o /tmp/s6-overlay-arch.tar.xz && \
+    tar -C / -Jxpf /tmp/s6-overlay-arch.tar.xz && \
+    rm /tmp/s6-overlay-arch.tar.xz
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Entrypoint & CMD
@@ -321,4 +302,3 @@ EXPOSE $DIFIT_PORT $CODE_SERVER_PORT $SUPERVISORD_PORT $PROCESS_COMPOSE_PORT
 
 # s6-overlay を PID 1 として起動
 # s6-overlay が docker-entrypoint, supervisord, process-compose を管理
-ENTRYPOINT ["/init"]
