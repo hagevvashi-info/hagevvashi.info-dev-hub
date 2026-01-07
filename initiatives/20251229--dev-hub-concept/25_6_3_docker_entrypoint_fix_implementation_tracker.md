@@ -19,9 +19,10 @@
 | **A: 【最優先】ビルド環境の復旧** | ✅ **完了** | Docker Desktop設定も更新済み |
 | **B: Dockerfileの修正** | ✅ **完了** | s6構造再編成も含む |
 | **C: s6サービス定義の修正** | ✅ **完了** | 依存関係定義も追加 |
-| **D: 全修正内容のコミット** | ✅ **完了** | 複数回実施（最新: afb84ff） |
+| **D: 全修正内容のコミット** | ✅ **完了** | 複数回実施（最新: fd11bcd） |
 | **G: sudo権限問題の解決** | ✅ **完了** | 新規追加セクション |
-| **E: 統合検証** | ⏳ **進行中** | 次のタスク |
+| **E: 統合検証** | ⏳ **進行中** | E-2部分完了、残課題あり |
+| **H: Phase 5問題の解決** | 🔴 **未着手** | 新規追加セクション |
 | **F: プロセス改善** | 🔴 **未着手** | 検証完了後に実施 |
 
 ---
@@ -151,13 +152,25 @@
 
 - [x] sudo完全削除とs6-overlay構造再編成
   - **コミット**: afb84ff "fix: remove unnecessary sudo and reorganize s6-overlay structure"
-  - **日時**: 2026-01-04
+  - **日時**: 2026-01-07
   - **内容**:
     - docker-entrypoint.sh から全11箇所のsudoを削除
     - Dockerfileのs6-overlay構造を再編成
     - サービス依存関係を追加
     - 25_6_7, 25_6_8 ドキュメント作成
   - **参照**: 25_6_7, 25_6_8
+
+#### D-4: xz-utils依存関係の修正
+
+- [x] Dockerfileのs6-overlayインストール順序を修正
+  - **コミット**: fd11bcd "build: fix xz-utils dependency for s6-overlay installation"
+  - **日時**: 2026-01-07
+  - **内容**:
+    - s6-overlayのインストールを`xz-utils`インストール後に移動
+    - ビルドエラー "xz: Cannot exec: No such file or directory" を解決
+    - 実装トラッカー最新状態を反映
+  - **問題**: afb84ffでs6-overlayを先頭に移動したことで依存関係が逆転
+  - **解決**: s6-overlayをメインパッケージインストール後に配置
 
 ---
 
@@ -212,6 +225,60 @@
 
 ---
 
+### セクションH: docker-entrypoint.sh Phase 5実行問題の解決 ★新規追加★
+
+**目的**: Phase 4でsupervisordがフォアグラウンド起動しスクリプトがブロックされる問題を解決し、Phase 5（process-compose設定）を実行可能にする。
+
+**発見経緯**: E-2統合検証時に判明（2026-01-07）
+
+#### H-1: 問題の分析
+
+- [x] Phase 5が実行されない原因を特定
+  - **現象**: docker-entrypoint.sh のログにPhase 5の出力が存在しない
+  - **原因**: Phase 4の137行目 `supervisord -c "${TARGET_CONF}" -t 2>&1` がフォアグラウンドで起動
+  - **結果**: スクリプトがPhase 4でブロックされ、Phase 5以降が実行されない
+  - **影響**: process-compose設定のシンボリックリンクが作成されない
+  - **実施日**: 2026-01-07
+
+#### H-2: 解決策の選定 🔴 次のタスク
+
+- [ ] 以下の解決策から最適なものを選定する:
+
+  **解決策1: supervisord検証をバックグラウンド実行**
+  - Phase 4でsupervisordをバックグラウンドで起動し、すぐに終了させる
+  - Phase 5, 6を実行後、最後にsupervisordをフォアグラウンドで起動
+  - メリット: Phase 5が確実に実行される
+  - デメリット: スクリプト構造の変更が必要
+
+  **解決策2: Phase 5をPhase 4の前に移動**
+  - process-compose設定をsupervisord設定より先に実行
+  - メリット: 最小限の変更
+  - デメリット: 論理的順序が不自然
+
+  **解決策3: docker-entrypointをlongrunサービスに変更**
+  - oneshotではなくlongrunとして実行
+  - メリット: s6-overlayの仕様に沿った設計
+  - デメリット: 大幅な設計変更が必要
+
+#### H-3: 解決策の実装
+
+- [ ] 選定した解決策を実装
+  - **対象ファイル**: `.devcontainer/docker-entrypoint.sh`
+  - **テスト**: ローカルでビルド&起動して検証
+  - **完了基準**: Phase 5のログが出力され、process-compose設定が作成される
+
+#### H-4: 検証
+
+- [ ] Phase 5が正常実行されることを確認
+  - **コマンド**: `docker logs <container-name> | grep "Phase 5"`
+  - **期待結果**: Phase 5のログが出力されている
+
+- [ ] process-compose設定が作成されることを確認
+  - **コマンド**: `ls -l /etc/process-compose/process-compose.yaml`
+  - **期待結果**: project.yamlへのシンボリックリンクが存在
+
+---
+
 ### セクションE: DevContainer再ビルドと統合検証
 
 **目的**: すべての修正が適用された状態でDevContainerを再ビルドし、問題が完全に解決したことを確認する。
@@ -223,35 +290,60 @@
   - **完了基準**: Dockerビルドログに`[Errno 28] No space left on device`やその他のエラーが出力されず、全ステップが正常に完了する。
   - **実施日**: 2026-01-04（複数回）
 
-#### E-2: 統合検証 ⏳ 次のタスク
+#### E-2: 統合検証 ⏳ 部分完了（2026-01-07実施）
 
-- [ ] コンテナに接続し、以下の項目をすべて確認する。
+- [x] **Dockerfileビルド成功**:
+  - **実施**: 2026-01-07 23:39-23:41
+  - **結果**: ✅ 成功（xz-utils依存関係修正後）
+  - **ビルド時間**: 約2分
+  - **新イメージID**: eb3c487b3b5e
 
-  - [ ] **サービス登録の確認**:
-    - **コマンド**: `/command/s6-rc -d list`
-    - **期待結果**: `docker-entrypoint`, `supervisord`, `process-compose` が一覧に含まれる。
+- [x] **コンテナ起動成功**:
+  - **実施**: 2026-01-07 23:43
+  - **コマンド**: `cd .devcontainer && docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml up -d`
+  - **結果**: ✅ 正常起動（14秒後にhealthy）
+  - **コンテナID**: b4de23d02a10
 
-  - [ ] **docker-entrypoint実行確認**:
-    - **コマンド**: VS Codeの "Dev Containers" 出力ログまたは `docker logs <container-name>` を確認。
-    - **期待結果**: `=== docker-entrypoint.sh STARTED at <timestamp> ===` が出力されている。
+- [x] **docker-entrypoint実行確認**:
+  - **コマンド**: `docker logs devcontainer-dev-1`
+  - **結果**: ✅ Phase 1-4すべて正常実行
+  - **重要**: sudo削除の効果確認
+  - **ログ抜粋**:
+    ```
+    === docker-entrypoint.sh STARTED at Wed Jan  7 11:43:48 PM JST 2026 ===
+    📁 Phase 1: Fixing permissions... ✅
+    🐳 Phase 2: Adjusting Docker socket... ✅
+    ⏱️  Phase 3: Initializing Atuin... ✅
+    🔍 Phase 4: Validating supervisord... ✅
+    ```
 
-  - [ ] **シンボリックリンク確認（supervisord）**:
-    - **コマンド**: `ls -l /etc/supervisor/supervisord.conf`
-    - **期待結果**: `/home/hagevvashi/hagevvashi.info-dev-hub/workloads/supervisord/project.conf` を指している
-    - **重要**: これまでseed.confを指していた問題が解決されているか確認
+- [x] **シンボリックリンク確認（supervisord）**:
+  - **コマンド**: `docker exec devcontainer-dev-1 ls -l /etc/supervisor/supervisord.conf`
+  - **結果**: ✅ `/home/hagevvashi/hagevvashi.info-dev-hub/workloads/supervisord/project.conf` を指している
+  - **重要**: ★以前の問題（seed.confを指していた）が完全に解決★
 
-  - [ ] **シンボリックリンク確認（process-compose）**:
-    - **コマンド**: `ls -l /etc/process-compose/process-compose.yaml`
-    - **期待結果**: `/home/hagevvashi/hagevvashi.info-dev-hub/workloads/process-compose/project.yaml` を指している
+- [x] **supervisorctl動作確認**:
+  - **コマンド**: `docker exec devcontainer-dev-1 supervisorctl status`
+  - **結果**: ✅ 正常動作（`code-server RUNNING pid 14, uptime 0:01:16`）
+  - **重要**: ★以前のエラー（`.ini file does not include supervisorctl section`）が完全に解消★
 
-  - [ ] **supervisorctl動作確認**:
-    - **コマンド**: `supervisorctl status`
-    - **期待結果**: エラーなく、プロセスリストが表示される
-    - **重要**: これまで `.ini file does not include supervisorctl section` エラーが発生していた問題が解決されているか確認
+- [x] **サービスプロセス確認（supervisord）**:
+  - **コマンド**: `docker exec devcontainer-dev-1 ps aux | grep supervisord`
+  - **結果**: ✅ supervisord正常起動（PID 13、project.conf使用）
+  - **code-server**: ✅ supervisord経由で正常起動（PID 14）
 
-  - [ ] **サービスプロセス確認**:
-    - **コマンド**: `ps aux | grep -E "(supervisord|process-compose)" | grep -v grep`
-    - **期待結果**: supervisord と process-compose のプロセスが正常に起動している
+- [⚠️] **シンボリックリンク確認（process-compose）**:
+  - **コマンド**: `docker exec devcontainer-dev-1 ls -l /etc/process-compose/process-compose.yaml`
+  - **結果**: ❌ ファイルが存在しない
+  - **原因**: Phase 5が実行されていない（Phase 4でsupervisordがフォアグラウンド起動しスクリプトがブロック）
+  - **影響**: process-compose関連機能が未設定
+  - **対応**: セクションHで解決予定
+
+- [⚠️] **サービス登録の確認（s6-rc）**:
+  - **コマンド**: `docker exec devcontainer-dev-1 /command/s6-rc -d list`
+  - **結果**: ❌ `s6-rc: fatal: unable to take locks: No such file or directory`
+  - **影響**: s6-rc直接実行は不可だが、サービス自体は正常動作
+  - **備考**: 副次的問題、主機能に影響なし
 
 ---
 
@@ -299,16 +391,33 @@
 | セクション | 主要な成果 | 参照 |
 |-----------|-----------|------|
 | A | Docker Desktop設定を128GBに拡張、クリーンアップ実施 | 25_6_4 |
-| B | s6-overlay構造を正しく配置、重複を削除 | 25_6_5, afb84ff |
+| B | s6-overlay構造を正しく配置、xz-utils依存関係修正 | 25_6_5, fd11bcd |
 | C | docker-entrypointをoneshotとして定義、依存関係追加 | fc68e84, afb84ff |
-| D | 複数回のコミット実施（62728f4 → afb84ff） | git log |
+| D | 複数回のコミット実施（62728f4 → fd11bcd） | git log |
 | G | sudo完全削除、設計意図を明示 | 25_6_7, afb84ff |
+| E-1 | DevContainer再ビルド成功 | fd11bcd |
+| E-2 (部分) | 統合検証: supervisord問題完全解決 | 2026-01-07実施 |
+
+### 主要な達成成果 🎯
+
+1. **✅ supervisord問題の完全解決**:
+   - 設定ファイルが project.conf を正しく指すようになった
+   - supervisorctl status が正常動作（以前のエラー完全解消）
+   - sudo削除の効果を確認
+
+2. **✅ Dockerビルドの安定化**:
+   - xz-utils依存関係問題を解決
+   - ビルドエラーゼロで完了
+
+3. **✅ docker-entrypoint.sh Phase 1-4の正常実行**:
+   - sudo削除後も全Phaseが正常動作
 
 ### 次のステップ ⏳
 
 | セクション | タスク | 優先度 |
 |-----------|--------|--------|
-| E-2 | 統合検証の実施 | 🔴 最優先 |
+| H-2 | Phase 5問題の解決策選定 | 🔴 最優先 |
+| H-3 | 解決策の実装とテスト | 🔴 最優先 |
 | F | プロセス改善の文書化 | 🟡 重要 |
 
 ---
@@ -382,5 +491,18 @@
 
 ---
 
-**最終更新**: 2026-01-04
-**ステータス**: セクションE-2（統合検証）実施待ち
+**最終更新**: 2026-01-07 23:55
+**ステータス**: セクションE-2部分完了（supervisord問題解決）、セクションH（Phase 5問題）が次のタスク
+
+### 検証結果の詳細 (2026-01-07)
+
+**成功した検証項目**:
+- ✅ Dockerfileビルド（fd11bcd）
+- ✅ docker-entrypoint.sh Phase 1-4実行
+- ✅ supervisord設定 → project.conf
+- ✅ supervisorctl status 正常動作
+- ✅ supervisord、code-serverプロセス起動
+
+**残された課題**:
+- ❌ process-compose設定未完了（Phase 5未実行）
+- ⚠️ s6-rc登録確認でロックエラー（副次的問題）
