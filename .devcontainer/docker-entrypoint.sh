@@ -134,8 +134,9 @@ if [ -f "${PROJECT_CONF}" ]; then
 
     ln -sf "${PROJECT_CONF}" "${TARGET_CONF}"
 
-    if supervisord -c "${TARGET_CONF}" -t 2>&1; then
-        echo "  ✅ project.conf is valid"
+    # 設定ファイルの基本的な構文チェック（静的検証）
+    if grep -q "\[supervisord\]" "${PROJECT_CONF}" && grep -q "\[supervisorctl\]" "${PROJECT_CONF}"; then
+        echo "  ✅ project.conf appears valid"
     else
         echo ""
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -236,4 +237,7 @@ echo "✅ Container initialization complete"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "🚀 Starting supervisord..."
+echo ""
 
+# supervisordをフォアグラウンドで起動（PID 1として実行）
+exec supervisord -c "${TARGET_CONF}" -n
