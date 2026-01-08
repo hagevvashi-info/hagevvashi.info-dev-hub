@@ -184,8 +184,8 @@ RUN DUCKDB_ARCH=$(case "${TARGETARCH}" in \
 # このレイヤーは、コピー元のシェルスクリプトファイルが変更された場合にのみ無効化される
 COPY .devcontainer/shell/.bash_profile /etc/skel/.bash_profile
 COPY .devcontainer/shell/.bashrc_custom /etc/skel/.bashrc_custom
-COPY .devcontainer/shell/paths.sh /etc/skel/.bashrc.d/paths.sh
-COPY .devcontainer/shell/env.sh /etc/skel/.bashrc.d/env.sh
+COPY .devcontainer/shell/paths.sh /etc/skel/paths.sh
+COPY .devcontainer/shell/env.sh /etc/skel/env.sh
 COPY .devcontainer/shell/.profile /etc/skel/.profile
 # 他のカスタムファイルがあればここに追加 (e.g. aliases.sh)
 # COPY.devcontainer/shell/aliases.sh /etc/skel/.aliases.sh
