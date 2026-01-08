@@ -134,26 +134,6 @@ RUN curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh && \
 
 # Atuin init for interactive shells is configured in ~/.bashrc below
 
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# s6-overlay: PID 1 保護・プロセス監視
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-ARG S6_OVERLAY_VERSION=3.1.6.2
-ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
-RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
-    rm /tmp/s6-overlay-noarch.tar.xz
-
-# アーキテクチャ別のバイナリ
-RUN ARCH=$(case "${TARGETARCH}" in \
-        "amd64") echo "x86_64" ;; \
-        "arm64") echo "aarch64" ;; \
-        *) echo "x86_64" ;; \
-    esac) && \
-    curl -L "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCH}.tar.xz" \
-    -o /tmp/s6-overlay-arch.tar.xz && \
-    tar -C / -Jxpf /tmp/s6-overlay-arch.tar.xz && \
-    rm /tmp/s6-overlay-arch.tar.xz
-
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Process management: process-compose
@@ -200,14 +180,6 @@ RUN DUCKDB_ARCH=$(case "${TARGETARCH}" in \
         rm -f /tmp/xsv.tar.gz; \
     fi
 
-# ENTRYPOINTスクリプトをコピー
-COPY .devcontainer/docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-# デバッグモード用ENTRYPOINTスクリプトをコピー
-COPY .devcontainer/debug-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/debug-entrypoint.sh
-
 #  外部化したシェル設定ファイルをコンテナにコピー
 # このレイヤーは、コピー元のシェルスクリプトファイルが変更された場合にのみ無効化される
 COPY .devcontainer/shell/.bash_profile /etc/skel/.bash_profile
@@ -250,7 +222,6 @@ RUN echo "${UNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 # 詳細: initiatives/20251229--dev-hub-concept/25_4_3_docker_build_debug_log.md Part 3
 
 COPY .devcontainer/supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 # 一般ユーザーに切り替え
 USER ${UNAME}
@@ -271,10 +242,9 @@ RUN pipx ensurepath && \
     pipx install csvkit && \
     pipx install visidata
 
-# COPY --chown=${UNAME}:${GNAME} package.json ./
-    # sdkman のインストール
+# sdkman のインストール
 RUN curl -s 'https://get.sdkman.io' | bash && \
-    bash -c "source /home/${UNAME}/.sdkman/bin/sdkman-init.sh && sdk install java 11.0.26-tem && sdk use java 11.0.26-tem && sdk default java 11.0.26-tem"
+    bash -c "source ~/.sdkman/bin/sdkman-init.sh && sdk install java 11.0.26-tem && sdk use java 11.0.26-tem && sdk default java 11.0.26-tem"
     # # cmak 3.0.0.6 のインストール
     # && rm -rf cmak && curl -sL https://github.com/yahoo/CMAK/releases/download/3.0.0.6/cmak-3.0.0.6.zip -o cmak.zip && unzip -o cmak.zip && rm cmak.zip && mv cmak-3.0.0.6 cmak
 
@@ -315,5 +285,17 @@ EXPOSE $DIFIT_PORT $CODE_SERVER_PORT $SUPERVISORD_PORT $PROCESS_COMPOSE_PORT
 # Entrypoint & CMD
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+# ユーザー切り替え前に実行する必要があるため、rootユーザーで実行する
+# ENTRYPOINTスクリプトをコピー
+COPY .devcontainer/docker-entrypoint.sh /usr/local/bin/
+RUN sudo chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# デバッグモード用ENTRYPOINTスクリプトをコピー
+COPY .devcontainer/debug-entrypoint.sh /usr/local/bin/
+RUN sudo chmod +x /usr/local/bin/debug-entrypoint.sh
+
+# ENTRYPOINTを最後に設定（ユーザー切り替え後）
+# これにより、コンテナ起動時のデフォルトユーザーがhagevvashiになる
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 # s6-overlay を PID 1 として起動
 # s6-overlay が docker-entrypoint, supervisord, process-compose を管理

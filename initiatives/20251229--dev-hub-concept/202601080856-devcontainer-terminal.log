@@ -1,0 +1,224 @@
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+[+] Building 13.0s (13/61)                                                      
+ => [internal] load local bake definitions                                 0.0s
+ => => reading from stdin 1.25kB                                           0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+[+] Building 13.1s (13/61)                                                      
+ => [internal] load local bake definitions                                 0.0s
+ => => reading from stdin 1.25kB                                           0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+[+] Building 13.2s (13/61)                                                      
+ => [internal] load local bake definitions                                 0.0s
+ => => reading from stdin 1.25kB                                           0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/debian:12.7             0.0s
+[+] Building 13.4s (13/61)                                                      
+ => [internal] load local bake definitions                                 0.0s
+ => => reading from stdin 1.25kB                                           0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/debian:12.7             0.0s
+[+] Building 13.5s (13/61)                                                      
+ => [internal] load local bake definitions                                 0.0s
+ => => reading from stdin 1.25kB                                           0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/debian:12.7             0.0s
+[+] Building 13.7s (13/61)                                                      
+ => [internal] load local bake definitions                                 0.0s
+ => => reading from stdin 1.25kB                                           0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/debian:12.7             0.0s
+[+] Building 13.8s (13/61)                                                      
+ => [internal] load local bake definitions                                 0.0s
+ => => reading from stdin 1.25kB                                           0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/debian:12.7             0.0s
+[+] Building 14.0s (13/61)                                                      
+ => [internal] load local bake definitions                                 0.0s
+ => => reading from stdin 1.25kB                                           0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/debian:12.7             0.0s
+[+] Building 14.0s (13/61)                                                      
+ => => reading from stdin 1.25kB                                           0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/debian:12.7             0.0s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+[+] Building 14.1s (13/61)                                                      
+ => => reading from stdin 1.25kB                                           0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/debian:12.7             0.0s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+[+] Building 14.3s (13/61)                                                      
+ => => reading from stdin 1.25kB                                           0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/debian:12.7             0.0s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+[+] Building 14.4s (13/61)                                                      
+ => => reading from stdin 1.25kB                                           0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/debian:12.7             0.0s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+[+] Building 14.6s (13/61)                                                      
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/debian:12.7             0.0s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[+] Building 14.7s (14/61)                                                      
+ => [internal] load local bake definitions                                 0.0s
+ => => reading from stdin 1.25kB                                           0.0s
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/debian:12.7             0.0s
+[+] Building 14.9s (14/61)                                                      
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/debian:12.7             0.0s
+ => [context dev_containers_feature_content_source] load .dockerignore     0.0s
+ => => transferring dev_containers_feature_content_source: 2B              0.0s
+[+] Building 15.1s (15/61)                                                      
+ => [internal] load local bake definitions                                 0.0s
+ => => reading from stdin 1.25kB                                           0.0s 
+ => [internal] load build definition from Dockerfile-with-features         0.0s
+ => => transferring dockerfile: 18.79kB                                    0.0s
+ => resolve image config for docker-image://docker.io/docker/dockerfile:1  0.8s
+ => CACHED docker-image://docker.io/docker/dockerfile:1.4@sha256:9ba7531b  0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/debian:12.7             0.0s
+
+...以下略...
+
+
+ => [dev_container_auto_added_stage_label  4/45] RUN echo "en_US.UTF-8 UT  2.8s
+ => [dev_container_auto_added_stage_label  5/45] RUN curl -fsSL https://d  0.4s
+ => [dev_container_auto_added_stage_label  6/45] RUN apt-get update       30.2s
+ => [dev_container_auto_added_stage_label  7/45] ADD https://github.com/j  0.0s
+ => [dev_container_auto_added_stage_label  8/45] RUN tar -C / -Jxpf /tmp/  0.1s
+ => [dev_container_auto_added_stage_label  9/45] RUN ARCH=$(case "arm64"   1.5s
+ => [dev_container_auto_added_stage_label 10/45] RUN mkdir -p /etc/s6-rc   0.1s
+ => [dev_container_auto_added_stage_label 11/45] COPY .devcontainer/super  0.0s
+ => [dev_container_auto_added_stage_label 12/45] RUN ln -s $(which python  0.1s
+ => [dev_container_auto_added_stage_label 13/45] RUN curl --proto '=https  2.9s
+ => [dev_container_auto_added_stage_label 14/45] RUN ARCH=$(case "arm64"   1.2s
+ => [dev_container_auto_added_stage_label 15/45] RUN mkdir -p /etc/proces  0.2s
+ => [dev_container_auto_added_stage_label 16/45] COPY .devcontainer/proce  0.0s
+ => [dev_container_auto_added_stage_label 17/45] RUN curl -fsSL https://c  7.7s
+ => [dev_container_auto_added_stage_label 18/45] RUN DUCKDB_ARCH=$(case "  1.2s
+ => [dev_container_auto_added_stage_label 19/45] COPY .devcontainer/docke  0.0s
+ => [dev_container_auto_added_stage_label 20/45] RUN chmod +x /usr/local/  0.1s
+ => [dev_container_auto_added_stage_label 21/45] COPY .devcontainer/debug  0.0s
+ => [dev_container_auto_added_stage_label 22/45] RUN chmod +x /usr/local/  0.1s
+ => [dev_container_auto_added_stage_label 23/45] COPY .devcontainer/shell  0.0s
+ => [dev_container_auto_added_stage_label 24/45] COPY .devcontainer/shell  0.0s
+ => [dev_container_auto_added_stage_label 25/45] COPY .devcontainer/shell  0.0s
+ => [dev_container_auto_added_stage_label 26/45] COPY .devcontainer/shell  0.0s
+ => [dev_container_auto_added_stage_label 27/45] COPY .devcontainer/shell  0.0s
+ => [dev_container_auto_added_stage_label 28/45] RUN echo '\n# Load custo  0.1s
+ => [dev_container_auto_added_stage_label 29/45] RUN groupadd -g 999 dock  0.1s
+ => [dev_container_auto_added_stage_label 30/45] RUN if ! getent group st  0.1s
+ => [dev_container_auto_added_stage_label 31/45] RUN useradd -o -l -u 501  0.2s
+ => [dev_container_auto_added_stage_label 32/45] RUN chown hagevvashi:sta  0.1s
+ => [dev_container_auto_added_stage_label 33/45] RUN mkdir -p /home/hagev  0.1s
+ => [dev_container_auto_added_stage_label 34/45] RUN chown -R 501:20 /hom  0.1s
+ => [dev_container_auto_added_stage_label 35/45] RUN echo "hagevvashi ALL  0.1s
+ => [dev_container_auto_added_stage_label 36/45] COPY .devcontainer/super  0.0s
+ => [dev_container_auto_added_stage_label 37/45] WORKDIR /home/hagevvashi  0.0s
+ => [dev_container_auto_added_stage_label 38/45] RUN curl -fsSL https://r  0.2s
+ => [dev_container_auto_added_stage_label 39/45] RUN git clone https://gi  2.4s
+ => [dev_container_auto_added_stage_label 40/45] RUN pipx ensurepath &&   11.2s
+ => [dev_container_auto_added_stage_label 41/45] RUN su - hagevvashi -c   27.5s
+ => [dev_container_auto_added_stage_label 42/45] RUN su - hagevvashi -c   43.7s
+ => [dev_container_auto_added_stage_label 43/45] ADD https://github.com/j  0.0s
+ => [dev_container_auto_added_stage_label 44/45] RUN tar -C / -Jxpf /tmp/  0.1s
+ => [dev_container_auto_added_stage_label 45/45] RUN ARCH=$(case "arm64"   0.3s
+ => [dev_containers_target_stage 1/4] RUN mkdir -p /tmp/dev-container-fea  0.2s
+ => [dev_containers_feature_content_normalize 1/2] COPY --from=dev_contai  0.0s
+ => [dev_containers_feature_content_normalize 2/2] RUN chmod -R 0755 /tmp  0.2s
+ => [dev_containers_target_stage 2/4] COPY --from=dev_containers_feature_  0.0s
+ => [dev_containers_target_stage 3/4] RUN echo "_CONTAINER_USER_HOME=$( (  0.2s
+ => [dev_containers_target_stage 4/4] RUN --mount=type=bind,from=dev_cont  8.4s
+ => exporting to image                                                    13.1s
+ => => exporting layers                                                   12.9s
+ => => preparing layers for inline cache                                   0.1s
+ => => writing image sha256:d1faecb8dfcdd2264ab363f5dfa94176ecbc15b9036fe  0.0s
+ => => naming to docker.io/library/hagevvashiinfo-dev-hub_devcontainer-de  0.0s
+ => resolving provenance for metadata file                                 0.0s
+[+] Building 1/1
+ ✔ hagevvashiinfo-dev-hub_devcontainer-dev  Built                          0.0s 
+WARN[0000] The "DEBUG_MODE" variable is not set. Defaulting to a blank string. 
+[+] Running 0/1
+ ⠸ Container hagevvashiinfo-dev-hub_devcontainer-dev-1  Starting           0.3s 
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint hagevvashiinfo-dev-hub_devcontainer-dev-1 (4c7c0e4225e38d8704f4b2ce9b0409e37461c19ad951c91a700c086b7778a55f): Bind for 0.0.0.0:4035 failed: port is already allocated

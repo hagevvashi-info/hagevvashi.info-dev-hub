@@ -18,6 +18,10 @@ services:
       - type: volume
         source: repos
         target: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}/repos
+      # /var/run/docker.sock をマウント ― Docker from Docker のための設定
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
     working_dir: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}
     ports:
       - "4035:4035"

@@ -7,7 +7,7 @@ echo "=== docker-entrypoint.sh STARTED at $(date) ===" >&2
 set -euo pipefail
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "🔧 Docker Entrypoint: Initializing container..."
+echo "🔧 Docker Entrypoint: Initializing container"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -44,6 +44,7 @@ echo "✅ Permissions fixed."
 
 echo ""
 echo "🐳 Phase 2: Adjusting Docker socket permissions..."
+
 if [ -S /var/run/docker.sock ]; then
     # Docker Socket の現在の所有者とパーミッションを確認
     DOCKER_SOCK_GID=$(stat -c '%g' /var/run/docker.sock)
@@ -52,11 +53,11 @@ if [ -S /var/run/docker.sock ]; then
     echo "  Docker socket GID: $DOCKER_SOCK_GID, Mode: $DOCKER_SOCK_MODE"
 
     # Docker Socket に書き込み権限を付与
-    chmod 666 /var/run/docker.sock
+    sudo chmod 666 /var/run/docker.sock
 
     # ユーザーのグループにdockerグループを追加（必要に応じて）
     if ! groups | grep -q docker; then
-        usermod -a -G docker ${UNAME}
+        sudo usermod -a -G docker ${UNAME}
     fi
 
     echo "  Docker socket permissions updated"
@@ -67,52 +68,36 @@ fi
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 echo ""
-echo "⏱️  Phase 3: Initializing Atuin configuration..."
+echo "⏱️  Phase 3: Initializing Atuin configuration for user ${UNAME}..."
 if command -v atuin >/dev/null 2>&1; then
-    # Atuin設定ディレクトリの作成
+    # ユーザーの環境で初期化
     mkdir -p ~/.config/atuin
     mkdir -p ~/.local/share/atuin
 
     # 設定ファイルが存在しない場合のみデフォルト設定を作成
     if [ ! -f ~/.config/atuin/config.toml ]; then
-        echo "  Creating default Atuin config..."
+        echo "  Creating default Atuin config for ${UNAME}..."
         cat > ~/.config/atuin/config.toml <<'EOF'
-# Atuin設定ファイル
-# 同期を無効化（必要に応じて有効化）
+# Atuin設定ファイル（ユーザー用）
 sync_address = ""
 sync_frequency = "0"
-
-# 検索設定
 search_mode = "fuzzy"
 filter_mode = "host"
 filter_mode_shell_up_key_binding = "directory"
-
-# UIカスタマイズ
 style = "compact"
 inline_height = 25
 show_preview = true
 show_help = true
-
-# 履歴の設定
 history_filter = []
-# secrets_filter = true  # パスワードなどの機密情報をフィルタリング
-
-# キーバインド設定
-# enter_accept = true  # Enterキーで選択を確定
-
-# 統計情報の表示
 show_stats = true
-
-# タイムゾーン設定
 timezone = "+09:00"
 EOF
-        echo "  ℹ️  Created default Atuin configuration"
+        echo "  ✅ Created default Atuin configuration for ${UNAME}"
     else
-        echo "  ℹ️  Atuin config already exists, using existing configuration"
+        echo "  ℹ️  Atuin config already exists for ${UNAME}"
     fi
 fi
-echo "✅ Atuin initialization complete"
-
+echo "✅ Atuin initialization complete for ${UNAME}"
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -123,7 +108,7 @@ echo ""
 echo "🔍 Phase 4: Validating supervisord configuration..."
 
 UNAME=${UNAME:-$(whoami)}
-REPO_NAME=${REPO_NAME:-"hagevvashi.info-dev-hub"}
+REPO_NAME=${REPO_NAME}
 
 PROJECT_CONF="/home/${UNAME}/${REPO_NAME}/workloads/supervisord/project.conf"
 SEED_CONF="/etc/supervisor/seed.conf"
@@ -132,7 +117,8 @@ TARGET_CONF="/etc/supervisor/supervisord.conf"
 if [ -f "${PROJECT_CONF}" ]; then
     echo "  ✅ Found: ${PROJECT_CONF}"
 
-    ln -sf "${PROJECT_CONF}" "${TARGET_CONF}"
+    sudo rm -f "${TARGET_CONF}"
+    sudo ln -sf "${PROJECT_CONF}" "${TARGET_CONF}"
 
     # 設定ファイルの基本的な構文チェック（静的検証）
     if grep -q "\[supervisord\]" "${PROJECT_CONF}" && grep -q "\[supervisorctl\]" "${PROJECT_CONF}"; then
@@ -153,7 +139,7 @@ if [ -f "${PROJECT_CONF}" ]; then
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo ""
 
-        ln -sf "${SEED_CONF}" "${TARGET_CONF}"
+        sudo ln -sf "${SEED_CONF}" "${TARGET_CONF}"
     fi
 else
     echo ""
@@ -171,7 +157,7 @@ else
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
 
-    ln -sf "${SEED_CONF}" "${TARGET_CONF}"
+    sudo ln -sf "${SEED_CONF}" "${TARGET_CONF}"
 fi
 
 echo "  Using config: ${TARGET_CONF}"
@@ -184,7 +170,7 @@ echo ""
 echo "🔍 Phase 5: Validating process-compose configuration..."
 
 UNAME=${UNAME:-$(whoami)}
-REPO_NAME=${REPO_NAME:-"hagevvashi.info-dev-hub"}
+REPO_NAME=${REPO_NAME}
 
 PROJECT_YAML="/home/${UNAME}/${REPO_NAME}/workloads/process-compose/project.yaml"
 SEED_YAML="/etc/process-compose/seed.yaml"
@@ -193,8 +179,8 @@ TARGET_YAML="/etc/process-compose/process-compose.yaml"
 if [ -f "${PROJECT_YAML}" ]; then
     echo "  ✅ Found: ${PROJECT_YAML}"
 
-    mkdir -p /etc/process-compose
-    ln -sf "${PROJECT_YAML}" "${TARGET_YAML}"
+    sudo mkdir -p /etc/process-compose
+    sudo ln -sf "${PROJECT_YAML}" "${TARGET_YAML}"
 
     # YAML構文チェック（簡易）
     if grep -q "^version:" "${PROJECT_YAML}" && grep -q "^processes:" "${PROJECT_YAML}"; then
@@ -215,14 +201,14 @@ if [ -f "${PROJECT_YAML}" ]; then
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo ""
 
-        ln -sf "${SEED_YAML}" "${TARGET_YAML}"
+        sudo ln -sf "${SEED_YAML}" "${TARGET_YAML}"
     fi
 else
     echo "  ⚠️  workloads/process-compose/project.yaml not found"
     echo "  Using seed config (minimal setup)"
 
-    mkdir -p /etc/process-compose
-    ln -sf "${SEED_YAML}" "${TARGET_YAML}"
+    sudo mkdir -p /etc/process-compose
+    sudo ln -sf "${SEED_YAML}" "${TARGET_YAML}"
 fi
 
 echo "  Using config: ${TARGET_YAML}"
@@ -240,4 +226,4 @@ echo "🚀 Starting supervisord..."
 echo ""
 
 # supervisordをフォアグラウンドで起動（PID 1として実行）
-exec supervisord -c "${TARGET_CONF}" -n
+exec sudo supervisord -c "${TARGET_CONF}" -n
