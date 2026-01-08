@@ -121,9 +121,6 @@ COPY .devcontainer/supervisord/seed.conf /etc/supervisor/seed.conf
 #     supervisord -c /etc/supervisor/seed.conf -t && \
 #     echo "✅ Default supervisord configuration is valid"
 
-
-
-
 # Create python symlink
 RUN ln -s $(which python3) /usr/bin/python
 
@@ -136,6 +133,27 @@ RUN curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh && \
     rm -rf /root/.atuin
 
 # Atuin init for interactive shells is configured in ~/.bashrc below
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# s6-overlay: PID 1 保護・プロセス監視
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ARG S6_OVERLAY_VERSION=3.1.6.2
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
+RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
+    rm /tmp/s6-overlay-noarch.tar.xz
+
+# アーキテクチャ別のバイナリ
+RUN ARCH=$(case "${TARGETARCH}" in \
+        "amd64") echo "x86_64" ;; \
+        "arm64") echo "aarch64" ;; \
+        *) echo "x86_64" ;; \
+    esac) && \
+    curl -L "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCH}.tar.xz" \
+    -o /tmp/s6-overlay-arch.tar.xz && \
+    tar -C / -Jxpf /tmp/s6-overlay-arch.tar.xz && \
+    rm /tmp/s6-overlay-arch.tar.xz
+
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Process management: process-compose
@@ -234,8 +252,8 @@ RUN echo "${UNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 COPY .devcontainer/supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-
-
+# 一般ユーザーに切り替え
+USER ${UNAME}
 WORKDIR /home/${UNAME}
 
 # Ensure bash-preexec is available for Atuin bash integration
@@ -255,12 +273,29 @@ RUN pipx ensurepath && \
 
 # COPY --chown=${UNAME}:${GNAME} package.json ./
     # sdkman のインストール
-RUN su - ${UNAME} -c "bash -c \"curl -s 'https://get.sdkman.io' | bash && source /home/${UNAME}/.sdkman/bin/sdkman-init.sh && sdk install java 11.0.26-tem && sdk use java 11.0.26-tem && sdk default java 11.0.26-tem\""
+RUN curl -s 'https://get.sdkman.io' | bash && \
+    bash -c "source /home/${UNAME}/.sdkman/bin/sdkman-init.sh && sdk install java 11.0.26-tem && sdk use java 11.0.26-tem && sdk default java 11.0.26-tem"
     # # cmak 3.0.0.6 のインストール
     # && rm -rf cmak && curl -sL https://github.com/yahoo/CMAK/releases/download/3.0.0.6/cmak-3.0.0.6.zip -o cmak.zip && unzip -o cmak.zip && rm cmak.zip && mv cmak-3.0.0.6 cmak
 
 # asdf install
-RUN su - ${UNAME} -c "bash -c \"git clone https://github.com/asdf-vm/asdf.git /home/${UNAME}/.asdf --branch v0.13.1 && . /home/${UNAME}/.asdf/asdf.sh && asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git && asdf install nodejs 22.17.0 && asdf install nodejs 24.9.0 && asdf global nodejs 22.17.0 && corepack enable npm && npm -v && npm install -g @anthropic-ai/claude-code && npm install -g @google/gemini-cli && npm install -g difit && npm install -g dotenv-cli\""
+RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.13.1
+
+ENV PATH="/home/${UNAME}/.asdf/bin:/home/${UNAME}/.asdf/shims:${PATH}"
+
+# Node.jsプラグインをインストール
+RUN asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git && \
+    # Node.js インストール
+    asdf install nodejs 22.17.0 && \
+    asdf install nodejs 24.9.0 && \
+    asdf global nodejs 22.17.0 && \
+    corepack enable npm && \
+    # corepack で npm のバージョンを固定
+    npm -v && \
+    npm install -g @anthropic-ai/claude-code && \
+    npm install -g @google/gemini-cli && \
+    npm install -g difit && \
+    npm install -g dotenv-cli
 
 # ENTRYPOINT は非インタラクティブシェルとして実行され、通常はシェルの初期化ファイルを読み込みまない
 # これにより、ログインシェルで bash を用いて bash シェルを手動で実行したときとは異なる環境になる
@@ -275,26 +310,6 @@ ENV DIFIT_PORT=8035
 ENV SUPERVISORD_PORT=9001
 ENV PROCESS_COMPOSE_PORT=8080
 EXPOSE $DIFIT_PORT $CODE_SERVER_PORT $SUPERVISORD_PORT $PROCESS_COMPOSE_PORT
-
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# s6-overlay: PID 1 保護・プロセス監視
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-ARG S6_OVERLAY_VERSION=3.1.6.2
-ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
-RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
-    rm /tmp/s6-overlay-noarch.tar.xz
-
-# アーキテクチャ別のバイナリ
-RUN ARCH=$(case "${TARGETARCH}" in \
-        "amd64") echo "x86_64" ;; \
-        "arm64") echo "aarch64" ;; \
-        *) echo "x86_64" ;; \
-    esac) && \
-    curl -L "https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${ARCH}.tar.xz" \
-    -o /tmp/s6-overlay-arch.tar.xz && \
-    tar -C / -Jxpf /tmp/s6-overlay-arch.tar.xz && \
-    rm /tmp/s6-overlay-arch.tar.xz
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Entrypoint & CMD

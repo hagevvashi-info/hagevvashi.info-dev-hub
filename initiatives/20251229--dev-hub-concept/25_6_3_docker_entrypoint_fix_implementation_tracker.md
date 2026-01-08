@@ -9,6 +9,7 @@
 - `25_6_6_docker_entrypoint_execution_failure_analysis.md` ★追加★
 - `25_6_7_sudo_privilege_escalation_issue_analysis.md` ★追加★
 - `25_6_8_current_situation_summary.md` ★追加★
+- `25_6_9_devcontainer_port_conflict_error_analysis.md` ★追加★
 
 ---
 
@@ -22,7 +23,8 @@
 | **D: 全修正内容のコミット** | ✅ **完了** | 複数回実施（最新: 96f0613） |
 | **G: sudo権限問題の解決** | ✅ **完了** | 新規追加セクション |
 | **H: Phase 5問題の解決** | ✅ **完了** | 2026-01-08完了 |
-| **E: 統合検証** | ✅ **完了** | 全検証項目クリア |
+| **E: 統合検証（手動起動）** | ✅ **完了** | 全検証項目クリア |
+| **I: ポート競合問題の解決** | 🔴 **未着手** | VSCode拡張起動時の問題 |
 | **F: プロセス改善** | 🔴 **未着手** | 検証完了後に実施 |
 
 ---
