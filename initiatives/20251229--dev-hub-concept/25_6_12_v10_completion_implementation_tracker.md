@@ -14,9 +14,12 @@
 | セクション | ステータス | 備考 |
 | :--- | :--- | :--- |
 | **Phase 1: コード修正** | ✅ **完了** | 2026-01-10T01:00:00+09:00 - 全5タスク完了 |
-| **Phase 2: ビルドと検証** | 🔴 **未着手** | 8つの検証項目（再ビルドが必要） |
-| **Phase 3: ドキュメント更新** | 🔴 **未着手** | 3つのドキュメント更新 |
+| **Phase 2: ビルドと検証** | ⚠️ **一部完了（解決策確定）** | 2-1〜2-3完了、2-3-1で問題発見、25_6_16で解決策確定 |
+| **Phase 2-2: ラッパースクリプト実装** | 🔴 **未着手** | bin/dc作成とdevcontainer.json修正 |
+| **Phase 3: ドキュメント更新** | 🔵 **進行中** | 25_6_14, 25_6_15, 25_6_16作成済み |
 | **Phase 4: コミット** | 🔴 **未着手** | git commit実施 |
+
+**解決策**: ラッパースクリプト戦略（25_6_16）を採用 - docker compose exec に自動的に -u ${UNAME} を付与
 
 ---
 
@@ -198,13 +201,149 @@
         ```
     - **完了基準**: PID 1が`s6-svscan`であること
     - **参照**: 25_6_12_v10_completion_strategy.md Phase 2 タスク2-3
-    - **実施日時**: 2026-01-10T00:07:00+09:00
-    - **結果**: ⚠️ **部分的成功 - 重大な問題発見**
+    - **実施日時**: 2026-01-10T01:32:00+09:00
+    - **結果**: ✅ **成功**
         - PID 1は`s6-svscan`として起動している ✅
-        - **しかしUSERが`sugahar+`（非root）で実行されている** ❌
-        - 原因: Dockerfile line 296で`USER ${UNAME}`を指定した後にENTRYPOINTを配置
-        - 影響: s6-overlayが非rootユーザーで実行され、Phase 1-5の初期化処理（chown等）が失敗する可能性
-        - **これは25_6_10で指摘されていた問題と同一**
+        - **USERが`root`で実行されている** ✅
+        - 実際の出力:
+            ```
+            USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+            root         1  0.0  0.0    428    96 ?        Ss   17:32   0:00 /package/admin/s6/command/s6-svscan -d4 -- /run/service
+            ```
+        - **Phase 1の修正（USER ${UNAME}をENTRYPOINTの後に移動）が成功**
+
+#### 2-3-1: docker exec bashログイン確認（追加検証）
+
+- [x] docker exec bashでログインユーザーを確認
+    - **コマンド**:
+        ```bash
+        docker exec -it devcontainer-dev-1 bash
+        ```
+    - **完了基準**: `${UNAME}`ユーザーでログインできること
+    - **実施日時**: 2026-01-10T01:35:00+09:00
+    - **結果**: ❌ **失敗 - 25_6_13の理論が実践で破綻**
+        - rootユーザーとしてログインされた
+        - エラー: `bash: /root/.atuin/bin/env: No such file or directory`
+        - **重要な発見**: `USER ${UNAME}` を ENTRYPOINT の後に配置しても、docker exec に影響しない
+        - **原因**: Dockerfile の `USER` 指定は、配置位置に関わらずイメージメタデータに記録され、すべてのプロセスに影響する
+        - **25_6_13 の理論的仮説が誤りであることが判明**
+    - **解決策の検討**: 25_6_14で4つの選択肢を分析
+    - **最終決定**: 25_6_16のラッパースクリプト戦略を採用（ユーザーの要望により/root/.bashrc修正は却下）
+
+#### 2-3-2: USER ${UNAME} アンコメント時の挙動確認（ユーザー検証済み）
+
+- [x] `USER ${UNAME}` をアンコメントした場合の PID 1 の挙動を確認
+    - **実施日時**: 2026-01-10T01:40:00+09:00（ユーザーによる検証）
+    - **結果**: ❌ **PID 1が非rootで実行される**
+        - ユーザーからの報告: "PID 1 が非ルートになることは確認済みです"
+        - **結論**: `USER ${UNAME}` の配置位置（ENTRYPOINTの前後）は無関係
+        - **Docker の実際の仕様**: `USER` 指定は、最終的なイメージメタデータの `User` フィールドに記録され、すべてのプロセス（ENTRYPOINT含む）に影響
+
+#### 2-3-3: デッドロック状態の確認
+
+- [x] Phase 1-4 の修正では両立不可能であることを確認
+    - **実施日時**: 2026-01-10T01:45:00+09:00
+    - **結果**: ✅ **デッドロック確定**
+        - **選択肢A**: `USER ${UNAME}` コメントアウト → PID 1=root ✅, docker exec=root ❌
+        - **選択肢B**: `USER ${UNAME}` アンコメント → PID 1=非root ❌, docker exec=${UNAME} ✅
+        - **結論**: Dockerfile の `USER` ディレクティブだけでは両要件を両立できない
+    - **参照**: `25_6_14_user_directive_limitation_analysis.md` - 詳細分析ドキュメント
+
+---
+
+### Phase 2-2: ラッパースクリプト実装（25_6_16戦略）
+
+**目的**: docker compose exec に自動的に -u ${UNAME} を付与するラッパースクリプトを実装
+
+**参照ドキュメント**: 25_6_16_wrapper_script_strategy.md
+
+#### 2-2-1: bin/dc スクリプト作成
+
+- [ ] `bin/dc` ラッパースクリプトを作成
+    - **実装内容**:
+        ```bash
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        DEVCONTAINER_DIR="${SCRIPT_DIR}/../.devcontainer"
+        DEFAULT_USER="${UNAME}"
+        USER="${UNAME:-${DEFAULT_USER}}"
+
+        cd "${DEVCONTAINER_DIR}"
+        COMPOSE_CMD="docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml"
+
+        if [ "${1:-}" = "exec" ]; then
+            shift
+            if [[ "$*" =~ -u|--user ]]; then
+                exec ${COMPOSE_CMD} exec "$@"
+            else
+                exec ${COMPOSE_CMD} exec -u "${USER}" "$@"
+            fi
+        else
+            exec ${COMPOSE_CMD} "$@"
+        fi
+        ```
+    - **完了基準**: bin/dc ファイルが作成されている
+    - **参照**: 25_6_16 セクション4.1
+    - **実施日時**:
+
+#### 2-2-2: 実行権限の付与
+
+- [ ] bin/dc に実行権限を付与
+    - **コマンド**: `chmod +x bin/dc`
+    - **完了基準**: `ls -l bin/dc` で実行権限が確認できる
+    - **参照**: 25_6_16 セクション4.2
+    - **実施日時**:
+
+#### 2-2-3: ラッパースクリプト動作確認
+
+- [ ] bin/dc の動作を確認
+    - **テスト1**: exec サブコマンド（${UNAME} ユーザーで自動ログイン）
+        ```bash
+        ./bin/dc exec dev /bin/bash
+        whoami  # 期待: ${UNAME}
+        ```
+    - **テスト2**: exec 以外のサブコマンド（ps）
+        ```bash
+        ./bin/dc ps
+        ```
+    - **テスト3**: 明示的な -u 指定
+        ```bash
+        ./bin/dc exec -u root dev /bin/bash
+        whoami  # 期待: root
+        ```
+    - **完了基準**: すべてのテストが期待通りに動作
+    - **参照**: 25_6_16 セクション4.3
+    - **実施日時**:
+
+#### 2-2-4: devcontainer.json の remoteUser 設定
+
+- [ ] `.devcontainer/devcontainer.json` に remoteUser を追加
+    - **追加内容**:
+        ```json
+        {
+          "remoteUser": "${UNAME}"
+        }
+        ```
+    - **完了基準**: devcontainer.json に remoteUser が設定されている
+    - **参照**: 25_6_16 セクション5.2
+    - **実施日時**:
+
+#### 2-2-5: VSCode DevContainer 動作確認
+
+- [ ] VSCode DevContainer で動作確認
+    - **手順**:
+        1. VSCodeでコンテナに再接続
+        2. ターミナルで `whoami` を実行 → `${UNAME}` を確認
+        3. ワークディレクトリが適切であることを確認
+    - **完了基準**: VSCode ターミナルで ${UNAME} ユーザーとしてログインできる
+    - **参照**: 25_6_16 セクション5.2
+    - **実施日時**:
+
+---
+
+### Phase 2 残りの検証項目（v10設計検証）
 
 #### 2-4: サービス状態確認
 
@@ -253,22 +392,44 @@
     - **参照**: 25_6_12_v10_completion_strategy.md Phase 2 タスク2-7
     - **実施日時**:
 
-#### 2-8: ログインユーザー確認（25_6_13対応）
+#### 2-8: ログインユーザー確認（25_6_16対応）
 
-- [ ] docker composeからのログイン時に`${UNAME}`ユーザーであることを確認
+- [ ] bin/dc ラッパー経由でのログイン時に`${UNAME}`ユーザーであることを確認
     - **コマンド**:
         ```bash
-        docker exec -it devcontainer-dev-1 bash -c "whoami"
+        ./bin/dc exec dev /bin/bash -c "whoami"
         ```
     - **完了基準**: `${UNAME}`が表示される
-    - **参照**: 25_6_13_user_context_requirements.md セクション5.3.2
+    - **参照**: 25_6_16 セクション4.3
+    - **注記**: Phase 2-2-3 で既に検証済みの場合はスキップ可
     - **実施日時**:
 
 ---
 
 ### Phase 3: ドキュメント更新
 
-**目的**: v10実装完了を各ドキュメントに記録する
+**目的**: v10実装完了とUSER問題解決を各ドキュメントに記録する
+
+#### 3-0: 問題分析ドキュメント作成（完了済み）
+
+- [x] 25_6_14: USER ディレクティブ限界分析
+    - **作成内容**: Docker USER ディレクティブの挙動分析、4つの解決策の評価
+    - **完了基準**: ✅ 作成済み
+    - **実施日時**: 2026-01-10T02:00:00+09:00
+    - **結果**: ✅ **完了** - 選択肢1〜4を分析、ユーザールールに基づき選択肢2を推奨
+
+- [x] 25_6_15: devcontainer.json remoteUser 調査
+    - **作成内容**: remoteUserの仕組み、containerUserとの違い、副作用・デメリット
+    - **完了基準**: ✅ 作成済み
+    - **実施日時**: 2026-01-10T03:00:00+09:00
+    - **結果**: ✅ **完了** - remoteUserは `docker exec -u` を実行しているだけと判明
+
+- [x] 25_6_16: ラッパースクリプト戦略
+    - **作成内容**: docker compose exec ラッパースクリプトによる解決策、実装計画
+    - **完了基準**: ✅ 作成済み
+    - **実施日時**: 2026-01-10T04:00:00+09:00
+    - **結果**: ✅ **完了** - 選択肢D（高機能ラッパー）として bin/dc 実装を提案
+    - **更新**: 正しい docker compose コマンド構造に修正（.devcontainerディレクトリから実行、-f フラグ2つ指定）
 
 #### 3-1: v10実装トラッカー更新
 
@@ -303,9 +464,37 @@
     - **追加内容**:
         - 実施日時
         - 検証結果のサマリー
-        - 次のアクション（25_6_10ユーザー切り替え問題対応等）
+        - 次のアクション（ラッパースクリプト実装等）
     - **完了基準**: セクション8が追加されている
     - **参照**: 25_6_12_v10_completion_strategy.md Phase 3 タスク3-3
+    - **実施日時**:
+
+#### 3-4: README.md に使い方を追加
+
+- [ ] README.md にラッパースクリプトの使い方を追加
+    - **追加内容**:
+        ```markdown
+        ## コンテナへのログイン
+
+        ### 推奨方法: ラッパースクリプト
+
+        ```bash
+        # ${UNAME} ユーザーでログイン（リポジトリルートから実行）
+        ./bin/dc exec dev /bin/bash
+        ```
+
+        ### 直接 docker compose を使う場合
+
+        ```bash
+        # .devcontainer ディレクトリに移動
+        cd .devcontainer
+
+        # 手動で -u フラグと両方のcomposeファイルを指定
+        docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml exec -u ${UNAME} dev /bin/bash
+        ```
+        ```
+    - **完了基準**: README.md に使い方セクションが追加されている
+    - **参照**: 25_6_16 セクション6 Phase 3
     - **実施日時**:
 
 ---
@@ -321,10 +510,18 @@
         ```bash
         git add .devcontainer/Dockerfile
         git add .devcontainer/docker-entrypoint.sh
+        git add .devcontainer/s6-rc.d/docker-entrypoint/up
+        git add .devcontainer/devcontainer.json
+        git add bin/dc
         git add initiatives/20251229--dev-hub-concept/25_6_12_v10_completion_strategy.md
         git add initiatives/20251229--dev-hub-concept/25_6_12_v10_completion_implementation_tracker.md
+        git add initiatives/20251229--dev-hub-concept/25_6_13_user_context_requirements.md
+        git add initiatives/20251229--dev-hub-concept/25_6_14_user_directive_limitation_analysis.md
+        git add initiatives/20251229--dev-hub-concept/25_6_15_devcontainer_remoteuser_investigation.md
+        git add initiatives/20251229--dev-hub-concept/25_6_16_wrapper_script_strategy.md
         git add initiatives/20251229--dev-hub-concept/25_4_2_v10_implementation_tracker.md
         git add initiatives/20251229--dev-hub-concept/25_6_11_pid1_design_deviation_verification_tracker.md
+        git add README.md
         ```
     - **完了基準**: `git status`で変更ファイルが表示される
     - **参照**: 25_6_12_v10_completion_strategy.md Phase 4 タスク4-1
@@ -366,6 +563,48 @@
 
 ---
 
-**最終更新**: 2026-01-10T01:00:00+09:00
-**ステータス**: ✅ **Phase 1完了** | 🔴 **Phase 2未着手**
-**次のアクション**: Phase 2-1（DevContainerビルド）を実施
+## Phase 2 で発見された問題
+
+### 問題の概要
+
+**Phase 1-4 の実装目標**:
+- Dockerfile の `USER ${UNAME}` を ENTRYPOINT の後に配置することで:
+  - PID 1 = root（v10設計）
+  - docker exec = ${UNAME}（開発ワークフロー）
+
+**実際の結果**:
+- ✅ PID 1 = root（目標達成）
+- ❌ docker exec = root（目標未達成、/root/.atuinエラー）
+
+**原因**:
+- 25_6_13 で立案した理論が誤り
+- Docker の `USER` 指定は、配置位置に関わらずすべてのプロセスに影響
+
+**詳細**: `25_6_14_user_directive_limitation_analysis.md`
+
+### 次のステップ
+
+**現在の状況**:
+1. ✅ v10設計の実装完了（Phase 1）
+2. ✅ PID 1 = root の確認完了（Phase 2-3）
+3. ✅ USER問題の分析と解決策確定（25_6_14, 25_6_15, 25_6_16）
+4. 🔴 ラッパースクリプト実装が必要（Phase 2-2）
+
+**採用した解決策**: ラッパースクリプト戦略（25_6_16）
+- ✅ PID 1 = root（v10設計維持）
+- 🔴 docker compose exec = ${UNAME}（bin/dc 実装により実現）
+- 🔴 VSCode DevContainer = ${UNAME}（devcontainer.json remoteUser設定により実現）
+
+**現在のモード**: mode-3（実装・検証モード）
+
+**immediate action**:
+1. bin/dc ラッパースクリプト作成（Phase 2-2-1）
+2. 実行権限付与（Phase 2-2-2）
+3. 動作確認（Phase 2-2-3）
+4. devcontainer.json 更新（Phase 2-2-4）
+
+---
+
+**最終更新**: 2026-01-10T05:00:00+09:00
+**ステータス**: 🔵 **Phase 2-2実装待ち** - ラッパースクリプト戦略確定、実装準備完了
+**次のアクション**: bin/dc スクリプト作成とdevcontainer.json修正（mode-3）

@@ -18,7 +18,7 @@
   - システムレベルのシグナル処理
   - graceful shutdownの制御
 
-**現状**: ❌ `sugahar+`ユーザーで実行されている（Dockerfile line 296で`USER ${UNAME}`指定後にENTRYPOINT配置）
+**現状**: ❌ `${UNAME}`ユーザーで実行されている（Dockerfile line 296で`USER ${UNAME}`指定後にENTRYPOINT配置）
 
 ---
 
@@ -381,6 +381,85 @@ ${UNAME}
 
 ---
 
-**最終更新**: 2026-01-10T00:20:00+09:00
-**ステータス**: ✅ 要件整理完了（質疑応答を反映）
-**次のアクション**: ユーザーに選択肢AまたはBを確認
+## 7. 【重要】理論と実践の乖離
+
+**更新日**: 2026-01-10T02:00:00+09:00
+
+### 7.1 実装結果の検証
+
+**Phase 1-4 の実装**（2026-01-10T00:48:00+09:00）:
+- Dockerfile line 306-309 で `USER ${UNAME}` を ENTRYPOINT の後に配置
+
+**Phase 2-3 の検証結果**（2026-01-10T01:32:00+09:00）:
+
+#### ✅ 成功: PID 1 は root で実行
+```
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root         1  0.0  0.0    428    96 ?        Ss   17:32   0:00 /package/admin/s6/command/s6-svscan -d4 -- /run/service
+```
+
+#### ❌ 失敗: docker exec bash で root としてログイン
+```bash
+$ docker exec -it devcontainer-dev-1 bash
+bash: /root/.atuin/bin/env: No such file or directory
+```
+
+### 7.2 理論の誤りの確認
+
+**このドキュメントで立案した理論**（セクション3.2 方法1）:
+> **効果**:
+> - ✅ ENTRYPOINTはrootで実行（PID 1がroot）
+> - ✅ `docker exec bash`等のログインは`${UNAME}`ユーザー
+
+**実際の結果**:
+- ✅ ENTRYPOINT は root で実行（PID 1 が root） ← **理論通り**
+- ❌ `docker exec bash` は **root** ユーザー ← **理論と矛盾**
+
+**さらなる検証**（ユーザーによる）:
+- `USER ${UNAME}` をアンコメント → PID 1 が **非root** で実行される
+- **結論**: `USER ${UNAME}` の配置位置（ENTRYPOINT の前後）は無関係
+
+### 7.3 Docker の実際の仕様
+
+**誤った理解**（セクション3.2 line 156）:
+> Dockerの仕様として、`USER`指定は以降のレイヤー（RUN等）と、コンテナ起動後のデフォルトユーザーに影響するが、**ENTRYPOINTには遡及しない**
+
+**正しい理解**:
+- Dockerfile の `USER` 指定は、イメージメタデータの `User` フィールドを設定する
+- コンテナ起動時、`User` フィールドが設定されている場合、**すべてのプロセス**（ENTRYPOINT、CMD、docker exec）がそのユーザーで実行される
+- **ENTRYPOINT の前後は関係ない** - 最終的な `USER` 指定がイメージメタデータに記録される
+
+### 7.4 結論
+
+❌ **このドキュメント（25_6_13）で提案した方法1は機能しない**
+
+**デッドロック状態**:
+- `USER ${UNAME}` コメントアウト → PID 1=root ✅, docker exec=root ❌
+- `USER ${UNAME}` アンコメント → PID 1=非root ❌, docker exec=${UNAME} ✅
+
+**Dockerfile の `USER` ディレクティブだけでは両要件を両立できない**
+
+### 7.5 代替解決策
+
+**詳細分析ドキュメント**: `25_6_14_user_directive_limitation_analysis.md`
+
+**推奨アプローチ: bashログイン時の自動ユーザー切り替え**
+1. `USER ${UNAME}` をコメントアウトのまま維持（PID 1 = root）
+2. `/root/.bashrc` に自動ユーザー切り替えロジックを追加
+3. docker exec セッション検出 → `exec su - ${UNAME}` で透過的に切り替え
+
+**理由**:
+- ✅ 要件を完全に満たす（PID 1=root、docker exec=${UNAME}）
+- ✅ セキュリティベストプラクティスに準拠
+- ✅ v10設計を維持
+- ✅ 将来的な拡張性
+
+**非推奨: rootログイン許容**
+- ❌ セキュリティベストプラクティス違反
+- ❌ 変更量が少ないという理由だけで選択すべきではない
+
+---
+
+**最終更新**: 2026-01-10T02:00:00+09:00
+**ステータス**: ❌ **理論が実践で破綻** - 代替策が必要
+**次のアクション**: 25_6_14 の代替解決策を実装

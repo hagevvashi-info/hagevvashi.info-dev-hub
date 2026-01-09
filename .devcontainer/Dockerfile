@@ -305,5 +305,5 @@ ENTRYPOINT ["/init"]
 #   - process-compose (longrun): TUIプロセス管理
 
 # 一般ユーザーに切り替え
-USER ${UNAME}
-WORKDIR /home/${UNAME}
+# USER ${UNAME}
+# WORKDIR /home/${UNAME}
