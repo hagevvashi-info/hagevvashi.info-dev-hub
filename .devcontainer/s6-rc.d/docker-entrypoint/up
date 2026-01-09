@@ -1,2 +1,4 @@
-#!/command/execlineb -P
-/usr/local/bin/docker-entrypoint.sh
+#!/usr/bin/env bash
+# ${UNAME}ユーザーで実行
+# docker-entrypoint.sh内の~は${UNAME}のホームディレクトリを指す
+exec s6-setuidgid "${UNAME}" /usr/local/bin/docker-entrypoint.sh

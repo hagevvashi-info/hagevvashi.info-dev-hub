@@ -393,7 +393,7 @@ echo ""
 #### タスク2-1: DevContainerビルド
 
 ```bash
-cd /Users/sugahara_naoto/repos/hagevvashi.info-dev-hub/.devcontainer
+cd /Users/${UNAME}/repos/hagevvashi.info-dev-hub/.devcontainer
 
 # ビルド（キャッシュなし）
 docker compose --progress plain -f docker-compose.yml -f docker-compose.dev-vm.yml build --no-cache

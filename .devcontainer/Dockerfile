@@ -285,14 +285,15 @@ EXPOSE $DIFIT_PORT $CODE_SERVER_PORT $SUPERVISORD_PORT $PROCESS_COMPOSE_PORT
 # Entrypoint & CMD
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+USER root
 # ユーザー切り替え前に実行する必要があるため、rootユーザーで実行する
 # ENTRYPOINTスクリプトをコピー
 COPY .devcontainer/docker-entrypoint.sh /usr/local/bin/
-RUN sudo chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # デバッグモード用ENTRYPOINTスクリプトをコピー
 COPY .devcontainer/debug-entrypoint.sh /usr/local/bin/
-RUN sudo chmod +x /usr/local/bin/debug-entrypoint.sh
+RUN chmod +x /usr/local/bin/debug-entrypoint.sh
 
 # ENTRYPOINTを最後に設定（ユーザー切り替え後）
 # これにより、コンテナ起動時のデフォルトユーザーがhagevvashiになる
@@ -302,3 +303,7 @@ ENTRYPOINT ["/init"]
 #   - docker-entrypoint (oneshot): 初期化処理（Phase 1-5）
 #   - supervisord (longrun): code-server等のプロセス管理
 #   - process-compose (longrun): TUIプロセス管理
+
+# 一般ユーザーに切り替え
+USER ${UNAME}
+WORKDIR /home/${UNAME}
