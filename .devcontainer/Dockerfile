@@ -296,6 +296,9 @@ RUN sudo chmod +x /usr/local/bin/debug-entrypoint.sh
 
 # ENTRYPOINTを最後に設定（ユーザー切り替え後）
 # これにより、コンテナ起動時のデフォルトユーザーがhagevvashiになる
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-# s6-overlay を PID 1 として起動
-# s6-overlay が docker-entrypoint, supervisord, process-compose を管理
+ENTRYPOINT ["/init"]
+# s6-overlay を PID 1 として起動（/init）
+# v10設計: s6-overlay が以下のサービスを管理
+#   - docker-entrypoint (oneshot): 初期化処理（Phase 1-5）
+#   - supervisord (longrun): code-server等のプロセス管理
+#   - process-compose (longrun): TUIプロセス管理

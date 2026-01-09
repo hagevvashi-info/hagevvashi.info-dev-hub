@@ -222,8 +222,8 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "✅ Container initialization complete"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "🚀 Starting supervisord..."
+echo "✅ docker-entrypoint.sh finished."
+echo "   s6-overlay will now start supervisord and process-compose as longrun services."
 echo ""
 
-# supervisordをフォアグラウンドで起動（PID 1として実行）
-exec sudo supervisord -c "${TARGET_CONF}" -n
+# Phase 6削除: s6-overlayがsupervisordとprocess-composeを起動する
