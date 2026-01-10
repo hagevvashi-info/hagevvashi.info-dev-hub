@@ -1,0 +1,371 @@
+2026-01-03 17:40:31.730 [info] Getting remote exec server for authority: dev-container+7b2273657474696e6754797065223a22636f6e666967222c22776f726b737061636550617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d687562222c22646576636f6e7461696e657250617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d6875622f2e646576636f6e7461696e65722f646576636f6e7461696e65722e6a736f6e227d
+2026-01-03 17:40:31.731 [info] Dev container authority (encoded):  7b2273657474696e6754797065223a22636f6e666967222c22776f726b737061636550617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d687562222c22646576636f6e7461696e657250617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d6875622f2e646576636f6e7461696e65722f646576636f6e7461696e65722e6a736f6e227d
+2026-01-03 17:40:31.732 [info] Spawned process 62772: 'docker' 'info'
+2026-01-03 17:40:31.732 [info] [docker info]: Running command: docker
+2026-01-03 17:40:31.871 [info] [docker info]: Command completed with exit code 0
+2026-01-03 17:40:31.872 [info] docker version: Client:
+ Version:    29.1.3
+ Context:    desktop-linux
+ Debug Mode: false
+ Plugins:
+  ai: Docker AI Agent - Ask Gordon (Docker Inc.)
+    Version:  v1.17.1
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-ai
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.30.1-desktop.1
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-buildx
+  compose: Docker Compose (Docker Inc.)
+    Version:  v2.40.3-desktop.1
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-compose
+  debug: Get a shell into any image or container (Docker Inc.)
+    Version:  0.0.45
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-debug
+  desktop: Docker Desktop commands (Docker Inc.)
+    Version:  v0.2.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-desktop
+  extension: Manages Docker extensions (Docker Inc.)
+    Version:  v0.2.31
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-extension
+  init: Creates Docker-related starter files for your project (Docker Inc.)
+    Version:  v1.4.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-init
+  mcp: Docker MCP Plugin (Docker Inc.)
+    Version:  v0.34.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-mcp
+  model: Docker Model Runner (Docker Inc.)
+    Version:  v1.0.2
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-model
+  offload: Docker Offload (Docker Inc.)
+    Version:  v0.5.33
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-offload
+  pass: Docker Pass Secrets Manager Plugin (beta) (Docker Inc.)
+    Version:  v0.0.21
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-pass
+  sandbox: Docker Sandbox (Docker Inc.)
+    Version:  v0.6.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-sandbox
+  sbom: View the packaged-based Software Bill Of Materials (SBOM) for an image (Anchore Inc.)
+    Version:  0.6.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-sbom
+  scout: Docker Scout (Docker Inc.)
+    Version:  v1.18.3
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-scout
+
+Server:
+ Containers: 1
+  Running: 0
+  Paused: 0
+  Stopped: 1
+ Images: 9
+ Server Version: 29.1.3
+ Storage Driver: overlay2
+  Backing Filesystem: extfs
+  Supports d_type: true
+  Using metacopy: false
+  Native Overlay Diff: true
+  userxattr: false
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Cgroup Version: 2
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+ CDI spec directories:
+  /etc/cdi
+  /var/run/cdi
+ Discovered Devices:
+  cdi: docker.com/gpu=webgpu
+ Swarm: inactive
+ Runtimes: io.containerd.runc.v2 runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: 1c4457e00facac03ce1d75f7b6777a7a851e5c41
+ runc version: v1.3.4-0-gd6d73eb8
+ init version: de40ad0
+ Security Options:
+  seccomp
+   Profile: builtin
+  cgroupns
+ Kernel Version: 6.12.54-linuxkit
+ Operating System: Docker Desktop
+ OSType: linux
+ Architecture: aarch64
+ CPUs: 8
+ Total Memory: 7.653GiB
+ Name: docker-desktop
+ ID: bbd7c1a3-b4ee-4854-8bae-70bbea3275ef
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ HTTP Proxy: http.docker.internal:3128
+ HTTPS Proxy: http.docker.internal:3128
+ No Proxy: hubproxy.docker.internal
+ Labels:
+  com.docker.desktop.address=unix:///Users/<一般ユーザー>/Library/Containers/com.docker.docker/Data/docker-cli.sock
+ Experimental: false
+ Insecure Registries:
+  hubproxy.docker.internal:5555
+  ::1/128
+  127.0.0.0/8
+ Live Restore Enabled: false
+ Firewall Backend: iptables
+2026-01-03 17:40:31.876 [info] Already inside a devcontainer; reloading window
+2026-01-03 17:40:33.700 [info] No remote exec server found for authority: dev-container+7b2273657474696e6754797065223a22636f6e666967222c22776f726b737061636550617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d687562222c22646576636f6e7461696e657250617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d6875622f2e646576636f6e7461696e65722f646576636f6e7461696e65722e6a736f6e227d; using local
+2026-01-03 17:40:33.700 [info] Resolving dev container authority 'dev-container+7b2273657474696e6754797065223a22636f6e666967222c22776f726b737061636550617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d687562222c22646576636f6e7461696e657250617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d6875622f2e646576636f6e7461696e65722f646576636f6e7461696e65722e6a736f6e227d' (attempt #1) container '{"settingType":"config","workspacePath":"/Users/<一般ユーザー>/hagevvashi.info-dev-hub","devcontainerPath":"/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json"}'
+2026-01-03 17:40:33.700 [info] Starting Dev Containers dev-container+7b2273657474696e6754797065223a22636f6e666967222c22776f726b737061636550617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d687562222c22646576636f6e7461696e657250617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d6875622f2e646576636f6e7461696e65722f646576636f6e7461696e65722e6a736f6e227d
+2026-01-03 17:40:33.700 [info] Spawned process 62812: 'docker' 'info'
+2026-01-03 17:40:33.700 [info] [docker info]: Running command: docker
+2026-01-03 17:40:33.801 [info] [docker info]: Command completed with exit code 0
+2026-01-03 17:40:33.801 [info] docker version: Client:
+ Version:    29.1.3
+ Context:    desktop-linux
+ Debug Mode: false
+ Plugins:
+  ai: Docker AI Agent - Ask Gordon (Docker Inc.)
+    Version:  v1.17.1
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-ai
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.30.1-desktop.1
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-buildx
+  compose: Docker Compose (Docker Inc.)
+    Version:  v2.40.3-desktop.1
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-compose
+  debug: Get a shell into any image or container (Docker Inc.)
+    Version:  0.0.45
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-debug
+  desktop: Docker Desktop commands (Docker Inc.)
+    Version:  v0.2.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-desktop
+  extension: Manages Docker extensions (Docker Inc.)
+    Version:  v0.2.31
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-extension
+  init: Creates Docker-related starter files for your project (Docker Inc.)
+    Version:  v1.4.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-init
+  mcp: Docker MCP Plugin (Docker Inc.)
+    Version:  v0.34.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-mcp
+  model: Docker Model Runner (Docker Inc.)
+    Version:  v1.0.2
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-model
+  offload: Docker Offload (Docker Inc.)
+    Version:  v0.5.33
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-offload
+  pass: Docker Pass Secrets Manager Plugin (beta) (Docker Inc.)
+    Version:  v0.0.21
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-pass
+  sandbox: Docker Sandbox (Docker Inc.)
+    Version:  v0.6.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-sandbox
+  sbom: View the packaged-based Software Bill Of Materials (SBOM) for an image (Anchore Inc.)
+    Version:  0.6.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-sbom
+  scout: Docker Scout (Docker Inc.)
+    Version:  v1.18.3
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-scout
+
+Server:
+ Containers: 1
+  Running: 0
+  Paused: 0
+  Stopped: 1
+ Images: 9
+ Server Version: 29.1.3
+ Storage Driver: overlay2
+  Backing Filesystem: extfs
+  Supports d_type: true
+  Using metacopy: false
+  Native Overlay Diff: true
+  userxattr: false
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Cgroup Version: 2
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+ CDI spec directories:
+  /etc/cdi
+  /var/run/cdi
+ Discovered Devices:
+  cdi: docker.com/gpu=webgpu
+ Swarm: inactive
+ Runtimes: io.containerd.runc.v2 runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: 1c4457e00facac03ce1d75f7b6777a7a851e5c41
+ runc version: v1.3.4-0-gd6d73eb8
+ init version: de40ad0
+ Security Options:
+  seccomp
+   Profile: builtin
+  cgroupns
+ Kernel Version: 6.12.54-linuxkit
+ Operating System: Docker Desktop
+ OSType: linux
+ Architecture: aarch64
+ CPUs: 8
+ Total Memory: 7.653GiB
+ Name: docker-desktop
+ ID: bbd7c1a3-b4ee-4854-8bae-70bbea3275ef
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ HTTP Proxy: http.docker.internal:3128
+ HTTPS Proxy: http.docker.internal:3128
+ No Proxy: hubproxy.docker.internal
+ Labels:
+  com.docker.desktop.address=unix:///Users/<一般ユーザー>/Library/Containers/com.docker.docker/Data/docker-cli.sock
+ Experimental: false
+ Insecure Registries:
+  hubproxy.docker.internal:5555
+  ::1/128
+  127.0.0.0/8
+ Live Restore Enabled: false
+ Firewall Backend: iptables
+2026-01-03 17:40:33.802 [info] Starting dev container
+2026-01-03 17:40:33.802 [info] Rebuild mode: cache
+2026-01-03 17:40:33.802 [info] Container is new: true
+2026-01-03 17:40:33.803 [info] Using local exec server. Current search paths: 
+2026-01-03 17:40:33.803 [info] Start devcontainer up ...
+2026-01-03 17:40:33.803 [info] [devcontainer run-user-commands]: Spawning command in terminal. Node module path: /Applications/Cursor.app/Contents/Resources/app/node_modules.asar:/Applications/Cursor.app/Contents/Resources/app/node_modules
+2026-01-03 17:40:33.803 [info] Spawned process 62832: '/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Plugin).app/Contents/MacOS/Cursor Helper (Plugin)' '/Users/<一般ユーザー>/.cursor/extensions/anysphere.remote-containers-1.0.29/dist/@devcontainers/cli/dist/spec-node/devContainersSpecCLI.js' 'up' '--workspace-folder' '/Users/<一般ユーザー>/hagevvashi.info-dev-hub' '--workspace-mount-consistency' 'cached' '--gpu-availability' 'detect' '--id-label' 'devcontainer.local_folder=/Users/<一般ユーザー>/hagevvashi.info-dev-hub' '--log-level' 'debug' '--log-format' 'json' '--default-user-env-probe' 'loginInteractiveShell' '--mount-workspace-git-root' '--update-remote-user-uid-default' 'on' '--skip-post-create' '--include-configuration' '--include-merged-configuration' '--docker-path' 'docker' '--id-label' 'devcontainer.config_file=/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json' '--additional-features' '{}' '--config' '/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json' '--remove-existing-container'
+2026-01-03 17:40:33.946 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767429633946,"text":"@devcontainers/cli 0.80.2. Node.js v22.20.0. darwin 25.2.0 arm64."}
+2026-01-03 17:40:33.946 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767429633946,"text":"Run: docker buildx version"}
+2026-01-03 17:40:34.025 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767429634025,"text":"Run: docker buildx version","startTimestamp":1767429633946}
+2026-01-03 17:40:34.025 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767429634025,"text":"github.com/docker/buildx v0.30.1-desktop.1 792b8327a475a5d8c9d5f4ea6ce866e7da39ae8b\r\n"}
+2026-01-03 17:40:34.025 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767429634025,"text":"\u001b[1m\u001b[31m\u001b[39m\u001b[22m\r\n"}
+2026-01-03 17:40:34.025 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767429634025,"text":"Run: docker -v"}
+2026-01-03 17:40:34.038 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767429634038,"text":"Run: docker -v","startTimestamp":1767429634025}
+2026-01-03 17:40:34.038 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767429634038,"text":"Resolving Remote"}
+2026-01-03 17:40:34.122 [info] [devcontainer run-user-commands]: {"type":"start","level":3,"timestamp":1767429634122,"text":"Run: /bin/sh -c ./.devcontainer/generate-env.sh","channel":"postCreate"}
+2026-01-03 17:40:34.163 [info] [devcontainer run-user-commands]: {"type":"stop","level":3,"timestamp":1767429634163,"text":"Run: /bin/sh -c ./.devcontainer/generate-env.sh","startTimestamp":1767429634122,"channel":"postCreate"}
+2026-01-03 17:40:34.164 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767429634164,"text":"Run: docker compose version --short"}
+2026-01-03 17:40:34.220 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767429634220,"text":"Run: docker compose version --short","startTimestamp":1767429634164}
+2026-01-03 17:40:34.220 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767429634220,"text":"Docker Compose version: 2.40.3-desktop.1"}
+2026-01-03 17:40:34.220 [info] [devcontainer run-user-commands]: {"type":"start","level":3,"timestamp":1767429634220,"text":"Run: docker compose -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml --profile * config"}
+2026-01-03 17:40:34.310 [info] [devcontainer run-user-commands]: {"type":"stop","level":3,"timestamp":1767429634310,"text":"Run: docker compose -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml --profile * config","startTimestamp":1767429634220}
+2026-01-03 17:40:34.310 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767429634310,"text":"name: devcontainer\nservices:\n  dev:\n    build:\n      context: /Users/<一般ユーザー>/hagevvashi.info-dev-hub\n      dockerfile: .devcontainer/Dockerfile\n      args:\n        GID: \"20\"\n        GNAME: staff\n        UID: \"501\"\n        UNAME: hagevvashi\n    environment:\n      DEBUG_MODE: \"false\"\n    healthcheck:\n      test:\n        - CMD-SHELL\n        - |\n          if [ \"\" = \"true\" ]; then\n            # DEBUG_MODE 時はヘルスチェックをパス（常に healthy）\n            exit 0\n          else\n            # 通常モード: supervisorctl で code-server の状態を確認\n            supervisorctl status code-server | grep -q RUNNING || exit 1\n          fi\n      timeout: 5s\n      interval: 10s\n      retries: 3\n      start_period: 30s\n    networks:\n      default: null\n    ports:\n      - mode: ingress\n        target: 4035\n        published: \"4035\"\n        protocol: tcp\n      - mode: ingress\n        target: 8035\n        published: \"8035\"\n        protocol: tcp\n      - mode: ingress\n        target: 9001\n        published: \"9001\"\n        protocol: tcp\n      - mode: ingress\n        target: 8080\n        published: \"8080\"\n        protocol: tcp\n    stdin_open: true\n    tmpfs:\n      - /run\n      - /run/lock\n      - /tmp\n    tty: true\n    user: \"501:20\"\n    volumes:\n      - type: bind\n        source: /Users/<一般ユーザー>/hagevvashi.info-dev-hub\n        target: /home/<一般ユーザー>/hagevvashi.info-dev-hub\n        consistency: cached\n      - type: volume\n        source: repos\n        target: /home/<一般ユーザー>/hagevvashi.info-dev-hub/repos\n    working_dir: /home/<一般ユーザー>/hagevvashi.info-dev-hub\nnetworks:\n  default:\n    name: devcontainer_default\nvolumes:\n  repos:\n    name: repos\n    external: true\n"}
+2026-01-03 17:40:34.313 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767429634313,"text":"Run: docker ps -q -a --filter label=com.docker.compose.project=hagevvashiinfo-dev-hub_devcontainer --filter label=com.docker.compose.service=dev"}
+2026-01-03 17:40:34.336 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767429634336,"text":"Run: docker ps -q -a --filter label=com.docker.compose.project=hagevvashiinfo-dev-hub_devcontainer --filter label=com.docker.compose.service=dev","startTimestamp":1767429634313}
+2026-01-03 17:40:34.336 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767429634336,"text":"Run: docker inspect --type container f36bb424848a"}
+2026-01-03 17:40:34.355 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767429634355,"text":"Run: docker inspect --type container f36bb424848a","startTimestamp":1767429634336}
+2026-01-03 17:40:34.355 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767429634355,"text":"Removing existing container."}
+2026-01-03 17:40:34.356 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767429634355,"text":"Run: docker rm -f f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6"}
+2026-01-03 17:40:34.753 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767429634753,"text":"Run: docker rm -f f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6","startTimestamp":1767429634355}
+2026-01-03 17:40:34.753 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767429634753,"text":"Removing existing container.","startTimestamp":1767429634355}
+2026-01-03 17:40:34.754 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767429634754,"text":"Run: docker events --format {{json .}} --filter event=start"}
+2026-01-03 17:40:34.755 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767429634755,"text":"PersistedPath=/var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli, ContainerHasLabels=false"}
+2026-01-03 17:40:34.756 [info] [devcontainer run-user-commands]: {"type":"start","level":3,"timestamp":1767429634756,"text":"Run: docker compose -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml --profile * config"}
+2026-01-03 17:40:34.874 [info] [devcontainer run-user-commands]: {"type":"stop","level":3,"timestamp":1767429634874,"text":"Run: docker compose -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml --profile * config","startTimestamp":1767429634756}
+2026-01-03 17:40:34.874 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767429634874,"text":"name: devcontainer\nservices:\n  dev:\n    build:\n      context: /Users/<一般ユーザー>/hagevvashi.info-dev-hub\n      dockerfile: .devcontainer/Dockerfile\n      args:\n        GID: \"20\"\n        GNAME: staff\n        UID: \"501\"\n        UNAME: hagevvashi\n    environment:\n      DEBUG_MODE: \"false\"\n    healthcheck:\n      test:\n        - CMD-SHELL\n        - |\n          if [ \"\" = \"true\" ]; then\n            # DEBUG_MODE 時はヘルスチェックをパス（常に healthy）\n            exit 0\n          else\n            # 通常モード: supervisorctl で code-server の状態を確認\n            supervisorctl status code-server | grep -q RUNNING || exit 1\n          fi\n      timeout: 5s\n      interval: 10s\n      retries: 3\n      start_period: 30s\n    networks:\n      default: null\n    ports:\n      - mode: ingress\n        target: 4035\n        published: \"4035\"\n        protocol: tcp\n      - mode: ingress\n        target: 8035\n        published: \"8035\"\n        protocol: tcp\n      - mode: ingress\n        target: 9001\n        published: \"9001\"\n        protocol: tcp\n      - mode: ingress\n        target: 8080\n        published: \"8080\"\n        protocol: tcp\n    stdin_open: true\n    tmpfs:\n      - /run\n      - /run/lock\n      - /tmp\n    tty: true\n    user: \"501:20\"\n    volumes:\n      - type: bind\n        source: /Users/<一般ユーザー>/hagevvashi.info-dev-hub\n        target: /home/<一般ユーザー>/hagevvashi.info-dev-hub\n        consistency: cached\n      - type: volume\n        source: repos\n        target: /home/<一般ユーザー>/hagevvashi.info-dev-hub/repos\n    working_dir: /home/<一般ユーザー>/hagevvashi.info-dev-hub\nnetworks:\n  default:\n    name: devcontainer_default\nvolumes:\n  repos:\n    name: repos\n    external: true\n"}
+2026-01-03 17:40:34.876 [info] [devcontainer run-user-commands]: {"type":"start","level":3,"timestamp":1767429634876,"text":"Run: docker inspect --type image debian:12.7"}
+2026-01-03 17:40:34.957 [info] [devcontainer run-user-commands]: {"type":"stop","level":3,"timestamp":1767429634956,"text":"Run: docker inspect --type image debian:12.7","startTimestamp":1767429634876}
+2026-01-03 17:40:34.960 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634960,"text":"workspace root: /Users/<一般ユーザー>/hagevvashi.info-dev-hub"}
+2026-01-03 17:40:34.960 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634960,"text":"configPath: /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json"}
+2026-01-03 17:40:34.961 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634961,"text":"--- Processing User Features ----"}
+2026-01-03 17:40:34.961 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634961,"text":"[* user-provided] ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 17:40:34.961 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767429634961,"text":"Resolving Feature dependencies for 'ghcr.io/devcontainers/features/docker-from-docker:1'..."}
+2026-01-03 17:40:34.961 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767429634961,"text":"* Processing feature: ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 17:40:34.962 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634962,"text":"> input: ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 17:40:34.962 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634962,"text":">"}
+2026-01-03 17:40:34.962 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634962,"text":"> resource: ghcr.io/devcontainers/features/docker-from-docker"}
+2026-01-03 17:40:34.962 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634962,"text":"> id: docker-from-docker"}
+2026-01-03 17:40:34.962 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634962,"text":"> owner: devcontainers"}
+2026-01-03 17:40:34.962 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634962,"text":"> namespace: devcontainers/features"}
+2026-01-03 17:40:34.962 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634962,"text":"> registry: ghcr.io"}
+2026-01-03 17:40:34.962 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634962,"text":"> path: devcontainers/features/docker-from-docker"}
+2026-01-03 17:40:34.962 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634962,"text":">"}
+2026-01-03 17:40:34.962 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634962,"text":"> version: 1"}
+2026-01-03 17:40:34.962 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634962,"text":"> tag?: 1"}
+2026-01-03 17:40:34.962 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634962,"text":"> digest?: undefined"}
+2026-01-03 17:40:34.962 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429634962,"text":"manifest url: https://ghcr.io/v2/devcontainers/features/docker-from-docker/manifests/1"}
+2026-01-03 17:40:35.198 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635198,"text":"[httpOci] Attempting to authenticate via 'Bearer' auth."}
+2026-01-03 17:40:35.199 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635198,"text":"[httpOci] Invoking credsStore credential helper 'desktop'"}
+2026-01-03 17:40:35.199 [info] [devcontainer run-user-commands]: {"type":"start","level":3,"timestamp":1767429635199,"text":"Run: docker-credential-desktop get"}
+2026-01-03 17:40:35.301 [info] [devcontainer run-user-commands]: {"type":"stop","level":3,"timestamp":1767429635301,"text":"Run: docker-credential-desktop get","startTimestamp":1767429635199}
+2026-01-03 17:40:35.301 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635301,"text":"[httpOci] Failed to query for 'ghcr.io' credential from 'docker-credential-desktop': [object Object]"}
+2026-01-03 17:40:35.301 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635301,"text":"[httpOci] No authentication credentials found for registry 'ghcr.io' via docker config or credential helper."}
+2026-01-03 17:40:35.301 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635301,"text":"[httpOci] No authentication credentials found for registry 'ghcr.io'. Accessing anonymously."}
+2026-01-03 17:40:35.301 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635301,"text":"[httpOci] Attempting to fetch bearer token from:  https://ghcr.io/token?service=ghcr.io&scope=repository:devcontainers/features/docker-from-docker:pull"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635729,"text":"[httpOci] 200 on reattempt after auth: https://ghcr.io/v2/devcontainers/features/docker-from-docker/manifests/1"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> input: ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":">"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> resource: ghcr.io/devcontainers/features/docker-from-docker"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> id: docker-from-docker"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> owner: devcontainers"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> namespace: devcontainers/features"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> registry: ghcr.io"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> path: devcontainers/features/docker-from-docker"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":">"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> version: 1"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> tag?: 1"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> digest?: undefined"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767429635730,"text":"* Processing feature: ghcr.io/devcontainers/features/common-utils"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> input: ghcr.io/devcontainers/features/common-utils"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":">"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> resource: ghcr.io/devcontainers/features/common-utils"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> id: common-utils"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> owner: devcontainers"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> namespace: devcontainers/features"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> registry: ghcr.io"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> path: devcontainers/features/common-utils"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":">"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> version: latest"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> tag?: latest"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"> digest?: undefined"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"manifest url: https://ghcr.io/v2/devcontainers/features/common-utils/manifests/latest"}
+2026-01-03 17:40:35.730 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635730,"text":"[httpOci] Applying cachedAuthHeader for registry ghcr.io..."}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"[httpOci] 200 (Cached): https://ghcr.io/v2/devcontainers/features/common-utils/manifests/latest"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"> input: ghcr.io/devcontainers/features/common-utils"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":">"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"> resource: ghcr.io/devcontainers/features/common-utils"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"> id: common-utils"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"> owner: devcontainers"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"> namespace: devcontainers/features"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"> registry: ghcr.io"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"> path: devcontainers/features/common-utils"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":">"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"> version: latest"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"> tag?: latest"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"> digest?: undefined"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"[* resolved worklist] ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"[\n  {\n    \"type\": \"user-provided\",\n    \"userFeatureId\": \"ghcr.io/devcontainers/features/docker-from-docker:1\",\n    \"options\": {},\n    \"dependsOn\": [],\n    \"installsAfter\": [\n      {\n        \"type\": \"resolved\",\n        \"userFeatureId\": \"ghcr.io/devcontainers/features/common-utils\",\n        \"options\": {},\n        \"featureSet\": {\n          \"sourceInformation\": {\n            \"type\": \"oci\",\n            \"manifest\": {\n              \"schemaVersion\": 2,\n              \"mediaType\": \"application/vnd.oci.image.manifest.v1+json\",\n              \"config\": {\n                \"mediaType\": \"application/vnd.devcontainers\",\n                \"digest\": \"sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a\",\n                \"size\": 2\n              },\n              \"layers\": [\n                {\n                  \"mediaType\": \"application/vnd.devcontainers.layer.v1+tar\",\n                  \"digest\": \"sha256:66c7071c2ce93ee0c42031da62bfb9bdecafdec1b154a6a33b9f5be18ca71103\",\n                  \"size\": 50176,\n                  \"annotations\": {\n                    \"org.opencontainers.image.title\": \"devcontainer-feature-common-utils.tgz\"\n                  }\n                }\n              ],\n              \"annotations\": {\n                \"dev.containers.metadata\": \"{\\\"id\\\":\\\"common-utils\\\",\\\"version\\\":\\\"2.5.5\\\",\\\"name\\\":\\\"Common Utilities\\\",\\\"documentationURL\\\":\\\"https://github.com/devcontainers/features/tree/main/src/common-utils\\\",\\\"description\\\":\\\"Installs a set of common command line utilities, Oh My Zsh!, and sets up a non-root user.\\\",\\\"options\\\":{\\\"installZsh\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":true,\\\"description\\\":\\\"Install ZSH?\\\"},\\\"configureZshAsDefaultShell\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":false,\\\"description\\\":\\\"Change default shell to ZSH?\\\"},\\\"installOhMyZsh\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":true,\\\"description\\\":\\\"Install Oh My Zsh!?\\\"},\\\"installOhMyZshConfig\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":true,\\\"description\\\":\\\"Allow installing the default dev container .zshrc templates?\\\"},\\\"upgradePackages\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":true,\\\"description\\\":\\\"Upgrade OS packages?\\\"},\\\"username\\\":{\\\"type\\\":\\\"string\\\",\\\"proposals\\\":[\\\"devcontainer\\\",\\\"vscode\\\",\\\"codespace\\\",\\\"none\\\",\\\"automatic\\\"],\\\"default\\\":\\\"automatic\\\",\\\"description\\\":\\\"Enter name of a non-root user to configure or none to skip\\\"},\\\"userUid\\\":{\\\"type\\\":\\\"string\\\",\\\"proposals\\\":[\\\"1001\\\",\\\"automatic\\\"],\\\"default\\\":\\\"automatic\\\",\\\"description\\\":\\\"Enter UID for non-root user\\\"},\\\"userGid\\\":{\\\"type\\\":\\\"string\\\",\\\"proposals\\\":[\\\"1001\\\",\\\"automatic\\\"],\\\"default\\\":\\\"automatic\\\",\\\"description\\\":\\\"Enter GID for non-root user\\\"},\\\"nonFreePackages\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":false,\\\"description\\\":\\\"Add packages from non-free Debian repository? (Debian only)\\\"}}}\",\n                \"com.github.package.type\": \"devcontainer_feature\"\n              }\n            },\n            \"manifestDigest\": \"sha256:6d22e5475de578a8dadf19ce15c0ed09d82d8e3006b851dae7fe59a959c9b787\",\n            \"featureRef\": {\n              \"id\": \"common-utils\",\n              \"owner\": \"devcontainers\",\n              \"namespace\": \"devcontainers/features\",\n              \"registry\": \"ghcr.io\",\n              \"resource\": \"ghcr.io/devcontainers/features/common-utils\",\n              \"path\": \"devcontainers/features/common-utils\",\n              \"version\": \"latest\",\n              \"tag\": \"latest\"\n            },\n            \"userFeatureId\": \"ghcr.io/devcontainers/features/common-utils\",\n            \"userFeatureIdWithoutVersion\": \"ghcr.io/devcontainers/features/common-utils\"\n          },\n          \"features\": [\n            {\n              \"id\": \"common-utils\",\n              \"included\": true,\n              \"value\": {}\n            }\n          ]\n        },\n        \"dependsOn\": [],\n        \"installsAfter\": [],\n        \"roundPriority\": 0,\n        \"featureIdAliases\": [\n          \"common-utils\"\n        ]\n      }\n    ],\n    \"roundPriority\": 0,\n    \"featureSet\": {\n      \"sourceInformation\": {\n        \"type\": \"oci\",\n        \"manifest\": {\n          \"schemaVersion\": 2,\n          \"mediaType\": \"application/vnd.oci.image.manifest.v1+json\",\n          \"config\": {\n            \"mediaType\": \"application/vnd.devcontainers\",\n            \"digest\": \"sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a\",\n            \"size\": 2\n          },\n          \"layers\": [\n            {\n              \"mediaType\": \"application/vnd.devcontainers.layer.v1+tar\",\n              \"digest\": \"sha256:515190340fb5be9183c2d3f4f87c9cfdd36993c6fa09d33b35fe72164b102a3d\",\n              \"size\": 39424,\n              \"annotations\": {\n                \"org.opencontainers.image.title\": \"devcontainer-feature-docker-outside-of-docker.tgz\"\n              }\n            }\n          ],\n          \"annotations\": {\n            \"dev.containers.metadata\": \"{\\\"id\\\":\\\"docker-outside-of-docker\\\",\\\"version\\\":\\\"1.6.5\\\",\\\"name\\\":\\\"Docker (docker-outside-of-docker)\\\",\\\"documentationURL\\\":\\\"https://github.com/devcontainers/features/tree/main/src/docker-outside-of-docker\\\",\\\"description\\\":\\\"Re-use the host docker socket, adding the Docker CLI to a container. Feature invokes a script to enable using a forwarded Docker socket within a container to run Docker commands.\\\",\\\"options\\\":{\\\"version\\\":{\\\"type\\\":\\\"string\\\",\\\"proposals\\\":[\\\"latest\\\",\\\"none\\\",\\\"20.10\\\"],\\\"default\\\":\\\"latest\\\",\\\"description\\\":\\\"Select or enter a Docker/Moby CLI version. (Availability can vary by OS version.)\\\"},\\\"moby\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":true,\\\"description\\\":\\\"Install OSS Moby build instead of Docker CE\\\"},\\\"mobyBuildxVersion\\\":{\\\"type\\\":\\\"string\\\",\\\"default\\\":\\\"latest\\\",\\\"description\\\":\\\"Install a specific version of moby-buildx when using Moby\\\"},\\\"dockerDashComposeVersion\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"none\\\",\\\"v1\\\",\\\"v2\\\"],\\\"default\\\":\\\"v2\\\",\\\"description\\\":\\\"Compose version to use for docker-compose (v1 or v2 or none)\\\"},\\\"installDockerBuildx\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":true,\\\"description\\\":\\\"Install Docker Buildx\\\"},\\\"installDockerComposeSwitch\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":true,\\\"description\\\":\\\"Install Compose Switch (provided docker compose is available) which is a replacement to the Compose V1 docker-compose (python) executable. It translates the command line into Compose V2 docker compose then runs the latter.\\\"}},\\\"entrypoint\\\":\\\"/usr/local/share/docker-init.sh\\\",\\\"customizations\\\":{\\\"vscode\\\":{\\\"extensions\\\":[\\\"ms-azuretools.vscode-containers\\\"],\\\"settings\\\":{\\\"github.copilot.chat.codeGeneration.instructions\\\":[{\\\"text\\\":\\\"This dev container includes the Docker CLI (`docker`) pre-installed and available on the `PATH` for running and managing containers using the Docker daemon on the host machine.\\\"}]}}},\\\"mounts\\\":[{\\\"source\\\":\\\"/var/run/docker.sock\\\",\\\"target\\\":\\\"/var/run/docker-host.sock\\\",\\\"type\\\":\\\"bind\\\"}],\\\"securityOpt\\\":[\\\"label=disable\\\"],\\\"installsAfter\\\":[\\\"ghcr.io/devcontainers/features/common-utils\\\"],\\\"legacyIds\\\":[\\\"docker-from-docker\\\"],\\\"currentId\\\":\\\"docker-outside-of-docker\\\"}\",\n            \"com.github.package.type\": \"devcontainer_feature\"\n          }\n        },\n        \"manifestDigest\": \"sha256:5c0af58d6acc6d81e38b5a6130724330f2eb4f703120dea0016a35da4ad30861\",\n        \"featureRef\": {\n          \"id\": \"docker-from-docker\",\n          \"owner\": \"devcontainers\",\n          \"namespace\": \"devcontainers/features\",\n          \"registry\": \"ghcr.io\",\n          \"resource\": \"ghcr.io/devcontainers/features/docker-from-docker\",\n          \"path\": \"devcontainers/features/docker-from-docker\",\n          \"version\": \"1\",\n          \"tag\": \"1\"\n        },\n        \"userFeatureId\": \"ghcr.io/devcontainers/features/docker-from-docker:1\",\n        \"userFeatureIdWithoutVersion\": \"ghcr.io/devcontainers/features/docker-from-docker\"\n      },\n      \"features\": [\n        {\n          \"id\": \"docker-outside-of-docker\",\n          \"included\": true,\n          \"value\": {},\n          \"version\": \"1.6.5\",\n          \"name\": \"Docker (docker-outside-of-docker)\",\n          \"documentationURL\": \"https://github.com/devcontainers/features/tree/main/src/docker-outside-of-docker\",\n          \"description\": \"Re-use the host docker socket, adding the Docker CLI to a container. Feature invokes a script to enable using a forwarded Docker socket within a container to run Docker commands.\",\n          \"options\": {\n            \"version\": {\n              \"type\": \"string\",\n              \"proposals\": [\n                \"latest\",\n                \"none\",\n                \"20.10\"\n              ],\n              \"default\": \"latest\",\n              \"description\": \"Select or enter a Docker/Moby CLI version. (Availability can vary by OS version.)\"\n            },\n            \"moby\": {\n              \"type\": \"boolean\",\n              \"default\": true,\n              \"description\": \"Install OSS Moby build instead of Docker CE\"\n            },\n            \"mobyBuildxVersion\": {\n              \"type\": \"string\",\n              \"default\": \"latest\",\n              \"description\": \"Install a specific version of moby-buildx when using Moby\"\n            },\n            \"dockerDashComposeVersion\": {\n              \"type\": \"string\",\n              \"enum\": [\n                \"none\",\n                \"v1\",\n                \"v2\"\n              ],\n              \"default\": \"v2\",\n              \"description\": \"Compose version to use for docker-compose (v1 or v2 or none)\"\n            },\n            \"installDockerBuildx\": {\n              \"type\": \"boolean\",\n              \"default\": true,\n              \"description\": \"Install Docker Buildx\"\n            },\n            \"installDockerComposeSwitch\": {\n              \"type\": \"boolean\",\n              \"default\": true,\n              \"description\": \"Install Compose Switch (provided docker compose is available) which is a replacement to the Compose V1 docker-compose (python) executable. It translates the command line into Compose V2 docker compose then runs the latter.\"\n            }\n          },\n          \"entrypoint\": \"/usr/local/share/docker-init.sh\",\n          \"customizations\": {\n            \"vscode\": {\n              \"extensions\": [\n                \"ms-azuretools.vscode-containers\"\n              ],\n              \"settings\": {\n                \"github.copilot.chat.codeGeneration.instructions\": [\n                  {\n                    \"text\": \"This dev container includes the Docker CLI (`docker`) pre-installed and available on the `PATH` for running and managing containers using the Docker daemon on the host machine.\"\n                  }\n                ]\n              }\n            }\n          },\n          \"mounts\": [\n            {\n              \"source\": \"/var/run/docker.sock\",\n              \"target\": \"/var/run/docker-host.sock\",\n              \"type\": \"bind\"\n            }\n          ],\n          \"securityOpt\": [\n            \"label=disable\"\n          ],\n          \"installsAfter\": [\n            \"ghcr.io/devcontainers/features/common-utils\"\n          ],\n          \"legacyIds\": [\n            \"docker-from-docker\"\n          ],\n          \"currentId\": \"docker-outside-of-docker\"\n        }\n      ]\n    },\n    \"featureIdAliases\": [\n      \"docker-outside-of-docker\",\n      \"docker-from-docker\"\n    ]\n  }\n]"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"[raw worklist]: ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767429635944,"text":"Soft-dependency 'ghcr.io/devcontainers/features/common-utils' is not required.  Removing from installation order..."}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"[worklist-without-dangling-soft-deps]: ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"Starting round-based Feature install order calculation from worklist..."}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"\n[round] ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"[round-candidates] ghcr.io/devcontainers/features/docker-from-docker:1 (0)"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"[round-after-filter-priority] (maxPriority=0) ghcr.io/devcontainers/features/docker-from-docker:1 (0)"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"[round-after-comparesTo] ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 17:40:35.944 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"--- Fetching User Features ----"}
+2026-01-03 17:40:35.945 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767429635944,"text":"* Fetching feature: docker-outside-of-docker_0_oci"}
+2026-01-03 17:40:35.945 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635944,"text":"Fetching from OCI"}
+2026-01-03 17:40:35.945 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635945,"text":"blob url: https://ghcr.io/v2/devcontainers/features/docker-from-docker/blobs/sha256:515190340fb5be9183c2d3f4f87c9cfdd36993c6fa09d33b35fe72164b102a3d"}
+2026-01-03 17:40:35.945 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429635945,"text":"[httpOci] Applying cachedAuthHeader for registry ghcr.io..."}
+2026-01-03 17:40:36.392 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429636392,"text":"[httpOci] 200 (Cached): https://ghcr.io/v2/devcontainers/features/docker-from-docker/blobs/sha256:515190340fb5be9183c2d3f4f87c9cfdd36993c6fa09d33b35fe72164b102a3d"}
+2026-01-03 17:40:36.394 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429636394,"text":"omitDuringExtraction: '"}
+2026-01-03 17:40:36.394 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767429636394,"text":"Files to omit: ''"}
+2026-01-03 17:40:36.396 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429636396,"text":"Testing './'(Directory)"}
+2026-01-03 17:40:36.397 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429636397,"text":"Testing './NOTES.md'(File)"}
+2026-01-03 17:40:36.397 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429636397,"text":"Testing './README.md'(File)"}
+2026-01-03 17:40:36.397 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429636397,"text":"Testing './devcontainer-feature.json'(File)"}
+2026-01-03 17:40:36.397 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429636397,"text":"Testing './install.sh'(File)"}
+2026-01-03 17:40:36.400 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767429636400,"text":"Files extracted from blob: ./NOTES.md, ./README.md, ./devcontainer-feature.json, ./install.sh"}
+2026-01-03 17:40:36.401 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767429636401,"text":"* Fetched feature: docker-outside-of-docker_0_oci version 1.6.5"}
+2026-01-03 17:40:36.404 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767429636404,"text":"Docker Compose override file for building image:\nservices:\n  dev:\n    build:\n      dockerfile: /var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/container-features/0.80.2-1767429634958/Dockerfile-with-features\n      args:\n        - BUILDKIT_INLINE_CACHE=1\n        - _DEV_CONTAINERS_BASE_IMAGE=dev_container_auto_added_stage_label\n        - _DEV_CONTAINERS_IMAGE_USER=hagevvashi\n        - _DEV_CONTAINERS_FEATURE_CONTENT_SOURCE=dev_container_feature_content_temp\n      additional_contexts:\n        - dev_containers_feature_content_source=/var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/container-features/0.80.2-1767429634958\n\n"}
+2026-01-03 17:40:36.404 [info] [devcontainer run-user-commands]: {"type":"start","level":3,"timestamp":1767429636404,"text":"Run: docker compose --project-name hagevvashiinfo-dev-hub_devcontainer -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml -f /var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose/docker-compose.devcontainer.build-1767429636404.yml build"}
+2026-01-03 17:41:06.262 [info] [devcontainer run-user-commands]: {"type":"stop","level":3,"timestamp":1767429666262,"text":"Run: docker compose --project-name hagevvashiinfo-dev-hub_devcontainer -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml -f /var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose/docker-compose.devcontainer.build-1767429636404.yml build","startTimestamp":1767429636404}
+2026-01-03 17:41:06.263 [error] [devcontainer run-user-commands][stderr JSON parse error]: Error: Command failed: docker compose --project-name hagevvashiinfo-dev-hub_devcontainer -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml -f /var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose/docker-compose.devcontainer.build-1767429636404.yml build
+2026-01-03 17:41:06.263 [error] [devcontainer run-user-commands][stderr JSON parse error]:     at lw (/Users/<一般ユーザー>/.cursor/extensions/anysphere.remote-containers-1.0.29/dist/@devcontainers/cli/dist/spec-node/devContainersSpecCLI.js:2:1573026)
+2026-01-03 17:41:06.263 [error] [devcontainer run-user-commands][stderr JSON parse error]:     at async l6 (/Users/<一般ユーザー>/.cursor/extensions/anysphere.remote-containers-1.0.29/dist/@devcontainers/cli/dist/spec-node/devContainersSpecCLI.js:2:1574975)
+2026-01-03 17:41:06.263 [error] [devcontainer run-user-commands][stderr JSON parse error]:     at async c6 (/Users/<一般ユーザー>/.cursor/extensions/anysphere.remote-containers-1.0.29/dist/@devcontainers/cli/dist/spec-node/devContainersSpecCLI.js:2:1569359)
+2026-01-03 17:41:06.263 [error] [devcontainer run-user-commands][stderr JSON parse error]:     at async Y6 (/Users/<一般ユーザー>/.cursor/extensions/anysphere.remote-containers-1.0.29/dist/@devcontainers/cli/dist/spec-node/devContainersSpecCLI.js:2:1599153)
+2026-01-03 17:41:06.263 [error] [devcontainer run-user-commands][stderr JSON parse error]:     at async BC (/Users/<一般ユーザー>/.cursor/extensions/anysphere.remote-containers-1.0.29/dist/@devcontainers/cli/dist/spec-node/devContainersSpecCLI.js:2:1599941)
+2026-01-03 17:41:06.263 [error] [devcontainer run-user-commands][stderr JSON parse error]:     at async p7 (/Users/<一般ユーザー>/.cursor/extensions/anysphere.remote-containers-1.0.29/dist/@devcontainers/cli/dist/spec-node/devContainersSpecCLI.js:2:1673382)
+2026-01-03 17:41:06.263 [error] [devcontainer run-user-commands][stderr JSON parse error]:     at async d7 (/Users/<一般ユーザー>/.cursor/extensions/anysphere.remote-containers-1.0.29/dist/@devcontainers/cli/dist/spec-node/devContainersSpecCLI.js:2:1673046)
+2026-01-03 17:41:06.263 [error] [devcontainer run-user-commands][stderr JSON parse error]:     at async /Users/<一般ユーザー>/.cursor/extensions/anysphere.remote-containers-1.0.29/dist/@devcontainers/cli/dist/spec-node/devContainersSpecCLI.js:2:1596193
+2026-01-03 17:41:06.263 [info] [devcontainer run-user-commands][stdout]: {"outcome":"error","message":"Command failed: docker compose --project-name hagevvashiinfo-dev-hub_devcontainer -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml -f /var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose/docker-compose.devcontainer.build-1767429636404.yml build","description":"An error occurred building the Docker Compose images."}
+
+2026-01-03 17:41:06.267 [info] [devcontainer run-user-commands][exit]: {"status":1}
+2026-01-03 17:41:06.269 [error] Error resolving dev container authority Failed to run devcontainer command: 1. {"outcome":"error","message":"Command failed: docker compose --project-name hagevvashiinfo-dev-hub_devcontainer -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml -f /var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose/docker-compose.devcontainer.build-1767429636404.yml build","description":"An error occurred building the Docker Compose images."}

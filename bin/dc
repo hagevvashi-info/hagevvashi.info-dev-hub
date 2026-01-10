@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# docker compose exec ラッパースクリプト
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# 目的: docker compose exec に自動的に -u ${UNAME} を付与
+#
+# 使用方法:
+#   ./bin/dc exec dev /bin/bash
+#   ./bin/dc ps
+#   ./bin/dc exec -u root dev /bin/bash  # 明示的な -u 指定も可能
+#
+# 参照: 25_6_16_wrapper_script_strategy.md
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# スクリプトのディレクトリと .devcontainer ディレクトリの取得
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEVCONTAINER_DIR="${SCRIPT_DIR}/../.devcontainer"
+
+# デフォルトユーザーの設定（UNAME が未定義の場合は whoami を使用）
+USER="${UNAME:-$(whoami)}"
+
+# .devcontainer ディレクトリに移動
+cd "${DEVCONTAINER_DIR}"
+
+# docker compose コマンドの基本形
+COMPOSE_CMD="docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml"
+
+# exec サブコマンドの場合のみ -u フラグを自動付与
+if [ "${1:-}" = "exec" ]; then
+    shift  # "exec" を引数から削除
+
+    # 既に -u または --user が指定されている場合はそのまま実行
+    if [[ "$*" =~ -u|--user ]]; then
+        exec ${COMPOSE_CMD} exec "$@"
+    else
+        # -u ${USER} を自動付与
+        exec ${COMPOSE_CMD} exec -u "${USER}" "$@"
+    fi
+else
+    # exec 以外のサブコマンドはそのまま実行
+    exec ${COMPOSE_CMD} "$@"
+fi

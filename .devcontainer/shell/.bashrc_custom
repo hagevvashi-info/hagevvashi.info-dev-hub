@@ -14,13 +14,44 @@ export HISTTIMEFORMAT="%F %T "
 # ステップ4: 事前実行フックフレームワークの読み込み
 [ -f ~/.bash_preexec ] && source ~/.bash_preexec
 
-# ステップ5: Atuinの初期化
-if command -v atuin >/dev/null 2>&1; then
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# ステップ4.5: Atuin 設定ファイルの初期化（初回ログイン時のみ）
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 注記: docker-entrypoint.sh では root コンテキストで実行されるため、
+#       ユーザー固有の設定ファイル作成は初回ログイン時に実行
+# 参照: 25_6_22_docker_entrypoint_user_context_issue.md
+#
+# 重要: この初期化は冪等性があり、複数回実行しても安全です
+if [ "$(id -u)" -ne 0 ] && [ ! -f ~/.config/atuin/config.toml ] && command -v atuin >/dev/null 2>&1; then
+    echo "Initializing Atuin configuration for $(whoami)..."
+    mkdir -p ~/.config/atuin
+    mkdir -p ~/.local/share/atuin
+    cat > ~/.config/atuin/config.toml <<'EOF'
+# Atuin設定ファイル（ユーザー用）
+sync_address = ""
+sync_frequency = "0"
+search_mode = "fuzzy"
+filter_mode = "host"
+filter_mode_shell_up_key_binding = "directory"
+style = "compact"
+inline_height = 25
+show_preview = true
+show_help = true
+history_filter = []
+show_stats = true
+timezone = "+09:00"
+EOF
+    echo "✅ Atuin configuration initialized."
+fi
+
+# ステップ5: Atuinの初期化（一般ユーザーのみ）
+if [ "$(id -u)" -ne 0 ] && command -v atuin >/dev/null 2>&1; then
   eval "$(atuin init bash)"
 fi
 
-eval "$(tfenv init -)"
-
-. ~/.asdf/asdf.sh
-
-. ~/.asdf/completions/asdf.bash
+# tfenv、asdfの初期化（一般ユーザーのみ）
+if [ "$(id -u)" -ne 0 ]; then
+  eval "$(tfenv init -)"
+  . ~/.asdf/asdf.sh
+  . ~/.asdf/completions/asdf.bash
+fi

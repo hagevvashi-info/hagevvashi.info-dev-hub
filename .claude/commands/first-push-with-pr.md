@@ -29,7 +29,7 @@ Pull Request を作成してください
         echo "現在のデフォルトリポジリ: $(gh repo view --json name,owner --jq '.owner.login + "/" + .name')"
         echo "ベースブランチ: $(gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name')"
         ```
-        確認後、表示されたリポジトリ名が`upstream`リポジリ（例: `hagevvashi-info/hagevvashi.info-dev-hub`）と一致し、ベースブランチが`main`であることを確認してください。
+        確認後、表示されたリポジトリ名が`upstream`リポジリ（例: `<some_org>/<repo_name>`）と一致し、ベースブランチが`main`であることを確認してください。
 - gh コマンドで Pull Request 作成
     - Pull Request 作成時の base と head は下記です
         - base: `main` (※ 事前に設定したデフォルトリポジトリのmainブランチを指します)

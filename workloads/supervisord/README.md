@@ -13,7 +13,7 @@
 ### よく使う設定項目
 
 *   **`command`**: 実行するコマンド。フルパスで指定することを推奨します。
-*   **`user`**: プロセスを実行するユーザー。通常は`hagevvashi`などの非rootユーザーを指定します。
+*   **`user`**: プロセスを実行するユーザー。通常は`<一般ユーザー>`などの非rootユーザーを指定します。
 *   **`directory`**: プロセスが実行されるワーキングディレクトリ。
 *   **`autostart`**: `true`にするとSupervisord起動時に自動的にプロセスを開始します。
 *   **`autorestart`**: `true`にするとプロセスが異常終了した場合に自動的に再起動します。開発環境ではエラーを見たい場合が多いため、`false`に設定することも検討してください。
@@ -26,8 +26,8 @@
 ```ini
 [program:your-custom-service]
 command=/usr/local/bin/your-command --arg1 value
-user=hagevvashi
-directory=/home/hagevvashi/hagevvashi.info-dev-hub/repos/your-project
+user=<一般ユーザー>
+directory=/home/<一般ユーザー>/hagevvashi.info-dev-hub/repos/your-project
 autostart=true
 autorestart=false # エラーを見たいので自動再起動しない
 environment=YOUR_ENV_VAR="some_value"

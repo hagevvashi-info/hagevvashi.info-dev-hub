@@ -1,23 +1,24 @@
 version: "0.5"
 
 # TUIの設定
-log_location: /tmp/process-compose-${USER}.log
+log_location: /tmp/process-compose-${UNAME}.log
 log_level: info
 
 processes:
-  # difit（開発支援ツール）
-  difit:
-    command: "difit"
-    working_dir: "/home/hagevvashi/hagevvashi.info-dev-hub"
+  # ダミープロセス: process-compose の動作確認用
+  # リソース消費ゼロで永続的に動作
+  dummy-watcher:
+    command: "tail -f /dev/null"
+    working_dir: "/home/${UNAME}/${REPO_NAME}"
     availability:
-      restart: "no"  # エラーを見たいので自動再起動しない
+      restart: "always"
     environment:
-      - HOME=/home/hagevvashi
+      - HOME=/home/${UNAME}
 
   # 実験的なサービスの例
   # vite-preview:
   #   command: "npm run preview"
-  #   working_dir: "/home/hagevvashi/repos/some-project"
+  #   working_dir: "/home/${UNAME}/repos/some-project"
   #   availability:
   #     restart: "no"
   #   depends_on:
@@ -27,9 +28,9 @@ processes:
   # アプリケーションサーバーの例
   # app-server:
   #   command: "npm run dev"
-  #   working_dir: "/home/hagevvashi/repos/product-a"
+  #   working_dir: "/home/${UNAME}/repos/product-a"
   #   availability:
   #     restart: "no"
   #   environment:
-  #     - HOME=/home/hagevvashi
+  #     - HOME=/home/${UNAME}
   #     - PORT=8080

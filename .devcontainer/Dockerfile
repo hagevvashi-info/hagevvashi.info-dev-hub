@@ -109,6 +109,14 @@ RUN ARCH=$(case "${TARGETARCH}" in \
 # /etc/s6-rc ディレクトリを早期に作成
 RUN mkdir -p /etc/s6-rc
 
+# s6-rc サービス定義をコピー
+# v10設計: supervisord, process-compose, docker-entrypoint を s6-overlay で管理
+COPY .devcontainer/s6-rc.d/ /etc/s6-overlay/s6-rc.d/
+
+# s6-rc サービスの run スクリプトに実行権限を付与
+# 注記: COPY 命令は権限を保持するはずだが、明示的に設定することで確実性を高める
+RUN find /etc/s6-overlay/s6-rc.d -type f -name 'run' -exec chmod +x {} \;
+
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Process management: supervisord
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -201,6 +209,14 @@ RUN echo '\n# Load custom dev container configurations' >> /etc/skel/.bashrc && 
     echo '\n# Then, load custom functions and aliases' >> /etc/skel/.bashrc && \
     echo 'if [ -f ~/.bashrc_custom ]; then . ~/.bashrc_custom; fi' >> /etc/skel/.bashrc
     # echo 'if [ -f ~/.aliases.sh ]; then. ~/.aliases.sh; fi' >> /etc/skel/.bashrc
+
+# root ユーザー用にも同様の設定を適用
+# 既存ユーザー（root）には /etc/skel/ の内容が自動コピーされないため、明示的にコピー
+# /etc/skel/.bashrc には既にカスタム設定の読み込みが含まれているため、そのままコピーするだけで良い
+RUN cp /etc/skel/.bashrc_custom /root/.bashrc_custom && \
+    cp /etc/skel/paths.sh /root/paths.sh && \
+    cp /etc/skel/env.sh /root/env.sh && \
+    cp /etc/skel/.bashrc /root/.bashrc
 
 # User and group setup
     # Create docker group
@@ -296,7 +312,7 @@ COPY .devcontainer/debug-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/debug-entrypoint.sh
 
 # ENTRYPOINTを最後に設定（ユーザー切り替え後）
-# これにより、コンテナ起動時のデフォルトユーザーがhagevvashiになる
+# これにより、コンテナ起動時のデフォルトユーザーが <一般ユーザー> になる
 ENTRYPOINT ["/init"]
 # s6-overlay を PID 1 として起動（/init）
 # v10設計: s6-overlay が以下のサービスを管理

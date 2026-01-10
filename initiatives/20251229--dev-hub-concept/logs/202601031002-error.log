@@ -1,0 +1,1214 @@
+2026-01-03 09:53:36.700 [info] Getting remote exec server for authority: dev-container+7b2273657474696e6754797065223a22636f6e666967222c22776f726b737061636550617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d687562222c22646576636f6e7461696e657250617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d6875622f2e646576636f6e7461696e65722f646576636f6e7461696e65722e6a736f6e227d
+2026-01-03 09:53:36.701 [info] Dev container authority (encoded):  7b2273657474696e6754797065223a22636f6e666967222c22776f726b737061636550617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d687562222c22646576636f6e7461696e657250617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d6875622f2e646576636f6e7461696e65722f646576636f6e7461696e65722e6a736f6e227d
+2026-01-03 09:53:36.701 [info] Spawned process 18306: 'docker' 'info'
+2026-01-03 09:53:36.701 [info] [docker info]: Running command: docker
+2026-01-03 09:53:37.089 [info] [docker info]: Command completed with exit code 0
+2026-01-03 09:53:37.089 [info] docker version: Client:
+ Version:    29.1.3
+ Context:    desktop-linux
+ Debug Mode: false
+ Plugins:
+  ai: Docker AI Agent - Ask Gordon (Docker Inc.)
+    Version:  v1.17.1
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-ai
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.30.1-desktop.1
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-buildx
+  compose: Docker Compose (Docker Inc.)
+    Version:  v2.40.3-desktop.1
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-compose
+  debug: Get a shell into any image or container (Docker Inc.)
+    Version:  0.0.45
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-debug
+  desktop: Docker Desktop commands (Docker Inc.)
+    Version:  v0.2.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-desktop
+  extension: Manages Docker extensions (Docker Inc.)
+    Version:  v0.2.31
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-extension
+  init: Creates Docker-related starter files for your project (Docker Inc.)
+    Version:  v1.4.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-init
+  mcp: Docker MCP Plugin (Docker Inc.)
+    Version:  v0.34.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-mcp
+  model: Docker Model Runner (Docker Inc.)
+    Version:  v1.0.2
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-model
+  offload: Docker Offload (Docker Inc.)
+    Version:  v0.5.33
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-offload
+  pass: Docker Pass Secrets Manager Plugin (beta) (Docker Inc.)
+    Version:  v0.0.21
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-pass
+  sandbox: Docker Sandbox (Docker Inc.)
+    Version:  v0.6.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-sandbox
+  sbom: View the packaged-based Software Bill Of Materials (SBOM) for an image (Anchore Inc.)
+    Version:  0.6.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-sbom
+  scout: Docker Scout (Docker Inc.)
+    Version:  v1.18.3
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-scout
+
+Server:
+ Containers: 0
+  Running: 0
+  Paused: 0
+  Stopped: 0
+ Images: 8
+ Server Version: 29.1.3
+ Storage Driver: overlay2
+  Backing Filesystem: extfs
+  Supports d_type: true
+  Using metacopy: false
+  Native Overlay Diff: true
+  userxattr: false
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Cgroup Version: 2
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+ CDI spec directories:
+  /etc/cdi
+  /var/run/cdi
+ Swarm: inactive
+ Runtimes: io.containerd.runc.v2 runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: 1c4457e00facac03ce1d75f7b6777a7a851e5c41
+ runc version: v1.3.4-0-gd6d73eb8
+ init version: de40ad0
+ Security Options:
+  seccomp
+   Profile: builtin
+  cgroupns
+ Kernel Version: 6.12.54-linuxkit
+ Operating System: Docker Desktop
+ OSType: linux
+ Architecture: aarch64
+ CPUs: 8
+ Total Memory: 7.653GiB
+ Name: docker-desktop
+ ID: bbd7c1a3-b4ee-4854-8bae-70bbea3275ef
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ HTTP Proxy: http.docker.internal:3128
+ HTTPS Proxy: http.docker.internal:3128
+ No Proxy: hubproxy.docker.internal
+ Labels:
+  com.docker.desktop.address=unix:///Users/<一般ユーザー>/Library/Containers/com.docker.docker/Data/docker-cli.sock
+ Experimental: false
+ Insecure Registries:
+  hubproxy.docker.internal:5555
+  ::1/128
+  127.0.0.0/8
+ Live Restore Enabled: false
+2026-01-03 09:53:37.094 [info] Already inside a devcontainer; reloading window
+2026-01-03 09:53:38.971 [info] No remote exec server found for authority: dev-container+7b2273657474696e6754797065223a22636f6e666967222c22776f726b737061636550617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d687562222c22646576636f6e7461696e657250617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d6875622f2e646576636f6e7461696e65722f646576636f6e7461696e65722e6a736f6e227d; using local
+2026-01-03 09:53:38.971 [info] Resolving dev container authority 'dev-container+7b2273657474696e6754797065223a22636f6e666967222c22776f726b737061636550617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d687562222c22646576636f6e7461696e657250617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d6875622f2e646576636f6e7461696e65722f646576636f6e7461696e65722e6a736f6e227d' (attempt #1) container '{"settingType":"config","workspacePath":"/Users/<一般ユーザー>/hagevvashi.info-dev-hub","devcontainerPath":"/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json"}'
+2026-01-03 09:53:38.971 [info] Starting Dev Containers dev-container+7b2273657474696e6754797065223a22636f6e666967222c22776f726b737061636550617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d687562222c22646576636f6e7461696e657250617468223a222f55736572732f686167657676617368692f686167657676617368692e696e666f2d6465762d6875622f2e646576636f6e7461696e65722f646576636f6e7461696e65722e6a736f6e227d
+2026-01-03 09:53:38.971 [info] Spawned process 18342: 'docker' 'info'
+2026-01-03 09:53:38.971 [info] [docker info]: Running command: docker
+2026-01-03 09:53:39.057 [info] [docker info]: Command completed with exit code 0
+2026-01-03 09:53:39.057 [info] docker version: Client:
+ Version:    29.1.3
+ Context:    desktop-linux
+ Debug Mode: false
+ Plugins:
+  ai: Docker AI Agent - Ask Gordon (Docker Inc.)
+    Version:  v1.17.1
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-ai
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.30.1-desktop.1
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-buildx
+  compose: Docker Compose (Docker Inc.)
+    Version:  v2.40.3-desktop.1
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-compose
+  debug: Get a shell into any image or container (Docker Inc.)
+    Version:  0.0.45
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-debug
+  desktop: Docker Desktop commands (Docker Inc.)
+    Version:  v0.2.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-desktop
+  extension: Manages Docker extensions (Docker Inc.)
+    Version:  v0.2.31
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-extension
+  init: Creates Docker-related starter files for your project (Docker Inc.)
+    Version:  v1.4.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-init
+  mcp: Docker MCP Plugin (Docker Inc.)
+    Version:  v0.34.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-mcp
+  model: Docker Model Runner (Docker Inc.)
+    Version:  v1.0.2
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-model
+  offload: Docker Offload (Docker Inc.)
+    Version:  v0.5.33
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-offload
+  pass: Docker Pass Secrets Manager Plugin (beta) (Docker Inc.)
+    Version:  v0.0.21
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-pass
+  sandbox: Docker Sandbox (Docker Inc.)
+    Version:  v0.6.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-sandbox
+  sbom: View the packaged-based Software Bill Of Materials (SBOM) for an image (Anchore Inc.)
+    Version:  0.6.0
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-sbom
+  scout: Docker Scout (Docker Inc.)
+    Version:  v1.18.3
+    Path:     /Users/<一般ユーザー>/.docker/cli-plugins/docker-scout
+
+Server:
+ Containers: 0
+  Running: 0
+  Paused: 0
+  Stopped: 0
+ Images: 8
+ Server Version: 29.1.3
+ Storage Driver: overlay2
+  Backing Filesystem: extfs
+  Supports d_type: true
+  Using metacopy: false
+  Native Overlay Diff: true
+  userxattr: false
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Cgroup Version: 2
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+ CDI spec directories:
+  /etc/cdi
+  /var/run/cdi
+ Swarm: inactive
+ Runtimes: io.containerd.runc.v2 runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: 1c4457e00facac03ce1d75f7b6777a7a851e5c41
+ runc version: v1.3.4-0-gd6d73eb8
+ init version: de40ad0
+ Security Options:
+  seccomp
+   Profile: builtin
+  cgroupns
+ Kernel Version: 6.12.54-linuxkit
+ Operating System: Docker Desktop
+ OSType: linux
+ Architecture: aarch64
+ CPUs: 8
+ Total Memory: 7.653GiB
+ Name: docker-desktop
+ ID: bbd7c1a3-b4ee-4854-8bae-70bbea3275ef
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ HTTP Proxy: http.docker.internal:3128
+ HTTPS Proxy: http.docker.internal:3128
+ No Proxy: hubproxy.docker.internal
+ Labels:
+  com.docker.desktop.address=unix:///Users/<一般ユーザー>/Library/Containers/com.docker.docker/Data/docker-cli.sock
+ Experimental: false
+ Insecure Registries:
+  hubproxy.docker.internal:5555
+  ::1/128
+  127.0.0.0/8
+ Live Restore Enabled: false
+2026-01-03 09:53:39.058 [info] Starting dev container
+2026-01-03 09:53:39.058 [info] Rebuild mode: cache
+2026-01-03 09:53:39.058 [info] Container is new: true
+2026-01-03 09:53:39.058 [info] Using local exec server. Current search paths: 
+2026-01-03 09:53:39.058 [info] Start devcontainer up ...
+2026-01-03 09:53:39.059 [info] [devcontainer run-user-commands]: Spawning command in terminal. Node module path: /Applications/Cursor.app/Contents/Resources/app/node_modules.asar:/Applications/Cursor.app/Contents/Resources/app/node_modules
+2026-01-03 09:53:39.059 [info] Spawned process 18357: '/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Plugin).app/Contents/MacOS/Cursor Helper (Plugin)' '/Users/<一般ユーザー>/.cursor/extensions/anysphere.remote-containers-1.0.29/dist/@devcontainers/cli/dist/spec-node/devContainersSpecCLI.js' 'up' '--workspace-folder' '/Users/<一般ユーザー>/hagevvashi.info-dev-hub' '--workspace-mount-consistency' 'cached' '--gpu-availability' 'detect' '--id-label' 'devcontainer.local_folder=/Users/<一般ユーザー>/hagevvashi.info-dev-hub' '--log-level' 'debug' '--log-format' 'json' '--default-user-env-probe' 'loginInteractiveShell' '--mount-workspace-git-root' '--update-remote-user-uid-default' 'on' '--skip-post-create' '--include-configuration' '--include-merged-configuration' '--docker-path' 'docker' '--id-label' 'devcontainer.config_file=/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json' '--additional-features' '{}' '--config' '/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json' '--remove-existing-container'
+2026-01-03 09:53:39.214 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767401619214,"text":"@devcontainers/cli 0.80.2. Node.js v22.20.0. darwin 25.2.0 arm64."}
+2026-01-03 09:53:39.215 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401619214,"text":"Run: docker buildx version"}
+2026-01-03 09:53:39.316 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401619316,"text":"Run: docker buildx version","startTimestamp":1767401619214}
+2026-01-03 09:53:39.316 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401619316,"text":"github.com/docker/buildx v0.30.1-desktop.1 792b8327a475a5d8c9d5f4ea6ce866e7da39ae8b\r\n"}
+2026-01-03 09:53:39.317 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401619316,"text":"\u001b[1m\u001b[31m\u001b[39m\u001b[22m\r\n"}
+2026-01-03 09:53:39.317 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401619316,"text":"Run: docker -v"}
+2026-01-03 09:53:39.332 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401619332,"text":"Run: docker -v","startTimestamp":1767401619316}
+2026-01-03 09:53:39.332 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401619332,"text":"Resolving Remote"}
+2026-01-03 09:53:39.427 [info] [devcontainer run-user-commands]: {"type":"start","level":3,"timestamp":1767401619427,"text":"Run: /bin/sh -c ./.devcontainer/generate-env.sh","channel":"postCreate"}
+2026-01-03 09:53:39.481 [info] [devcontainer run-user-commands]: {"type":"stop","level":3,"timestamp":1767401619480,"text":"Run: /bin/sh -c ./.devcontainer/generate-env.sh","startTimestamp":1767401619427,"channel":"postCreate"}
+2026-01-03 09:53:39.482 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401619482,"text":"Run: docker compose version --short"}
+2026-01-03 09:53:39.556 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401619555,"text":"Run: docker compose version --short","startTimestamp":1767401619482}
+2026-01-03 09:53:39.556 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401619556,"text":"Docker Compose version: 2.40.3-desktop.1"}
+2026-01-03 09:53:39.556 [info] [devcontainer run-user-commands]: {"type":"start","level":3,"timestamp":1767401619556,"text":"Run: docker compose -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml --profile * config"}
+2026-01-03 09:53:39.624 [info] [devcontainer run-user-commands]: {"type":"stop","level":3,"timestamp":1767401619624,"text":"Run: docker compose -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml --profile * config","startTimestamp":1767401619556}
+2026-01-03 09:53:39.624 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401619624,"text":"name: devcontainer\nservices:\n  dev:\n    build:\n      context: /Users/<一般ユーザー>/hagevvashi.info-dev-hub\n      dockerfile: .devcontainer/Dockerfile\n      args:\n        GID: \"20\"\n        GNAME: staff\n        UID: \"501\"\n        UNAME: hagevvashi\n    networks:\n      default: null\n    ports:\n      - mode: ingress\n        target: 4035\n        published: \"4035\"\n        protocol: tcp\n      - mode: ingress\n        target: 8035\n        published: \"8035\"\n        protocol: tcp\n      - mode: ingress\n        target: 8036\n        published: \"8036\"\n        protocol: tcp\n      - mode: ingress\n        target: 8037\n        published: \"8037\"\n        protocol: tcp\n      - mode: ingress\n        target: 8038\n        published: \"8038\"\n        protocol: tcp\n      - mode: ingress\n        target: 9001\n        published: \"9001\"\n        protocol: tcp\n      - mode: ingress\n        target: 8080\n        published: \"8080\"\n        protocol: tcp\n    stdin_open: true\n    tty: true\n    user: \"501:20\"\n    volumes:\n      - type: bind\n        source: /Users/<一般ユーザー>/hagevvashi.info-dev-hub\n        target: /home/<一般ユーザー>/hagevvashi.info-dev-hub\n        consistency: cached\n      - type: volume\n        source: repos\n        target: /home/<一般ユーザー>/hagevvashi.info-dev-hub/repos\n    working_dir: /home/<一般ユーザー>/hagevvashi.info-dev-hub\nnetworks:\n  default:\n    name: devcontainer_default\nvolumes:\n  repos:\n    name: repos\n    external: true\n"}
+2026-01-03 09:53:39.627 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401619627,"text":"Run: docker ps -q -a --filter label=com.docker.compose.project=hagevvashiinfo-dev-hub_devcontainer --filter label=com.docker.compose.service=dev"}
+2026-01-03 09:53:41.920 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401621920,"text":"Run: docker ps -q -a --filter label=com.docker.compose.project=hagevvashiinfo-dev-hub_devcontainer --filter label=com.docker.compose.service=dev","startTimestamp":1767401619627}
+2026-01-03 09:53:41.921 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401621920,"text":"Run: docker events --format {{json .}} --filter event=start"}
+2026-01-03 09:53:41.921 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401621921,"text":"PersistedPath=/var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli, ContainerHasLabels=false"}
+2026-01-03 09:53:41.922 [info] [devcontainer run-user-commands]: {"type":"start","level":3,"timestamp":1767401621922,"text":"Run: docker compose -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml --profile * config"}
+2026-01-03 09:53:41.990 [info] [devcontainer run-user-commands]: {"type":"stop","level":3,"timestamp":1767401621990,"text":"Run: docker compose -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml --profile * config","startTimestamp":1767401621922}
+2026-01-03 09:53:41.990 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767401621990,"text":"name: devcontainer\nservices:\n  dev:\n    build:\n      context: /Users/<一般ユーザー>/hagevvashi.info-dev-hub\n      dockerfile: .devcontainer/Dockerfile\n      args:\n        GID: \"20\"\n        GNAME: staff\n        UID: \"501\"\n        UNAME: hagevvashi\n    networks:\n      default: null\n    ports:\n      - mode: ingress\n        target: 4035\n        published: \"4035\"\n        protocol: tcp\n      - mode: ingress\n        target: 8035\n        published: \"8035\"\n        protocol: tcp\n      - mode: ingress\n        target: 8036\n        published: \"8036\"\n        protocol: tcp\n      - mode: ingress\n        target: 8037\n        published: \"8037\"\n        protocol: tcp\n      - mode: ingress\n        target: 8038\n        published: \"8038\"\n        protocol: tcp\n      - mode: ingress\n        target: 9001\n        published: \"9001\"\n        protocol: tcp\n      - mode: ingress\n        target: 8080\n        published: \"8080\"\n        protocol: tcp\n    stdin_open: true\n    tty: true\n    user: \"501:20\"\n    volumes:\n      - type: bind\n        source: /Users/<一般ユーザー>/hagevvashi.info-dev-hub\n        target: /home/<一般ユーザー>/hagevvashi.info-dev-hub\n        consistency: cached\n      - type: volume\n        source: repos\n        target: /home/<一般ユーザー>/hagevvashi.info-dev-hub/repos\n    working_dir: /home/<一般ユーザー>/hagevvashi.info-dev-hub\nnetworks:\n  default:\n    name: devcontainer_default\nvolumes:\n  repos:\n    name: repos\n    external: true\n"}
+2026-01-03 09:53:41.992 [info] [devcontainer run-user-commands]: {"type":"start","level":3,"timestamp":1767401621991,"text":"Run: docker inspect --type image debian:12.7"}
+2026-01-03 09:53:42.009 [info] [devcontainer run-user-commands]: {"type":"stop","level":3,"timestamp":1767401622009,"text":"Run: docker inspect --type image debian:12.7","startTimestamp":1767401621991}
+2026-01-03 09:53:42.010 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622010,"text":"workspace root: /Users/<一般ユーザー>/hagevvashi.info-dev-hub"}
+2026-01-03 09:53:42.010 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622010,"text":"configPath: /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json"}
+2026-01-03 09:53:42.010 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622010,"text":"--- Processing User Features ----"}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622011,"text":"[* user-provided] ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767401622011,"text":"Resolving Feature dependencies for 'ghcr.io/devcontainers/features/docker-from-docker:1'..."}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767401622011,"text":"* Processing feature: ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622011,"text":"> input: ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622011,"text":">"}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622011,"text":"> resource: ghcr.io/devcontainers/features/docker-from-docker"}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622011,"text":"> id: docker-from-docker"}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622011,"text":"> owner: devcontainers"}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622011,"text":"> namespace: devcontainers/features"}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622011,"text":"> registry: ghcr.io"}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622011,"text":"> path: devcontainers/features/docker-from-docker"}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622011,"text":">"}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622011,"text":"> version: 1"}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622011,"text":"> tag?: 1"}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622011,"text":"> digest?: undefined"}
+2026-01-03 09:53:42.011 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622011,"text":"manifest url: https://ghcr.io/v2/devcontainers/features/docker-from-docker/manifests/1"}
+2026-01-03 09:53:42.243 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622243,"text":"[httpOci] Attempting to authenticate via 'Bearer' auth."}
+2026-01-03 09:53:42.244 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622243,"text":"[httpOci] Invoking credsStore credential helper 'desktop'"}
+2026-01-03 09:53:42.244 [info] [devcontainer run-user-commands]: {"type":"start","level":3,"timestamp":1767401622244,"text":"Run: docker-credential-desktop get"}
+2026-01-03 09:53:42.321 [info] [devcontainer run-user-commands]: {"type":"stop","level":3,"timestamp":1767401622321,"text":"Run: docker-credential-desktop get","startTimestamp":1767401622244}
+2026-01-03 09:53:42.321 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622321,"text":"[httpOci] Failed to query for 'ghcr.io' credential from 'docker-credential-desktop': [object Object]"}
+2026-01-03 09:53:42.321 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622321,"text":"[httpOci] No authentication credentials found for registry 'ghcr.io' via docker config or credential helper."}
+2026-01-03 09:53:42.321 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622321,"text":"[httpOci] No authentication credentials found for registry 'ghcr.io'. Accessing anonymously."}
+2026-01-03 09:53:42.321 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622321,"text":"[httpOci] Attempting to fetch bearer token from:  https://ghcr.io/token?service=ghcr.io&scope=repository:devcontainers/features/docker-from-docker:pull"}
+2026-01-03 09:53:42.766 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622766,"text":"[httpOci] 200 on reattempt after auth: https://ghcr.io/v2/devcontainers/features/docker-from-docker/manifests/1"}
+2026-01-03 09:53:42.767 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622767,"text":"> input: ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 09:53:42.767 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622767,"text":">"}
+2026-01-03 09:53:42.767 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622767,"text":"> resource: ghcr.io/devcontainers/features/docker-from-docker"}
+2026-01-03 09:53:42.767 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622767,"text":"> id: docker-from-docker"}
+2026-01-03 09:53:42.767 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622767,"text":"> owner: devcontainers"}
+2026-01-03 09:53:42.767 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622767,"text":"> namespace: devcontainers/features"}
+2026-01-03 09:53:42.767 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622767,"text":"> registry: ghcr.io"}
+2026-01-03 09:53:42.767 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622767,"text":"> path: devcontainers/features/docker-from-docker"}
+2026-01-03 09:53:42.767 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622767,"text":">"}
+2026-01-03 09:53:42.767 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622767,"text":"> version: 1"}
+2026-01-03 09:53:42.767 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622767,"text":"> tag?: 1"}
+2026-01-03 09:53:42.767 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622767,"text":"> digest?: undefined"}
+2026-01-03 09:53:42.768 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767401622768,"text":"* Processing feature: ghcr.io/devcontainers/features/common-utils"}
+2026-01-03 09:53:42.768 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622768,"text":"> input: ghcr.io/devcontainers/features/common-utils"}
+2026-01-03 09:53:42.768 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622768,"text":">"}
+2026-01-03 09:53:42.768 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622768,"text":"> resource: ghcr.io/devcontainers/features/common-utils"}
+2026-01-03 09:53:42.768 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622768,"text":"> id: common-utils"}
+2026-01-03 09:53:42.768 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622768,"text":"> owner: devcontainers"}
+2026-01-03 09:53:42.768 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622768,"text":"> namespace: devcontainers/features"}
+2026-01-03 09:53:42.768 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622768,"text":"> registry: ghcr.io"}
+2026-01-03 09:53:42.768 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622768,"text":"> path: devcontainers/features/common-utils"}
+2026-01-03 09:53:42.768 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622768,"text":">"}
+2026-01-03 09:53:42.768 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622768,"text":"> version: latest"}
+2026-01-03 09:53:42.768 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622768,"text":"> tag?: latest"}
+2026-01-03 09:53:42.768 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622768,"text":"> digest?: undefined"}
+2026-01-03 09:53:42.768 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622768,"text":"manifest url: https://ghcr.io/v2/devcontainers/features/common-utils/manifests/latest"}
+2026-01-03 09:53:42.768 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622768,"text":"[httpOci] Applying cachedAuthHeader for registry ghcr.io..."}
+2026-01-03 09:53:42.991 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622990,"text":"[httpOci] 200 (Cached): https://ghcr.io/v2/devcontainers/features/common-utils/manifests/latest"}
+2026-01-03 09:53:42.991 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622990,"text":"> input: ghcr.io/devcontainers/features/common-utils"}
+2026-01-03 09:53:42.991 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622990,"text":">"}
+2026-01-03 09:53:42.991 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622990,"text":"> resource: ghcr.io/devcontainers/features/common-utils"}
+2026-01-03 09:53:42.991 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622990,"text":"> id: common-utils"}
+2026-01-03 09:53:42.991 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622990,"text":"> owner: devcontainers"}
+2026-01-03 09:53:42.991 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622990,"text":"> namespace: devcontainers/features"}
+2026-01-03 09:53:42.991 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622991,"text":"> registry: ghcr.io"}
+2026-01-03 09:53:42.991 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622991,"text":"> path: devcontainers/features/common-utils"}
+2026-01-03 09:53:42.991 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622991,"text":">"}
+2026-01-03 09:53:42.991 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622991,"text":"> version: latest"}
+2026-01-03 09:53:42.991 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622991,"text":"> tag?: latest"}
+2026-01-03 09:53:42.991 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622991,"text":"> digest?: undefined"}
+2026-01-03 09:53:42.991 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622991,"text":"[* resolved worklist] ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 09:53:42.992 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622991,"text":"[\n  {\n    \"type\": \"user-provided\",\n    \"userFeatureId\": \"ghcr.io/devcontainers/features/docker-from-docker:1\",\n    \"options\": {},\n    \"dependsOn\": [],\n    \"installsAfter\": [\n      {\n        \"type\": \"resolved\",\n        \"userFeatureId\": \"ghcr.io/devcontainers/features/common-utils\",\n        \"options\": {},\n        \"featureSet\": {\n          \"sourceInformation\": {\n            \"type\": \"oci\",\n            \"manifest\": {\n              \"schemaVersion\": 2,\n              \"mediaType\": \"application/vnd.oci.image.manifest.v1+json\",\n              \"config\": {\n                \"mediaType\": \"application/vnd.devcontainers\",\n                \"digest\": \"sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a\",\n                \"size\": 2\n              },\n              \"layers\": [\n                {\n                  \"mediaType\": \"application/vnd.devcontainers.layer.v1+tar\",\n                  \"digest\": \"sha256:66c7071c2ce93ee0c42031da62bfb9bdecafdec1b154a6a33b9f5be18ca71103\",\n                  \"size\": 50176,\n                  \"annotations\": {\n                    \"org.opencontainers.image.title\": \"devcontainer-feature-common-utils.tgz\"\n                  }\n                }\n              ],\n              \"annotations\": {\n                \"dev.containers.metadata\": \"{\\\"id\\\":\\\"common-utils\\\",\\\"version\\\":\\\"2.5.5\\\",\\\"name\\\":\\\"Common Utilities\\\",\\\"documentationURL\\\":\\\"https://github.com/devcontainers/features/tree/main/src/common-utils\\\",\\\"description\\\":\\\"Installs a set of common command line utilities, Oh My Zsh!, and sets up a non-root user.\\\",\\\"options\\\":{\\\"installZsh\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":true,\\\"description\\\":\\\"Install ZSH?\\\"},\\\"configureZshAsDefaultShell\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":false,\\\"description\\\":\\\"Change default shell to ZSH?\\\"},\\\"installOhMyZsh\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":true,\\\"description\\\":\\\"Install Oh My Zsh!?\\\"},\\\"installOhMyZshConfig\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":true,\\\"description\\\":\\\"Allow installing the default dev container .zshrc templates?\\\"},\\\"upgradePackages\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":true,\\\"description\\\":\\\"Upgrade OS packages?\\\"},\\\"username\\\":{\\\"type\\\":\\\"string\\\",\\\"proposals\\\":[\\\"devcontainer\\\",\\\"vscode\\\",\\\"codespace\\\",\\\"none\\\",\\\"automatic\\\"],\\\"default\\\":\\\"automatic\\\",\\\"description\\\":\\\"Enter name of a non-root user to configure or none to skip\\\"},\\\"userUid\\\":{\\\"type\\\":\\\"string\\\",\\\"proposals\\\":[\\\"1001\\\",\\\"automatic\\\"],\\\"default\\\":\\\"automatic\\\",\\\"description\\\":\\\"Enter UID for non-root user\\\"},\\\"userGid\\\":{\\\"type\\\":\\\"string\\\",\\\"proposals\\\":[\\\"1001\\\",\\\"automatic\\\"],\\\"default\\\":\\\"automatic\\\",\\\"description\\\":\\\"Enter GID for non-root user\\\"},\\\"nonFreePackages\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":false,\\\"description\\\":\\\"Add packages from non-free Debian repository? (Debian only)\\\"}}}\",\n                \"com.github.package.type\": \"devcontainer_feature\"\n              }\n            },\n            \"manifestDigest\": \"sha256:6d22e5475de578a8dadf19ce15c0ed09d82d8e3006b851dae7fe59a959c9b787\",\n            \"featureRef\": {\n              \"id\": \"common-utils\",\n              \"owner\": \"devcontainers\",\n              \"namespace\": \"devcontainers/features\",\n              \"registry\": \"ghcr.io\",\n              \"resource\": \"ghcr.io/devcontainers/features/common-utils\",\n              \"path\": \"devcontainers/features/common-utils\",\n              \"version\": \"latest\",\n              \"tag\": \"latest\"\n            },\n            \"userFeatureId\": \"ghcr.io/devcontainers/features/common-utils\",\n            \"userFeatureIdWithoutVersion\": \"ghcr.io/devcontainers/features/common-utils\"\n          },\n          \"features\": [\n            {\n              \"id\": \"common-utils\",\n              \"included\": true,\n              \"value\": {}\n            }\n          ]\n        },\n        \"dependsOn\": [],\n        \"installsAfter\": [],\n        \"roundPriority\": 0,\n        \"featureIdAliases\": [\n          \"common-utils\"\n        ]\n      }\n    ],\n    \"roundPriority\": 0,\n    \"featureSet\": {\n      \"sourceInformation\": {\n        \"type\": \"oci\",\n        \"manifest\": {\n          \"schemaVersion\": 2,\n          \"mediaType\": \"application/vnd.oci.image.manifest.v1+json\",\n          \"config\": {\n            \"mediaType\": \"application/vnd.devcontainers\",\n            \"digest\": \"sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a\",\n            \"size\": 2\n          },\n          \"layers\": [\n            {\n              \"mediaType\": \"application/vnd.devcontainers.layer.v1+tar\",\n              \"digest\": \"sha256:515190340fb5be9183c2d3f4f87c9cfdd36993c6fa09d33b35fe72164b102a3d\",\n              \"size\": 39424,\n              \"annotations\": {\n                \"org.opencontainers.image.title\": \"devcontainer-feature-docker-outside-of-docker.tgz\"\n              }\n            }\n          ],\n          \"annotations\": {\n            \"dev.containers.metadata\": \"{\\\"id\\\":\\\"docker-outside-of-docker\\\",\\\"version\\\":\\\"1.6.5\\\",\\\"name\\\":\\\"Docker (docker-outside-of-docker)\\\",\\\"documentationURL\\\":\\\"https://github.com/devcontainers/features/tree/main/src/docker-outside-of-docker\\\",\\\"description\\\":\\\"Re-use the host docker socket, adding the Docker CLI to a container. Feature invokes a script to enable using a forwarded Docker socket within a container to run Docker commands.\\\",\\\"options\\\":{\\\"version\\\":{\\\"type\\\":\\\"string\\\",\\\"proposals\\\":[\\\"latest\\\",\\\"none\\\",\\\"20.10\\\"],\\\"default\\\":\\\"latest\\\",\\\"description\\\":\\\"Select or enter a Docker/Moby CLI version. (Availability can vary by OS version.)\\\"},\\\"moby\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":true,\\\"description\\\":\\\"Install OSS Moby build instead of Docker CE\\\"},\\\"mobyBuildxVersion\\\":{\\\"type\\\":\\\"string\\\",\\\"default\\\":\\\"latest\\\",\\\"description\\\":\\\"Install a specific version of moby-buildx when using Moby\\\"},\\\"dockerDashComposeVersion\\\":{\\\"type\\\":\\\"string\\\",\\\"enum\\\":[\\\"none\\\",\\\"v1\\\",\\\"v2\\\"],\\\"default\\\":\\\"v2\\\",\\\"description\\\":\\\"Compose version to use for docker-compose (v1 or v2 or none)\\\"},\\\"installDockerBuildx\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":true,\\\"description\\\":\\\"Install Docker Buildx\\\"},\\\"installDockerComposeSwitch\\\":{\\\"type\\\":\\\"boolean\\\",\\\"default\\\":true,\\\"description\\\":\\\"Install Compose Switch (provided docker compose is available) which is a replacement to the Compose V1 docker-compose (python) executable. It translates the command line into Compose V2 docker compose then runs the latter.\\\"}},\\\"entrypoint\\\":\\\"/usr/local/share/docker-init.sh\\\",\\\"customizations\\\":{\\\"vscode\\\":{\\\"extensions\\\":[\\\"ms-azuretools.vscode-containers\\\"],\\\"settings\\\":{\\\"github.copilot.chat.codeGeneration.instructions\\\":[{\\\"text\\\":\\\"This dev container includes the Docker CLI (`docker`) pre-installed and available on the `PATH` for running and managing containers using the Docker daemon on the host machine.\\\"}]}}},\\\"mounts\\\":[{\\\"source\\\":\\\"/var/run/docker.sock\\\",\\\"target\\\":\\\"/var/run/docker-host.sock\\\",\\\"type\\\":\\\"bind\\\"}],\\\"securityOpt\\\":[\\\"label=disable\\\"],\\\"installsAfter\\\":[\\\"ghcr.io/devcontainers/features/common-utils\\\"],\\\"legacyIds\\\":[\\\"docker-from-docker\\\"],\\\"currentId\\\":\\\"docker-outside-of-docker\\\"}\",\n            \"com.github.package.type\": \"devcontainer_feature\"\n          }\n        },\n        \"manifestDigest\": \"sha256:5c0af58d6acc6d81e38b5a6130724330f2eb4f703120dea0016a35da4ad30861\",\n        \"featureRef\": {\n          \"id\": \"docker-from-docker\",\n          \"owner\": \"devcontainers\",\n          \"namespace\": \"devcontainers/features\",\n          \"registry\": \"ghcr.io\",\n          \"resource\": \"ghcr.io/devcontainers/features/docker-from-docker\",\n          \"path\": \"devcontainers/features/docker-from-docker\",\n          \"version\": \"1\",\n          \"tag\": \"1\"\n        },\n        \"userFeatureId\": \"ghcr.io/devcontainers/features/docker-from-docker:1\",\n        \"userFeatureIdWithoutVersion\": \"ghcr.io/devcontainers/features/docker-from-docker\"\n      },\n      \"features\": [\n        {\n          \"id\": \"docker-outside-of-docker\",\n          \"included\": true,\n          \"value\": {},\n          \"version\": \"1.6.5\",\n          \"name\": \"Docker (docker-outside-of-docker)\",\n          \"documentationURL\": \"https://github.com/devcontainers/features/tree/main/src/docker-outside-of-docker\",\n          \"description\": \"Re-use the host docker socket, adding the Docker CLI to a container. Feature invokes a script to enable using a forwarded Docker socket within a container to run Docker commands.\",\n          \"options\": {\n            \"version\": {\n              \"type\": \"string\",\n              \"proposals\": [\n                \"latest\",\n                \"none\",\n                \"20.10\"\n              ],\n              \"default\": \"latest\",\n              \"description\": \"Select or enter a Docker/Moby CLI version. (Availability can vary by OS version.)\"\n            },\n            \"moby\": {\n              \"type\": \"boolean\",\n              \"default\": true,\n              \"description\": \"Install OSS Moby build instead of Docker CE\"\n            },\n            \"mobyBuildxVersion\": {\n              \"type\": \"string\",\n              \"default\": \"latest\",\n              \"description\": \"Install a specific version of moby-buildx when using Moby\"\n            },\n            \"dockerDashComposeVersion\": {\n              \"type\": \"string\",\n              \"enum\": [\n                \"none\",\n                \"v1\",\n                \"v2\"\n              ],\n              \"default\": \"v2\",\n              \"description\": \"Compose version to use for docker-compose (v1 or v2 or none)\"\n            },\n            \"installDockerBuildx\": {\n              \"type\": \"boolean\",\n              \"default\": true,\n              \"description\": \"Install Docker Buildx\"\n            },\n            \"installDockerComposeSwitch\": {\n              \"type\": \"boolean\",\n              \"default\": true,\n              \"description\": \"Install Compose Switch (provided docker compose is available) which is a replacement to the Compose V1 docker-compose (python) executable. It translates the command line into Compose V2 docker compose then runs the latter.\"\n            }\n          },\n          \"entrypoint\": \"/usr/local/share/docker-init.sh\",\n          \"customizations\": {\n            \"vscode\": {\n              \"extensions\": [\n                \"ms-azuretools.vscode-containers\"\n              ],\n              \"settings\": {\n                \"github.copilot.chat.codeGeneration.instructions\": [\n                  {\n                    \"text\": \"This dev container includes the Docker CLI (`docker`) pre-installed and available on the `PATH` for running and managing containers using the Docker daemon on the host machine.\"\n                  }\n                ]\n              }\n            }\n          },\n          \"mounts\": [\n            {\n              \"source\": \"/var/run/docker.sock\",\n              \"target\": \"/var/run/docker-host.sock\",\n              \"type\": \"bind\"\n            }\n          ],\n          \"securityOpt\": [\n            \"label=disable\"\n          ],\n          \"installsAfter\": [\n            \"ghcr.io/devcontainers/features/common-utils\"\n          ],\n          \"legacyIds\": [\n            \"docker-from-docker\"\n          ],\n          \"currentId\": \"docker-outside-of-docker\"\n        }\n      ]\n    },\n    \"featureIdAliases\": [\n      \"docker-outside-of-docker\",\n      \"docker-from-docker\"\n    ]\n  }\n]"}
+2026-01-03 09:53:42.992 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622991,"text":"[raw worklist]: ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 09:53:42.992 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767401622992,"text":"Soft-dependency 'ghcr.io/devcontainers/features/common-utils' is not required.  Removing from installation order..."}
+2026-01-03 09:53:42.992 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622992,"text":"[worklist-without-dangling-soft-deps]: ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 09:53:42.992 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622992,"text":"Starting round-based Feature install order calculation from worklist..."}
+2026-01-03 09:53:42.992 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622992,"text":"\n[round] ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 09:53:42.992 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622992,"text":"[round-candidates] ghcr.io/devcontainers/features/docker-from-docker:1 (0)"}
+2026-01-03 09:53:42.992 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622992,"text":"[round-after-filter-priority] (maxPriority=0) ghcr.io/devcontainers/features/docker-from-docker:1 (0)"}
+2026-01-03 09:53:42.992 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622992,"text":"[round-after-comparesTo] ghcr.io/devcontainers/features/docker-from-docker:1"}
+2026-01-03 09:53:42.992 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622992,"text":"--- Fetching User Features ----"}
+2026-01-03 09:53:42.993 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767401622993,"text":"* Fetching feature: docker-outside-of-docker_0_oci"}
+2026-01-03 09:53:42.993 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622993,"text":"Fetching from OCI"}
+2026-01-03 09:53:42.993 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622993,"text":"blob url: https://ghcr.io/v2/devcontainers/features/docker-from-docker/blobs/sha256:515190340fb5be9183c2d3f4f87c9cfdd36993c6fa09d33b35fe72164b102a3d"}
+2026-01-03 09:53:42.994 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401622994,"text":"[httpOci] Applying cachedAuthHeader for registry ghcr.io..."}
+2026-01-03 09:53:43.452 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401623452,"text":"[httpOci] 200 (Cached): https://ghcr.io/v2/devcontainers/features/docker-from-docker/blobs/sha256:515190340fb5be9183c2d3f4f87c9cfdd36993c6fa09d33b35fe72164b102a3d"}
+2026-01-03 09:53:43.453 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401623453,"text":"omitDuringExtraction: '"}
+2026-01-03 09:53:43.454 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767401623453,"text":"Files to omit: ''"}
+2026-01-03 09:53:43.456 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401623456,"text":"Testing './'(Directory)"}
+2026-01-03 09:53:43.456 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401623456,"text":"Testing './NOTES.md'(File)"}
+2026-01-03 09:53:43.457 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401623457,"text":"Testing './README.md'(File)"}
+2026-01-03 09:53:43.457 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401623457,"text":"Testing './devcontainer-feature.json'(File)"}
+2026-01-03 09:53:43.457 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401623457,"text":"Testing './install.sh'(File)"}
+2026-01-03 09:53:43.459 [info] [devcontainer run-user-commands]: {"type":"text","level":1,"timestamp":1767401623459,"text":"Files extracted from blob: ./NOTES.md, ./README.md, ./devcontainer-feature.json, ./install.sh"}
+2026-01-03 09:53:43.459 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767401623459,"text":"* Fetched feature: docker-outside-of-docker_0_oci version 1.6.5"}
+2026-01-03 09:53:43.462 [info] [devcontainer run-user-commands]: {"type":"text","level":3,"timestamp":1767401623462,"text":"Docker Compose override file for building image:\nservices:\n  dev:\n    build:\n      dockerfile: /var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/container-features/0.80.2-1767401622010/Dockerfile-with-features\n      args:\n        - BUILDKIT_INLINE_CACHE=1\n        - _DEV_CONTAINERS_BASE_IMAGE=dev_container_auto_added_stage_label\n        - _DEV_CONTAINERS_IMAGE_USER=hagevvashi\n        - _DEV_CONTAINERS_FEATURE_CONTENT_SOURCE=dev_container_feature_content_temp\n      additional_contexts:\n        - dev_containers_feature_content_source=/var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/container-features/0.80.2-1767401622010\n\n"}
+2026-01-03 09:53:43.462 [info] [devcontainer run-user-commands]: {"type":"start","level":3,"timestamp":1767401623462,"text":"Run: docker compose --project-name hagevvashiinfo-dev-hub_devcontainer -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml -f /var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose/docker-compose.devcontainer.build-1767401623462.yml build"}
+2026-01-03 09:56:14.067 [info] [devcontainer run-user-commands]: {"type":"stop","level":3,"timestamp":1767401774066,"text":"Run: docker compose --project-name hagevvashiinfo-dev-hub_devcontainer -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml -f /var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose/docker-compose.devcontainer.build-1767401623462.yml build","startTimestamp":1767401623462}
+2026-01-03 09:56:14.067 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774067,"text":"Run: docker inspect --type image hagevvashiinfo-dev-hub_devcontainer-dev"}
+2026-01-03 09:56:14.085 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774084,"text":"Run: docker inspect --type image hagevvashiinfo-dev-hub_devcontainer-dev","startTimestamp":1767401774067}
+2026-01-03 09:56:14.085 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774085,"text":"Docker Compose override file for creating container:\nservices:\n  'dev':\n    entrypoint: [\"/bin/sh\", \"-c\", \"echo Container started\\n\ntrap \\\"exit 0\\\" 15\\n\n/usr/local/share/docker-init.sh\\n\nexec \\\"$$@\\\"\\n\nwhile sleep 1 & wait $$!; do :; done\", \"-\", \"/usr/local/bin/docker-entrypoint.sh\"]\n    command: [\"/usr/bin/supervisord\",\"-c\",\"/etc/supervisor/conf.d/supervisord.conf\"]\n    security_opt:\n      - label=disable\n    labels:\n      - 'devcontainer.local_folder=/Users/<一般ユーザー>/hagevvashi.info-dev-hub'\n      - 'devcontainer.config_file=/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json'\n    volumes:\n      - /var/run/docker.sock:/var/run/docker-host.sock\n      - /Users/<一般ユーザー>/.bash_history:/home/<一般ユーザー>/.bash_history\n      - /Users/<一般ユーザー>/.git:/home/<一般ユーザー>/.git\n      - /Users/<一般ユーザー>/.ssh:/home/<一般ユーザー>/.ssh\n      - /Users/<一般ユーザー>/.gitconfig:/home/<一般ユーザー>/.gitconfig\n      - /Users/<一般ユーザー>/.aws:/home/<一般ユーザー>/.aws\n      - /Users/<一般ユーザー>/.claude:/home/<一般ユーザー>/.claude\n      - /Users/<一般ユーザー>/.claude.json:/home/<一般ユーザー>/.claude.json\n      - /Users/<一般ユーザー>/.config/code-server:/home/<一般ユーザー>/.config/code-server\n      - /Users/<一般ユーザー>/.config/gh:/home/<一般ユーザー>/.config/gh\n      - /Users/<一般ユーザー>/.config/gcloud:/home/<一般ユーザー>/.config/gcloud\n      - /Users/<一般ユーザー>/.config/atuin:/home/<一般ユーザー>/.config/atuin\n      - /Users/<一般ユーザー>/.local/share/atuin:/home/<一般ユーザー>/.local/share/atuin\n      - /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.cursor:/home/<一般ユーザー>/.cursor\n      - /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.vscode:/home/<一般ユーザー>/.vscode\n"}
+2026-01-03 09:56:14.085 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774085,"text":"Writing docker-compose.devcontainer.containerFeatures-1767401774085-65ae96fa-05b0-4b6f-a28e-461d2ecd19cb.yml to /var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose"}
+2026-01-03 09:56:14.085 [info] [devcontainer run-user-commands]: {"type":"start","level":3,"timestamp":1767401774085,"text":"Run: docker compose --project-name hagevvashiinfo-dev-hub_devcontainer -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml -f /var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose/docker-compose.devcontainer.build-1767401623462.yml -f /var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose/docker-compose.devcontainer.containerFeatures-1767401774085-65ae96fa-05b0-4b6f-a28e-461d2ecd19cb.yml up -d"}
+2026-01-03 09:56:14.440 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774440,"text":"Run: docker events --format {{json .}} --filter event=start","startTimestamp":1767401621920}
+2026-01-03 09:56:14.455 [info] [devcontainer run-user-commands]: {"type":"stop","level":3,"timestamp":1767401774454,"text":"Run: docker compose --project-name hagevvashiinfo-dev-hub_devcontainer -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml -f /var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose/docker-compose.devcontainer.build-1767401623462.yml -f /var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose/docker-compose.devcontainer.containerFeatures-1767401774085-65ae96fa-05b0-4b6f-a28e-461d2ecd19cb.yml up -d","startTimestamp":1767401774085}
+2026-01-03 09:56:14.455 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774455,"text":"Run: docker ps -q -a --filter label=com.docker.compose.project=hagevvashiinfo-dev-hub_devcontainer --filter label=com.docker.compose.service=dev"}
+2026-01-03 09:56:14.472 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774472,"text":"Run: docker ps -q -a --filter label=com.docker.compose.project=hagevvashiinfo-dev-hub_devcontainer --filter label=com.docker.compose.service=dev","startTimestamp":1767401774455}
+2026-01-03 09:56:14.472 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774472,"text":"Run: docker inspect --type container f36bb424848a"}
+2026-01-03 09:56:14.491 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774490,"text":"Run: docker inspect --type container f36bb424848a","startTimestamp":1767401774472}
+2026-01-03 09:56:14.491 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774491,"text":"Inspecting container"}
+2026-01-03 09:56:14.491 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774491,"text":"Run: docker inspect --type container f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6"}
+2026-01-03 09:56:14.510 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774510,"text":"Run: docker inspect --type container f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6","startTimestamp":1767401774491}
+2026-01-03 09:56:14.510 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774510,"text":"Inspecting container","startTimestamp":1767401774491}
+2026-01-03 09:56:14.511 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774511,"text":"Run in container: /bin/sh"}
+2026-01-03 09:56:14.512 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774512,"text":"Run in container: uname -m"}
+2026-01-03 09:56:14.570 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774570,"text":"aarch64\n"}
+2026-01-03 09:56:14.570 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774570,"text":""}
+2026-01-03 09:56:14.570 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774570,"text":"Run in container: uname -m","startTimestamp":1767401774512}
+2026-01-03 09:56:14.570 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774570,"text":"Run in container: (cat /etc/os-release || cat /usr/lib/os-release) 2>/dev/null"}
+2026-01-03 09:56:14.571 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774571,"text":"PRETTY_NAME=\"Debian GNU/Linux 12 (bookworm)\"\nNAME=\"Debian GNU/Linux\"\nVERSION_ID=\"12\"\nVERSION=\"12 (bookworm)\"\nVERSION_CODENAME=bookworm\nID=debian\nHOME_URL=\"https://www.debian.org/\"\nSUPPORT_URL=\"https://www.debian.org/support\"\nBUG_REPORT_URL=\"https://bugs.debian.org/\"\n"}
+2026-01-03 09:56:14.571 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774571,"text":""}
+2026-01-03 09:56:14.571 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774571,"text":"Run in container: (cat /etc/os-release || cat /usr/lib/os-release) 2>/dev/null","startTimestamp":1767401774570}
+2026-01-03 09:56:14.571 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774571,"text":"Run in container:  (command -v getent >/dev/null 2>&1 && getent passwd '501' || grep -E '^501|^[^:]*:[^:]*:501:' /etc/passwd || true)"}
+2026-01-03 09:56:14.573 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774573,"text":"Run in container:  (command -v getent >/dev/null 2>&1 && getent passwd '501' || grep -E '^501|^[^:]*:[^:]*:501:' /etc/passwd || true)","startTimestamp":1767401774571}
+2026-01-03 09:56:14.573 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774573,"text":"Run in container: test -f '/var/devcontainer/.patchEtcEnvironmentMarker'"}
+2026-01-03 09:56:14.574 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774574,"text":""}
+2026-01-03 09:56:14.574 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774574,"text":""}
+2026-01-03 09:56:14.574 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774574,"text":"Exit code 1"}
+2026-01-03 09:56:14.574 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774574,"text":"Run in container: test -f '/var/devcontainer/.patchEtcEnvironmentMarker'","startTimestamp":1767401774573}
+2026-01-03 09:56:14.574 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774574,"text":"Run in container: /bin/sh"}
+2026-01-03 09:56:14.574 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774574,"text":"Run in container: test ! -f '/var/devcontainer/.patchEtcEnvironmentMarker' && set -o noclobber && mkdir -p '/var/devcontainer' && { > '/var/devcontainer/.patchEtcEnvironmentMarker' ; } 2> /dev/null"}
+2026-01-03 09:56:14.645 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774645,"text":""}
+2026-01-03 09:56:14.645 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774645,"text":""}
+2026-01-03 09:56:14.645 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774645,"text":"Run in container: test ! -f '/var/devcontainer/.patchEtcEnvironmentMarker' && set -o noclobber && mkdir -p '/var/devcontainer' && { > '/var/devcontainer/.patchEtcEnvironmentMarker' ; } 2> /dev/null","startTimestamp":1767401774574}
+2026-01-03 09:56:14.645 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774645,"text":"Run in container: cat >> /etc/environment <<'etcEnvironmentEOF'"}
+2026-01-03 09:56:14.647 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774647,"text":""}
+2026-01-03 09:56:14.648 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774647,"text":""}
+2026-01-03 09:56:14.648 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774647,"text":"Run in container: cat >> /etc/environment <<'etcEnvironmentEOF'","startTimestamp":1767401774645}
+2026-01-03 09:56:14.648 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774647,"text":"Run in container: test -f '/var/devcontainer/.patchEtcProfileMarker'"}
+2026-01-03 09:56:14.648 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774648,"text":""}
+2026-01-03 09:56:14.648 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774648,"text":""}
+2026-01-03 09:56:14.648 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774648,"text":"Exit code 1"}
+2026-01-03 09:56:14.648 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774648,"text":"Run in container: test -f '/var/devcontainer/.patchEtcProfileMarker'","startTimestamp":1767401774647}
+2026-01-03 09:56:14.648 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774648,"text":"Run in container: test ! -f '/var/devcontainer/.patchEtcProfileMarker' && set -o noclobber && mkdir -p '/var/devcontainer' && { > '/var/devcontainer/.patchEtcProfileMarker' ; } 2> /dev/null"}
+2026-01-03 09:56:14.649 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774649,"text":""}
+2026-01-03 09:56:14.649 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774649,"text":""}
+2026-01-03 09:56:14.649 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774649,"text":"Run in container: test ! -f '/var/devcontainer/.patchEtcProfileMarker' && set -o noclobber && mkdir -p '/var/devcontainer' && { > '/var/devcontainer/.patchEtcProfileMarker' ; } 2> /dev/null","startTimestamp":1767401774648}
+2026-01-03 09:56:14.650 [info] [devcontainer run-user-commands]: {"type":"start","level":2,"timestamp":1767401774649,"text":"Run in container: sed -i -E 's/((^|\\s)PATH=)([^\\$]*)$/\\1${PATH:-\\3}/g' /etc/profile || true"}
+2026-01-03 09:56:14.651 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774651,"text":""}
+2026-01-03 09:56:14.651 [info] [devcontainer run-user-commands]: {"type":"text","level":2,"timestamp":1767401774651,"text":""}
+2026-01-03 09:56:14.651 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774651,"text":"Run in container: sed -i -E 's/((^|\\s)PATH=)([^\\$]*)$/\\1${PATH:-\\3}/g' /etc/profile || true","startTimestamp":1767401774649}
+2026-01-03 09:56:14.651 [info] [devcontainer run-user-commands]: {"type":"stop","level":2,"timestamp":1767401774651,"text":"Resolving Remote","startTimestamp":1767401619332}
+2026-01-03 09:56:14.651 [info] [devcontainer run-user-commands][stdout]: {"outcome":"success","containerId":"f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6","composeProjectName":"hagevvashiinfo-dev-hub_devcontainer","remoteUser":"501","remoteWorkspaceFolder":"/home/<一般ユーザー>/hagevvashi.info-dev-hub","configuration":{"name":"Development Environment","runArgs":["--platform","linux/arm64"],"dockerComposeFile":"docker-compose.yml","service":"dev","workspaceFolder":"/home/<一般ユーザー>/hagevvashi.info-dev-hub","initializeCommand":"./.devcontainer/generate-env.sh","postCreateCommand":"/home/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/post-create.sh","mounts":["source=/Users/<一般ユーザー>/.bash_history,target=/home/<一般ユーザー>/.bash_history,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.git,target=/home/<一般ユーザー>/.git,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.ssh,target=/home/<一般ユーザー>/.ssh,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.gitconfig,target=/home/<一般ユーザー>/.gitconfig,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.aws,target=/home/<一般ユーザー>/.aws,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.claude,target=/home/<一般ユーザー>/.claude,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.claude.json,target=/home/<一般ユーザー>/.claude.json,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.config/code-server,target=/home/<一般ユーザー>/.config/code-server,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.config/gh,target=/home/<一般ユーザー>/.config/gh,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.config/gcloud,target=/home/<一般ユーザー>/.config/gcloud,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.config/atuin,target=/home/<一般ユーザー>/.config/atuin,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.local/share/atuin,target=/home/<一般ユーザー>/.local/share/atuin,type=bind,consistency=cached","source=/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.cursor,target=/home/<一般ユーザー>/.cursor,type=bind,consistency=cached","source=/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.vscode,target=/home/<一般ユーザー>/.vscode,type=bind,consistency=cached"],"features":{"ghcr.io/devcontainers/features/docker-from-docker:1":{}},"customizations":{"vscode":{"extensions":["EditorConfig.EditorConfig","ms-azuretools.vscode-docker","4ops.terraform","GitHub.vscode-pull-request-github","GitHub.copilot","GitHub.copilot-chat","Anthropic.claude-code","RooVeterinaryInc.roo-cline"],"settings":{"terminal.integrated.defaultProfile.linux":"bash","terminal.integrated.profiles.linux":{"bash":{"path":"bash","args":["-l"]}}}}},"configFilePath":{"$mid":1,"fsPath":"/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json","path":"/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json","scheme":"file"}},"mergedConfiguration":{"name":"Development Environment","runArgs":["--platform","linux/arm64"],"dockerComposeFile":"docker-compose.yml","service":"dev","workspaceFolder":"/home/<一般ユーザー>/hagevvashi.info-dev-hub","initializeCommand":"./.devcontainer/generate-env.sh","mounts":[{"source":"/var/run/docker.sock","target":"/var/run/docker-host.sock","type":"bind"},"source=/Users/<一般ユーザー>/.bash_history,target=/home/<一般ユーザー>/.bash_history,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.git,target=/home/<一般ユーザー>/.git,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.ssh,target=/home/<一般ユーザー>/.ssh,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.gitconfig,target=/home/<一般ユーザー>/.gitconfig,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.aws,target=/home/<一般ユーザー>/.aws,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.claude,target=/home/<一般ユーザー>/.claude,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.claude.json,target=/home/<一般ユーザー>/.claude.json,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.config/code-server,target=/home/<一般ユーザー>/.config/code-server,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.config/gh,target=/home/<一般ユーザー>/.config/gh,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.config/gcloud,target=/home/<一般ユーザー>/.config/gcloud,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.config/atuin,target=/home/<一般ユーザー>/.config/atuin,type=bind,consistency=cached","source=/Users/<一般ユーザー>/.local/share/atuin,target=/home/<一般ユーザー>/.local/share/atuin,type=bind,consistency=cached","source=/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.cursor,target=/home/<一般ユーザー>/.cursor,type=bind,consistency=cached","source=/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.vscode,target=/home/<一般ユーザー>/.vscode,type=bind,consistency=cached"],"features":{"ghcr.io/devcontainers/features/docker-from-docker:1":{}},"configFilePath":{"$mid":1,"fsPath":"/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json","path":"/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json","scheme":"file"},"init":false,"privileged":false,"securityOpt":["label=disable"],"entrypoints":["/usr/local/share/docker-init.sh"],"customizations":{"vscode":[{"extensions":["ms-azuretools.vscode-containers"],"settings":{"github.copilot.chat.codeGeneration.instructions":[{"text":"This dev container includes the Docker CLI (`docker`) pre-installed and available on the `PATH` for running and managing containers using the Docker daemon on the host machine."}]}},{"extensions":["EditorConfig.EditorConfig","ms-azuretools.vscode-docker","4ops.terraform","GitHub.vscode-pull-request-github","GitHub.copilot","GitHub.copilot-chat","Anthropic.claude-code","RooVeterinaryInc.roo-cline"],"settings":{"terminal.integrated.defaultProfile.linux":"bash","terminal.integrated.profiles.linux":{"bash":{"path":"bash","args":["-l"]}}}}]},"onCreateCommands":[],"updateContentCommands":[],"postCreateCommands":["/home/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/post-create.sh"],"postStartCommands":[],"postAttachCommands":[],"remoteEnv":{},"containerEnv":{},"portsAttributes":{}}}
+
+2026-01-03 09:56:14.655 [info] [devcontainer run-user-commands][exit]: {"status":0}
+2026-01-03 09:56:14.656 [info] Finished Read Dev Container Configuration: {
+  "outcome": "success",
+  "containerId": "f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6",
+  "composeProjectName": "hagevvashiinfo-dev-hub_devcontainer",
+  "remoteUser": "501",
+  "remoteWorkspaceFolder": "/home/<一般ユーザー>/hagevvashi.info-dev-hub",
+  "configuration": {
+    "name": "Development Environment",
+    "runArgs": [
+      "--platform",
+      "linux/arm64"
+    ],
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "dev",
+    "workspaceFolder": "/home/<一般ユーザー>/hagevvashi.info-dev-hub",
+    "initializeCommand": "./.devcontainer/generate-env.sh",
+    "postCreateCommand": "/home/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/post-create.sh",
+    "mounts": [
+      "source=/Users/<一般ユーザー>/.bash_history,target=/home/<一般ユーザー>/.bash_history,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.git,target=/home/<一般ユーザー>/.git,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.ssh,target=/home/<一般ユーザー>/.ssh,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.gitconfig,target=/home/<一般ユーザー>/.gitconfig,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.aws,target=/home/<一般ユーザー>/.aws,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.claude,target=/home/<一般ユーザー>/.claude,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.claude.json,target=/home/<一般ユーザー>/.claude.json,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.config/code-server,target=/home/<一般ユーザー>/.config/code-server,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.config/gh,target=/home/<一般ユーザー>/.config/gh,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.config/gcloud,target=/home/<一般ユーザー>/.config/gcloud,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.config/atuin,target=/home/<一般ユーザー>/.config/atuin,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.local/share/atuin,target=/home/<一般ユーザー>/.local/share/atuin,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.cursor,target=/home/<一般ユーザー>/.cursor,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.vscode,target=/home/<一般ユーザー>/.vscode,type=bind,consistency=cached"
+    ],
+    "features": {
+      "ghcr.io/devcontainers/features/docker-from-docker:1": {}
+    },
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "EditorConfig.EditorConfig",
+          "ms-azuretools.vscode-docker",
+          "4ops.terraform",
+          "GitHub.vscode-pull-request-github",
+          "GitHub.copilot",
+          "GitHub.copilot-chat",
+          "Anthropic.claude-code",
+          "RooVeterinaryInc.roo-cline"
+        ],
+        "settings": {
+          "terminal.integrated.defaultProfile.linux": "bash",
+          "terminal.integrated.profiles.linux": {
+            "bash": {
+              "path": "bash",
+              "args": [
+                "-l"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "configFilePath": {
+      "$mid": 1,
+      "fsPath": "/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json",
+      "path": "/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json",
+      "scheme": "file"
+    }
+  },
+  "mergedConfiguration": {
+    "name": "Development Environment",
+    "runArgs": [
+      "--platform",
+      "linux/arm64"
+    ],
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "dev",
+    "workspaceFolder": "/home/<一般ユーザー>/hagevvashi.info-dev-hub",
+    "initializeCommand": "./.devcontainer/generate-env.sh",
+    "mounts": [
+      {
+        "source": "/var/run/docker.sock",
+        "target": "/var/run/docker-host.sock",
+        "type": "bind"
+      },
+      "source=/Users/<一般ユーザー>/.bash_history,target=/home/<一般ユーザー>/.bash_history,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.git,target=/home/<一般ユーザー>/.git,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.ssh,target=/home/<一般ユーザー>/.ssh,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.gitconfig,target=/home/<一般ユーザー>/.gitconfig,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.aws,target=/home/<一般ユーザー>/.aws,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.claude,target=/home/<一般ユーザー>/.claude,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.claude.json,target=/home/<一般ユーザー>/.claude.json,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.config/code-server,target=/home/<一般ユーザー>/.config/code-server,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.config/gh,target=/home/<一般ユーザー>/.config/gh,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.config/gcloud,target=/home/<一般ユーザー>/.config/gcloud,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.config/atuin,target=/home/<一般ユーザー>/.config/atuin,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/.local/share/atuin,target=/home/<一般ユーザー>/.local/share/atuin,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.cursor,target=/home/<一般ユーザー>/.cursor,type=bind,consistency=cached",
+      "source=/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.vscode,target=/home/<一般ユーザー>/.vscode,type=bind,consistency=cached"
+    ],
+    "features": {
+      "ghcr.io/devcontainers/features/docker-from-docker:1": {}
+    },
+    "configFilePath": {
+      "$mid": 1,
+      "fsPath": "/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json",
+      "path": "/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json",
+      "scheme": "file"
+    },
+    "init": false,
+    "privileged": false,
+    "securityOpt": [
+      "label=disable"
+    ],
+    "entrypoints": [
+      "/usr/local/share/docker-init.sh"
+    ],
+    "customizations": {
+      "vscode": [
+        {
+          "extensions": [
+            "ms-azuretools.vscode-containers"
+          ],
+          "settings": {
+            "github.copilot.chat.codeGeneration.instructions": [
+              {
+                "text": "This dev container includes the Docker CLI (`docker`) pre-installed and available on the `PATH` for running and managing containers using the Docker daemon on the host machine."
+              }
+            ]
+          }
+        },
+        {
+          "extensions": [
+            "EditorConfig.EditorConfig",
+            "ms-azuretools.vscode-docker",
+            "4ops.terraform",
+            "GitHub.vscode-pull-request-github",
+            "GitHub.copilot",
+            "GitHub.copilot-chat",
+            "Anthropic.claude-code",
+            "RooVeterinaryInc.roo-cline"
+          ],
+          "settings": {
+            "terminal.integrated.defaultProfile.linux": "bash",
+            "terminal.integrated.profiles.linux": {
+              "bash": {
+                "path": "bash",
+                "args": [
+                  "-l"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "onCreateCommands": [],
+    "updateContentCommands": [],
+    "postCreateCommands": [
+      "/home/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/post-create.sh"
+    ],
+    "postStartCommands": [],
+    "postAttachCommands": [],
+    "remoteEnv": {},
+    "containerEnv": {},
+    "portsAttributes": {}
+  }
+}
+2026-01-03 09:56:14.656 [info] Spawned process 18630: 'docker' 'inspect' 'f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6'
+2026-01-03 09:56:14.656 [info] [docker inspect]: Running command: docker
+2026-01-03 09:56:14.674 [info] [docker inspect]: Command completed with exit code 0
+2026-01-03 09:56:14.675 [info] Skipping remote user check because of previous check
+2026-01-03 09:56:14.675 [info] Remote user: 501:20
+2026-01-03 09:56:14.675 [info] Container info: {
+  "Id": "f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6",
+  "Created": "2026-01-03T00:56:14.188961168Z",
+  "Path": "/bin/sh",
+  "Args": [
+    "-c",
+    "echo Container started\n trap \"exit 0\" 15\n /usr/local/share/docker-init.sh\n exec \"$@\"\n while sleep 1 & wait $!; do :; done",
+    "-",
+    "/usr/local/bin/docker-entrypoint.sh",
+    "/usr/bin/supervisord",
+    "-c",
+    "/etc/supervisor/conf.d/supervisord.conf"
+  ],
+  "State": {
+    "Status": "running",
+    "Running": true,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 11344,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-01-03T00:56:14.327956751Z",
+    "FinishedAt": "0001-01-01T00:00:00Z"
+  },
+  "Image": "sha256:fc8f7d8ff3e2b9c27c9739305a102c31f92de14eb08724002d61b52d73ffbf86",
+  "ResolvConfPath": "/var/lib/docker/containers/f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6/resolv.conf",
+  "HostnamePath": "/var/lib/docker/containers/f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6/hostname",
+  "HostsPath": "/var/lib/docker/containers/f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6/hosts",
+  "LogPath": "/var/lib/docker/containers/f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6/f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6-json.log",
+  "Name": "/hagevvashiinfo-dev-hub_devcontainer-dev-1",
+  "RestartCount": 0,
+  "Driver": "overlay2",
+  "Platform": "linux",
+  "MountLabel": "",
+  "ProcessLabel": "",
+  "AppArmorProfile": "",
+  "ExecIDs": null,
+  "HostConfig": {
+    "Binds": [
+      "/Users/<一般ユーザー>/.config/gcloud:/home/<一般ユーザー>/.config/gcloud:rw",
+      "/Users/<一般ユーザー>/.bash_history:/home/<一般ユーザー>/.bash_history:rw",
+      "/Users/<一般ユーザー>/.ssh:/home/<一般ユーザー>/.ssh:rw",
+      "/Users/<一般ユーザー>/.aws:/home/<一般ユーザー>/.aws:rw",
+      "/Users/<一般ユーザー>/.config/code-server:/home/<一般ユーザー>/.config/code-server:rw",
+      "/Users/<一般ユーザー>/.config/atuin:/home/<一般ユーザー>/.config/atuin:rw",
+      "/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.cursor:/home/<一般ユーザー>/.cursor:rw",
+      "/Users/<一般ユーザー>/.config/gh:/home/<一般ユーザー>/.config/gh:rw",
+      "/Users/<一般ユーザー>/hagevvashi.info-dev-hub:/home/<一般ユーザー>/hagevvashi.info-dev-hub:rw",
+      "repos:/home/<一般ユーザー>/hagevvashi.info-dev-hub/repos:rw",
+      "/run/host-services/docker.proxy.sock:/var/run/docker-host.sock:rw",
+      "/host_mnt/Users/<一般ユーザー>/.git:/home/<一般ユーザー>/.git:rw",
+      "/host_mnt/Users/<一般ユーザー>/.gitconfig:/home/<一般ユーザー>/.gitconfig:rw",
+      "/host_mnt/Users/<一般ユーザー>/.claude:/home/<一般ユーザー>/.claude:rw",
+      "/host_mnt/Users/<一般ユーザー>/.claude.json:/home/<一般ユーザー>/.claude.json:rw",
+      "/host_mnt/Users/<一般ユーザー>/.local/share/atuin:/home/<一般ユーザー>/.local/share/atuin:rw",
+      "/host_mnt/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.vscode:/home/<一般ユーザー>/.vscode:rw"
+    ],
+    "ContainerIDFile": "",
+    "LogConfig": {
+      "Type": "json-file",
+      "Config": {}
+    },
+    "NetworkMode": "hagevvashiinfo-dev-hub_devcontainer_default",
+    "PortBindings": {
+      "4035/tcp": [
+        {
+          "HostIp": "",
+          "HostPort": "4035"
+        }
+      ],
+      "8035/tcp": [
+        {
+          "HostIp": "",
+          "HostPort": "8035"
+        }
+      ],
+      "8036/tcp": [
+        {
+          "HostIp": "",
+          "HostPort": "8036"
+        }
+      ],
+      "8037/tcp": [
+        {
+          "HostIp": "",
+          "HostPort": "8037"
+        }
+      ],
+      "8038/tcp": [
+        {
+          "HostIp": "",
+          "HostPort": "8038"
+        }
+      ],
+      "8080/tcp": [
+        {
+          "HostIp": "",
+          "HostPort": "8080"
+        }
+      ],
+      "9001/tcp": [
+        {
+          "HostIp": "",
+          "HostPort": "9001"
+        }
+      ]
+    },
+    "RestartPolicy": {
+      "Name": "no",
+      "MaximumRetryCount": 0
+    },
+    "AutoRemove": false,
+    "VolumeDriver": "",
+    "VolumesFrom": null,
+    "ConsoleSize": [
+      0,
+      0
+    ],
+    "CapAdd": null,
+    "CapDrop": null,
+    "CgroupnsMode": "private",
+    "Dns": null,
+    "DnsOptions": null,
+    "DnsSearch": null,
+    "ExtraHosts": [],
+    "GroupAdd": null,
+    "IpcMode": "private",
+    "Cgroup": "",
+    "Links": null,
+    "OomScoreAdj": 0,
+    "PidMode": "",
+    "Privileged": false,
+    "PublishAllPorts": false,
+    "ReadonlyRootfs": false,
+    "SecurityOpt": [
+      "label=disable"
+    ],
+    "UTSMode": "",
+    "UsernsMode": "",
+    "ShmSize": 67108864,
+    "Runtime": "runc",
+    "Isolation": "",
+    "CpuShares": 0,
+    "Memory": 0,
+    "NanoCpus": 0,
+    "CgroupParent": "",
+    "BlkioWeight": 0,
+    "BlkioWeightDevice": null,
+    "BlkioDeviceReadBps": null,
+    "BlkioDeviceWriteBps": null,
+    "BlkioDeviceReadIOps": null,
+    "BlkioDeviceWriteIOps": null,
+    "CpuPeriod": 0,
+    "CpuQuota": 0,
+    "CpuRealtimePeriod": 0,
+    "CpuRealtimeRuntime": 0,
+    "CpusetCpus": "",
+    "CpusetMems": "",
+    "Devices": null,
+    "DeviceCgroupRules": null,
+    "DeviceRequests": null,
+    "MemoryReservation": 0,
+    "MemorySwap": 0,
+    "MemorySwappiness": null,
+    "OomKillDisable": null,
+    "PidsLimit": null,
+    "Ulimits": null,
+    "CpuCount": 0,
+    "CpuPercent": 0,
+    "IOMaximumIOps": 0,
+    "IOMaximumBandwidth": 0,
+    "MaskedPaths": [
+      "/proc/acpi",
+      "/proc/asound",
+      "/proc/interrupts",
+      "/proc/kcore",
+      "/proc/keys",
+      "/proc/latency_stats",
+      "/proc/sched_debug",
+      "/proc/scsi",
+      "/proc/timer_list",
+      "/proc/timer_stats",
+      "/sys/devices/virtual/powercap",
+      "/sys/firmware"
+    ],
+    "ReadonlyPaths": [
+      "/proc/bus",
+      "/proc/fs",
+      "/proc/irq",
+      "/proc/sys",
+      "/proc/sysrq-trigger"
+    ]
+  },
+  "GraphDriver": {
+    "Data": {
+      "ID": "f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6",
+      "LowerDir": "/var/lib/docker/overlay2/951652af8da5b77ff5935792a61c105a0f421ed6940845aa57968374aa645ebb-init/diff:/var/lib/docker/overlay2/y2i4ik7zoh0y5ocs6ap27m8xl/diff:/var/lib/docker/overlay2/zxdwb77xxbk664mdei1jy0462/diff:/var/lib/docker/overlay2/pbs2xgvu4lnvd2gvx8fvrn51v/diff:/var/lib/docker/overlay2/jsqzydfrznwxdxswcdlb6wl8p/diff:/var/lib/docker/overlay2/6hd7lgnqbd7gmvlhvi5ge1mfk/diff:/var/lib/docker/overlay2/muyzrctb2qnp3r67xkfuz3uyr/diff:/var/lib/docker/overlay2/eevixcsocwss2wgs6v3q3lrqf/diff:/var/lib/docker/overlay2/j34ms5nw7seo8d67mpomiss74/diff:/var/lib/docker/overlay2/lz8g1kgklztxlcl5mrodikwsh/diff:/var/lib/docker/overlay2/0alz1h3l8uygz6p4uhuiquex7/diff:/var/lib/docker/overlay2/nvma27vok1ulg9khgr14exnqg/diff:/var/lib/docker/overlay2/z69d08rokme54yzfl37nyt7vo/diff:/var/lib/docker/overlay2/ux33tlgpldljuut6kmh1x7qkt/diff:/var/lib/docker/overlay2/llsig25i2820c0s2k6y9n1htm/diff:/var/lib/docker/overlay2/cvajn28azb9saxf9xlyx3lmqq/diff:/var/lib/docker/overlay2/pwmv3hdoz8n5jnrt9pmcqroo7/diff:/var/lib/docker/overlay2/eshk1ix3n1vjju09gfstjorgz/diff:/var/lib/docker/overlay2/6yncxi9gnjrxvtojlenmcq8kd/diff:/var/lib/docker/overlay2/z2xybiy6z5i2vnaq73bru3vx1/diff:/var/lib/docker/overlay2/n8a0xt5dz40ndksettsoxrudb/diff:/var/lib/docker/overlay2/oryar1vd5v74ewjh6edbx5u75/diff:/var/lib/docker/overlay2/073x5kd70wsamd39ai4eyetj1/diff:/var/lib/docker/overlay2/eovb9oryyxurnzb0ii5rdeb64/diff:/var/lib/docker/overlay2/acg9xw702dhogw6kvabtln8ok/diff:/var/lib/docker/overlay2/on963xaxdqd2l90p4eh9yowzc/diff:/var/lib/docker/overlay2/h1fp8pjc7z4vzhsgqf1fj8k62/diff:/var/lib/docker/overlay2/xdqhn6fmba0bvqsej1o3ffpy4/diff:/var/lib/docker/overlay2/xfn07vtvkenfxjay27xo412mm/diff:/var/lib/docker/overlay2/18urr1q1ck2c82gg1o3em41rn/diff:/var/lib/docker/overlay2/78252e7brvyytlott8o73jadw/diff:/var/lib/docker/overlay2/6f84fdecc31790dbc0ad6673d198ce4af1c92064091f6cba15a57e1a85fea472/diff",
+      "MergedDir": "/var/lib/docker/overlay2/951652af8da5b77ff5935792a61c105a0f421ed6940845aa57968374aa645ebb/merged",
+      "UpperDir": "/var/lib/docker/overlay2/951652af8da5b77ff5935792a61c105a0f421ed6940845aa57968374aa645ebb/diff",
+      "WorkDir": "/var/lib/docker/overlay2/951652af8da5b77ff5935792a61c105a0f421ed6940845aa57968374aa645ebb/work"
+    },
+    "Name": "overlay2"
+  },
+  "Mounts": [
+    {
+      "Type": "bind",
+      "Source": "/run/host-services/docker.proxy.sock",
+      "Destination": "/var/run/docker-host.sock",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/Users/<一般ユーザー>/.config/atuin",
+      "Destination": "/home/<一般ユーザー>/.config/atuin",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/Users/<一般ユーザー>/.bash_history",
+      "Destination": "/home/<一般ユーザー>/.bash_history",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/Users/<一般ユーザー>/.config/gh",
+      "Destination": "/home/<一般ユーザー>/.config/gh",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/Users/<一般ユーザー>/hagevvashi.info-dev-hub",
+      "Destination": "/home/<一般ユーザー>/hagevvashi.info-dev-hub",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "volume",
+      "Name": "repos",
+      "Source": "/var/lib/docker/volumes/repos/_data",
+      "Destination": "/home/<一般ユーザー>/hagevvashi.info-dev-hub/repos",
+      "Driver": "local",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": ""
+    },
+    {
+      "Type": "bind",
+      "Source": "/host_mnt/Users/<一般ユーザー>/.git",
+      "Destination": "/home/<一般ユーザー>/.git",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/host_mnt/Users/<一般ユーザー>/.claude",
+      "Destination": "/home/<一般ユーザー>/.claude",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/host_mnt/Users/<一般ユーザー>/.claude.json",
+      "Destination": "/home/<一般ユーザー>/.claude.json",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/host_mnt/Users/<一般ユーザー>/.local/share/atuin",
+      "Destination": "/home/<一般ユーザー>/.local/share/atuin",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/Users/<一般ユーザー>/.config/gcloud",
+      "Destination": "/home/<一般ユーザー>/.config/gcloud",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/Users/<一般ユーザー>/.aws",
+      "Destination": "/home/<一般ユーザー>/.aws",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/Users/<一般ユーザー>/.config/code-server",
+      "Destination": "/home/<一般ユーザー>/.config/code-server",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.cursor",
+      "Destination": "/home/<一般ユーザー>/.cursor",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/host_mnt/Users/<一般ユーザー>/.gitconfig",
+      "Destination": "/home/<一般ユーザー>/.gitconfig",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/host_mnt/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.vscode",
+      "Destination": "/home/<一般ユーザー>/.vscode",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    },
+    {
+      "Type": "bind",
+      "Source": "/Users/<一般ユーザー>/.ssh",
+      "Destination": "/home/<一般ユーザー>/.ssh",
+      "Mode": "rw",
+      "RW": true,
+      "Propagation": "rprivate"
+    }
+  ],
+  "Config": {
+    "Hostname": "f36bb424848a",
+    "Domainname": "",
+    "User": "501:20",
+    "AttachStdin": false,
+    "AttachStdout": true,
+    "AttachStderr": true,
+    "ExposedPorts": {
+      "4035/tcp": {},
+      "8035/tcp": {},
+      "8036/tcp": {},
+      "8037/tcp": {},
+      "8038/tcp": {},
+      "8080/tcp": {},
+      "9001/tcp": {}
+    },
+    "Tty": true,
+    "OpenStdin": true,
+    "StdinOnce": false,
+    "Env": [
+      "PATH=/home/<一般ユーザー>/.sdkman/candidates/java/current/bin:/home/<一般ユーザー>/.asdf/bin:/home/<一般ユーザー>/.asdf/shims:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      "LANG=en_US.UTF-8",
+      "LANGUAGE=en_US:en",
+      "LC_CTYPE=ja_JP.UTF-8",
+      "TZ=Asia/Tokyo",
+      "JAVA_HOME=/home/<一般ユーザー>/.sdkman/candidates/java/current",
+      "CODE_SERVER_PORT=4035",
+      "DIFIT_PORT=8035",
+      "VITE_PREVIEW_PORT=8036",
+      "REVIEW_KNOWLEDGE_RAG_SERVER_PORT=8037",
+      "KPI_WORKBENCH_PORT=8038",
+      "SUPERVISORD_PORT=9001",
+      "PROCESS_COMPOSE_PORT=8080"
+    ],
+    "Cmd": [
+      "/usr/bin/supervisord",
+      "-c",
+      "/etc/supervisor/conf.d/supervisord.conf"
+    ],
+    "Image": "hagevvashiinfo-dev-hub_devcontainer-dev",
+    "Volumes": null,
+    "WorkingDir": "/home/<一般ユーザー>/hagevvashi.info-dev-hub",
+    "Entrypoint": [
+      "/bin/sh",
+      "-c",
+      "echo Container started\n trap \"exit 0\" 15\n /usr/local/share/docker-init.sh\n exec \"$@\"\n while sleep 1 & wait $!; do :; done",
+      "-",
+      "/usr/local/bin/docker-entrypoint.sh"
+    ],
+    "OnBuild": null,
+    "Labels": {
+      "com.docker.compose.config-hash": "0a393a21730859aada6a3bcf11872fb0c9cb80e22fd86cc3edeef923f71ccb21",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:fc8f7d8ff3e2b9c27c9739305a102c31f92de14eb08724002d61b52d73ffbf86",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "hagevvashiinfo-dev-hub_devcontainer",
+      "com.docker.compose.project.config_files": "/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml,/var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose/docker-compose.devcontainer.build-1767401623462.yml,/var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose/docker-compose.devcontainer.containerFeatures-1767401774085-65ae96fa-05b0-4b6f-a28e-461d2ecd19cb.yml",
+      "com.docker.compose.project.working_dir": "/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer",
+      "com.docker.compose.service": "dev",
+      "com.docker.compose.version": "2.40.3",
+      "devcontainer.config_file": "/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/devcontainer.json",
+      "devcontainer.local_folder": "/Users/<一般ユーザー>/hagevvashi.info-dev-hub",
+      "devcontainer.metadata": "[ {\"id\":\"ghcr.io/devcontainers/features/docker-from-docker:1\",\"securityOpt\":[\"label=disable\"],\"entrypoint\":\"/usr/local/share/docker-init.sh\",\"mounts\":[{\"source\":\"/var/run/docker.sock\",\"target\":\"/var/run/docker-host.sock\",\"type\":\"bind\"}],\"customizations\":{\"vscode\":{\"extensions\":[\"ms-azuretools.vscode-containers\"],\"settings\":{\"github.copilot.chat.codeGeneration.instructions\":[{\"text\":\"This dev container includes the Docker CLI (`docker`) pre-installed and available on the `PATH` for running and managing containers using the Docker daemon on the host machine.\"}]}}}}, {\"postCreateCommand\":\"/home/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/post-create.sh\",\"customizations\":{\"vscode\":{\"extensions\":[\"EditorConfig.EditorConfig\",\"ms-azuretools.vscode-docker\",\"4ops.terraform\",\"GitHub.vscode-pull-request-github\",\"GitHub.copilot\",\"GitHub.copilot-chat\",\"Anthropic.claude-code\",\"RooVeterinaryInc.roo-cline\"],\"settings\":{\"terminal.integrated.defaultProfile.linux\":\"bash\",\"terminal.integrated.profiles.linux\":{\"bash\":{\"path\":\"bash\",\"args\":[\"-l\"]}}}}},\"mounts\":[\"source=/Users/<一般ユーザー>/.bash_history,target=/home/<一般ユーザー>/.bash_history,type=bind,consistency=cached\",\"source=/Users/<一般ユーザー>/.git,target=/home/<一般ユーザー>/.git,type=bind,consistency=cached\",\"source=/Users/<一般ユーザー>/.ssh,target=/home/<一般ユーザー>/.ssh,type=bind,consistency=cached\",\"source=/Users/<一般ユーザー>/.gitconfig,target=/home/<一般ユーザー>/.gitconfig,type=bind,consistency=cached\",\"source=/Users/<一般ユーザー>/.aws,target=/home/<一般ユーザー>/.aws,type=bind,consistency=cached\",\"source=/Users/<一般ユーザー>/.claude,target=/home/<一般ユーザー>/.claude,type=bind,consistency=cached\",\"source=/Users/<一般ユーザー>/.claude.json,target=/home/<一般ユーザー>/.claude.json,type=bind,consistency=cached\",\"source=/Users/<一般ユーザー>/.config/code-server,target=/home/<一般ユーザー>/.config/code-server,type=bind,consistency=cached\",\"source=/Users/<一般ユーザー>/.config/gh,target=/home/<一般ユーザー>/.config/gh,type=bind,consistency=cached\",\"source=/Users/<一般ユーザー>/.config/gcloud,target=/home/<一般ユーザー>/.config/gcloud,type=bind,consistency=cached\",\"source=/Users/<一般ユーザー>/.config/atuin,target=/home/<一般ユーザー>/.config/atuin,type=bind,consistency=cached\",\"source=/Users/<一般ユーザー>/.local/share/atuin,target=/home/<一般ユーザー>/.local/share/atuin,type=bind,consistency=cached\",\"source=${localWorkspaceFolder}/.cursor,target=/home/<一般ユーザー>/.cursor,type=bind,consistency=cached\",\"source=${localWorkspaceFolder}/.vscode,target=/home/<一般ユーザー>/.vscode,type=bind,consistency=cached\"]} ]"
+    },
+    "StopTimeout": 1
+  },
+  "NetworkSettings": {
+    "Bridge": "",
+    "SandboxID": "cd99ab55cc278eff3f2e11d9c56c49c05603ee5c3822344af1f3d77aeb7eed79",
+    "SandboxKey": "/var/run/docker/netns/cd99ab55cc27",
+    "Ports": {
+      "4035/tcp": [
+        {
+          "HostIp": "0.0.0.0",
+          "HostPort": "4035"
+        },
+        {
+          "HostIp": "::",
+          "HostPort": "4035"
+        }
+      ],
+      "8035/tcp": [
+        {
+          "HostIp": "0.0.0.0",
+          "HostPort": "8035"
+        },
+        {
+          "HostIp": "::",
+          "HostPort": "8035"
+        }
+      ],
+      "8036/tcp": [
+        {
+          "HostIp": "0.0.0.0",
+          "HostPort": "8036"
+        },
+        {
+          "HostIp": "::",
+          "HostPort": "8036"
+        }
+      ],
+      "8037/tcp": [
+        {
+          "HostIp": "0.0.0.0",
+          "HostPort": "8037"
+        },
+        {
+          "HostIp": "::",
+          "HostPort": "8037"
+        }
+      ],
+      "8038/tcp": [
+        {
+          "HostIp": "0.0.0.0",
+          "HostPort": "8038"
+        },
+        {
+          "HostIp": "::",
+          "HostPort": "8038"
+        }
+      ],
+      "8080/tcp": [
+        {
+          "HostIp": "0.0.0.0",
+          "HostPort": "8080"
+        },
+        {
+          "HostIp": "::",
+          "HostPort": "8080"
+        }
+      ],
+      "9001/tcp": [
+        {
+          "HostIp": "0.0.0.0",
+          "HostPort": "9001"
+        },
+        {
+          "HostIp": "::",
+          "HostPort": "9001"
+        }
+      ]
+    },
+    "HairpinMode": false,
+    "LinkLocalIPv6Address": "",
+    "LinkLocalIPv6PrefixLen": 0,
+    "SecondaryIPAddresses": null,
+    "SecondaryIPv6Addresses": null,
+    "EndpointID": "",
+    "Gateway": "",
+    "GlobalIPv6Address": "",
+    "GlobalIPv6PrefixLen": 0,
+    "IPAddress": "",
+    "IPPrefixLen": 0,
+    "IPv6Gateway": "",
+    "MacAddress": "",
+    "Networks": {
+      "hagevvashiinfo-dev-hub_devcontainer_default": {
+        "IPAMConfig": null,
+        "Links": null,
+        "Aliases": [
+          "hagevvashiinfo-dev-hub_devcontainer-dev-1",
+          "dev"
+        ],
+        "MacAddress": "12:a0:8d:9b:7e:3b",
+        "DriverOpts": null,
+        "GwPriority": 0,
+        "NetworkID": "25427f90a5e7ff6ed077c8d54f3358c2e99199d217fd3f75fcdc95ee784342a5",
+        "EndpointID": "19570ca8559a6aac8184d0bd1ac11468ea7f22d639b80456204afa378a4cb378",
+        "Gateway": "172.18.0.1",
+        "IPAddress": "172.18.0.2",
+        "IPPrefixLen": 16,
+        "IPv6Gateway": "",
+        "GlobalIPv6Address": "",
+        "GlobalIPv6PrefixLen": 0,
+        "DNSNames": [
+          "hagevvashiinfo-dev-hub_devcontainer-dev-1",
+          "dev",
+          "f36bb424848a"
+        ]
+      }
+    }
+  }
+}
+2026-01-03 09:56:14.675 [info] Writing shutdown token 7f829a9f-6eba-4845-9de5-cc53a71f0604 token to /tmp/cursor-remote-containers-shutdown-token-2799d351-519a-40f5-8079-987ca17e767b.txt
+2026-01-03 09:56:14.676 [info] Starting shutdown monitor process /Users/<一般ユーザー>/.cursor/extensions/anysphere.remote-containers-1.0.29/dist/scripts/devcontainerShutdownMonitor.js with env {"CURSOR_IS_DOCKER_COMPOSE":"true","CURSOR_DOCKER_ARGS":"[\"-f\",\"/Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml\",\"-f\",\"/var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose/docker-compose.devcontainer.build-1767401623462.yml\",\"-f\",\"/var/folders/5m/xm8g2scn6x1dm1zp82l7hdq40000gn/T/devcontainercli/docker-compose/docker-compose.devcontainer.containerFeatures-1767401774085-65ae96fa-05b0-4b6f-a28e-461d2ecd19cb.yml\",\"stop\"]","CURSOR_DOCKER_PATH":"docker","CURSOR_TOKEN_FILE":"/tmp/cursor-remote-containers-shutdown-token-2799d351-519a-40f5-8079-987ca17e767b.txt","CURSOR_LOG_FILE":"/tmp/cursor-remote-containers-shutdown-log-2799d351-519a-40f5-8079-987ca17e767b.txt","CURSOR_TOKEN":"7f829a9f-6eba-4845-9de5-cc53a71f0604","CURSOR_DETACHED":"true","CURSOR_EXTENSION_HOST_PID":"18323"}
+2026-01-03 09:56:14.676 [info] Spawned process 18631: '/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Plugin).app/Contents/MacOS/Cursor Helper (Plugin)' '/Users/<一般ユーザー>/.cursor/extensions/anysphere.remote-containers-1.0.29/dist/scripts/devcontainerShutdownMonitor.js'
+2026-01-03 09:56:14.677 [info] Installing remote server in container...
+2026-01-03 09:56:14.677 [info] Reading .gitconfig from /Users/<一般ユーザー>/.gitconfig
+2026-01-03 09:56:14.677 [info] Stat: {
+  "type": 1,
+  "size": 56,
+  "ctime": 1767316368683.9033,
+  "mtime": 1648265263231.435
+}
+2026-01-03 09:56:14.677 [info] Reading known hosts from /Users/<一般ユーザー>/.ssh/known_hosts
+2026-01-03 09:56:14.677 [info] Stat: {
+  "type": 1,
+  "size": 1665,
+  "ctime": 1767316368570.6958,
+  "mtime": 1745845039730.8247
+}
+2026-01-03 09:56:14.678 [info] Final extension list: ms-azuretools.vscode-containers, EditorConfig.EditorConfig, ms-azuretools.vscode-docker, 4ops.terraform, GitHub.vscode-pull-request-github, GitHub.copilot, GitHub.copilot-chat, Anthropic.claude-code, RooVeterinaryInc.roo-cline
+2026-01-03 09:56:14.679 [info] Install options: {
+  "id": "a677734928d0470a1d5a879d",
+  "commit": "20adc1003928b0f1b99305dbaf845656ff81f5d0",
+  "line": "production",
+  "extensionIds": [
+    "ms-azuretools.vscode-containers",
+    "EditorConfig.EditorConfig",
+    "ms-azuretools.vscode-docker",
+    "4ops.terraform",
+    "GitHub.vscode-pull-request-github",
+    "GitHub.copilot",
+    "GitHub.copilot-chat",
+    "Anthropic.claude-code",
+    "RooVeterinaryInc.roo-cline"
+  ],
+  "envVariables": [],
+  "serverApplicationName": "cursor-server",
+  "forceReinstall": false,
+  "killRunningServers": false,
+  "realCommit": "20adc1003928b0f1b99305dbaf845656ff81f5d4",
+  "serverDataFolderName": ".cursor-server",
+  "cursorVersion": "2.2.44",
+  "spin": false,
+  "settings": {
+    "github.copilot.chat.codeGeneration.instructions": [
+      {
+        "text": "This dev container includes the Docker CLI (`docker`) pre-installed and available on the `PATH` for running and managing containers using the Docker daemon on the host machine."
+      }
+    ],
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "terminal.integrated.profiles.linux": {
+      "bash": {
+        "path": "bash",
+        "args": [
+          "-l"
+        ]
+      }
+    },
+    "remote.portsAttributes": {}
+  },
+  "gitConfig": "[user]\n\tname = hagevvashi\n\temail = hagevvashi@gmail.com\n",
+  "sshKnownHosts": "192.168.11.39 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIH8GlE9fvLNz2MEMoh8ktPE29oa7psC+OGttziHD9hS\n192.168.11.39 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC+Vv/PquGLPFUHVmr1ZgXZThjYtz6EFpgt36WNZ90D8759T8c80+hcU6ZQXcWw8Pt4gY+9/HK1uQVwTR5DDxlucxoX1+PXd8JNxgHWYxlOdRFz8s+zkgYD7bVBRMSw4sy17ntnePlIp8cE8UpzCLLGXLUw6wZyCF/LFHBOyqMUX8/7kw1cGh7tfVI4Q7aMTZXeglwciLLh5u/yjTNYaRLVqVdO7V1aHWYxtXb3yE/Wm3zGd+81bw6ff7tc35MbfywcWSN5a3Azs3AqssjSxWZoe8STNBedadEx5JpWAcIxhg//7LGmChDLwymo+dEW77V+cVlQuZIXsrXCbM8IVYiBqLu8FnetCC6EgNEr/kn7OxHR2S5wxauqXPlXEb26QEQTlyQx2ZmhZE+EuEN2jBBeP0cDYbRiyqW7y1XPQ14bwbfK8GXRrfrOuE+1yV7yyp4a/cJMxBsPweIQ3zUwuG65iFif+obPHcSSnEESzVyxMhG9XRp2RiPe9O09hzLhMTU=\n192.168.11.39 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBDWorXZ6VeGrSjfdUa3qNUndZGu0YNPyHknr58tpy6ntyouuv+iM02rA0jCJVypmk1QY5v6/7cjnNCF9RF2qhD4=\ngithub.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl\ngithub.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=\ngithub.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg=\n"
+}
+2026-01-03 09:56:14.679 [info] Spawned process 18632: 'docker' 'exec' '-u' '501:20' '-i' 'f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6' 'bash' '-c' 'cat | (base64 -d 2>/dev/null || base64 -D || true) | bash'
+2026-01-03 09:56:14.679 [info] Installing server...
+2026-01-03 09:56:14.734 [info] [server install] stdout: Waiting for lock...
+
+2026-01-03 09:56:14.735 [info] [server install] stdout: Lock acquired, proceeding with installation.
+
+2026-01-03 09:56:14.735 [info] [server install] stdout: Installing server script
+
+2026-01-03 09:56:14.736 [info] [server install] stdout: Cursor server path: undefined
+Downloading server script
+
+2026-01-03 09:56:14.738 [info] [server install] stdout: Downloading server from https://downloads.cursor.com/production/20adc1003928b0f1b99305dbaf845656ff81f5d4/linux/arm64/cursor-reh-linux-arm64.tar.gz to /tmp/tmp.B3VyYII1Kd
+
+2026-01-03 09:56:14.767 [info] Shutdown monitor process stdout: Logging to /tmp/cursor-remote-containers-shutdown-log-2799d351-519a-40f5-8079-987ca17e767b.txt
+
+2026-01-03 09:56:14.979 [info] [server install] stderr: #=#=#                                                                         
+2026-01-03 09:56:15.504 [info] [server install] stderr: 
+                                                                           0.0%
+2026-01-03 09:56:15.627 [info] [server install] stderr: 
+#####                                                                      7.3%
+2026-01-03 09:56:15.733 [info] [server install] stderr: 
+##############                                                            20.1%
+2026-01-03 09:56:15.829 [info] [server install] stderr: 
+#######################                                                   32.3%
+2026-01-03 09:56:15.928 [info] [server install] stderr: 
+################################                                          45.3%
+2026-01-03 09:56:16.044 [info] [server install] stderr: 
+########################################                                  55.8%
+2026-01-03 09:56:16.160 [info] [server install] stderr: 
+##################################################                        70.1%
+2026-01-03 09:56:16.252 [info] [server install] stderr: 
+###########################################################               82.7%
+2026-01-03 09:56:16.370 [info] [server install] stderr: 
+######################################################################    97.3%
+2026-01-03 09:56:16.388 [info] [server install] stderr: 
+######################################################################## 100.0%
+
+2026-01-03 09:56:18.164 [info] [server install]: exit
+2026-01-03 09:56:18.165 [info] Finished installing remote server in container. Parsing output...
+2026-01-03 09:56:18.165 [info] Result map: undefined
+2026-01-03 09:56:18.165 [error] Failed to install remote server in container: Error: Failed to install the Cursor Server. Please check the logs for more details.
+2026-01-03 09:56:18.166 [info] Downloading cursor server locally and copying into container
+2026-01-03 09:56:18.166 [info] Spawned process 18636: 'docker' 'exec' '-u' '501:20' 'f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6' 'uname' '-m'
+2026-01-03 09:56:18.166 [info] [uname -m]: Running command: docker
+2026-01-03 09:56:19.943 [info] [uname -m][stderr]: Error response from daemon: container f36bb424848ac8a6b5d63174a0b516ccf0ba810b9964e57ded0a24b1470172d6 is not running
+2026-01-03 09:56:19.944 [error] [uname -m]: Running command: docker
+2026-01-03 09:56:19.944 [error] Failed to install remote server in container: Error: Failed to determine container architecture: Error: [uname -m] Command failed with exit code 1: stdout: 
+2026-01-03 09:56:19.948 [error] Error resolving dev container authority Failed to determine container architecture: Error: [uname -m] Command failed with exit code 1: stdout: 

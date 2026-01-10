@@ -1,3 +1,4 @@
-#!/usr/bin/env bash
+#!/command/with-contenv bash
+# s6-overlay の with-contenv で環境変数を読み込む
 set -euo pipefail
-exec /usr/local/bin/process-compose -f /etc/process-compose/process-compose.yaml
+exec /usr/local/bin/process-compose -t=false -f /etc/process-compose/process-compose.yaml

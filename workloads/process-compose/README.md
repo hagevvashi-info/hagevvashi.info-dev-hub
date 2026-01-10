@@ -30,7 +30,7 @@ log_level: info
 processes:
   your-custom-service:
     command: "npm run dev"
-    working_dir: "/home/hagevvashi/hagevvashi.info-dev-hub/repos/your-project"
+    working_dir: "/home/<一般ユーザー>/hagevvashi.info-dev-hub/repos/your-project"
     availability:
       restart: "no" # エラーを見たいので自動再起動しない
     environment:
