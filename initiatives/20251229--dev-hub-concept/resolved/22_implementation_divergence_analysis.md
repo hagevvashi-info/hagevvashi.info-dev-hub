@@ -222,7 +222,7 @@ chown -R ${UID}:${GID} /home/${UNAME}/repos && \
 
 ```bash
 $ ls -la workspace.code-workspace
--rw-r--r--@ 1 hagevvashi staff 0 Dec 31 12:46 workspace.code-workspace
+-rw-r--r--@ 1 <一般ユーザー> staff 0 Dec 31 12:46 workspace.code-workspace
 ```
 
 **0バイトの空ファイル**
@@ -335,10 +335,10 @@ volumes:
 ### 4. ディレクトリ構造
 
 ```bash
-$ ls -la /Users/<一般ユーザー>/hagevvashi.info-dev-hub/
-drwxr-xr-x@  3 hagevvashi  staff    96 Dec 31 12:46 foundations
-drwxr-xr-x@  5 hagevvashi  staff   160 Jan  1 23:19 initiatives
-drwxr-xr-x@  3 hagevvashi  staff    96 Dec 31 12:46 members
+$ ls -la /Users/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/
+drwxr-xr-x@  3 <一般ユーザー>  staff    96 Dec 31 12:46 foundations
+drwxr-xr-x@  5 <一般ユーザー>  staff   160 Jan  1 23:19 initiatives
+drwxr-xr-x@  3 <一般ユーザー>  staff    96 Dec 31 12:46 members
 ```
 
 ✅ `foundations/`, `initiatives/`, `members/` は存在する
@@ -579,7 +579,7 @@ devcontainer.json
 
 **実装内容**:
 1. `devcontainer.json.template` の修正
-   - `workspaceFolder` を `/home/__UNAME__/hagevvashi.info-dev-hub` に変更
+   - `workspaceFolder` を `/home/__UNAME__/<MonolithicDevContainerレポジトリ名>` に変更
    - `${localWorkspaceFolder}` のマウント設定を明示化
 2. `repos/` は従来通り `/home/__UNAME__/repos` にマウント（暫定）
 3. 動作確認
@@ -600,14 +600,14 @@ devcontainer.json
 
 **実装内容**:
 1. `docker-compose.yml` の修正
-   - `repos/` のマウント先を `/home/${UNAME}/hagevvashi.info-dev-hub/repos` に変更
+   - `repos/` のマウント先を `/home/${UNAME}/<MonolithicDevContainerレポジトリ名>/repos` に変更
 2. `post-create.sh` の新規作成（または `docker-entrypoint.sh` の拡張）
    - プロダクトリポジトリの自動clone
-   - Devin互換用シンボリックリンク作成: `ln -sf /home/${UNAME}/hagevvashi.info-dev-hub/repos /home/${UNAME}/repos`
+   - Devin互換用シンボリックリンク作成: `ln -sf /home/${UNAME}/<MonolithicDevContainerレポジトリ名>/repos /home/${UNAME}/repos`
 3. `devcontainer.json.template` の修正
    - `postCreateCommand` の設定（post-create.sh実行）
 4. 動作確認
-   - CLI版AIエージェントが `/home/<user>/hagevvashi.info-dev-hub` から全体を参照可能か確認
+   - CLI版AIエージェントが `/home/<user>/<MonolithicDevContainerレポジトリ名>` から全体を参照可能か確認
    - Devin互換性が維持されているか確認（`~/repos/` からアクセス可能か）
    - 既存機能が正常に動作するか確認
 
@@ -738,10 +738,10 @@ devcontainer.json
 
 ### 生成された設定（確認済み）
 
-- `workspaceFolder`: `/home/<一般ユーザー>/hagevvashi.info-dev-hub` ✅
-- `postCreateCommand`: `bash /home/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/post-create.sh` ✅
-- `REPO_NAME`: `hagevvashi.info-dev-hub` ✅
-- Docker Volume `repos` のマウント先: `/home/<一般ユーザー>/hagevvashi.info-dev-hub/repos` ✅
+- `workspaceFolder`: `/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>` ✅
+- `postCreateCommand`: `bash /home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/.devcontainer/post-create.sh` ✅
+- `REPO_NAME`: `<MonolithicDevContainerレポジトリ名>` ✅
+- Docker Volume `repos` のマウント先: `/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/repos` ✅
 
 ### 次のステップ
 

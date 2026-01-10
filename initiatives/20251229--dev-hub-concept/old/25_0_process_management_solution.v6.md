@@ -156,7 +156,7 @@ serverurl=unix:///var/run/supervisor.sock
 
 [program:docker-entrypoint]
 command=/usr/local/bin/docker-entrypoint.sh
-user=hagevvashi
+user=<一般ユーザー>
 autostart=true
 autorestart=false
 startsecs=0
@@ -172,8 +172,8 @@ stderr_logfile_maxbytes=0
 
 [program:code-server]
 command=/home/<一般ユーザー>/.local/bin/code-server --bind-addr 0.0.0.0:4035 --auth password
-user=hagevvashi
-directory=/home/<一般ユーザー>/hagevvashi.info-dev-hub
+user=<一般ユーザー>
+directory=/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>
 autostart=true
 autorestart=false
 priority=10
@@ -191,8 +191,8 @@ stderr_logfile_maxbytes=0
 # 必要なときだけ手動起動
 [program:process-compose]
 command=/usr/local/bin/process-compose -f /etc/process-compose/process-compose.yaml
-user=hagevvashi
-directory=/home/<一般ユーザー>/hagevvashi.info-dev-hub
+user=<一般ユーザー>
+directory=/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>
 autostart=false
 autorestart=false
 priority=20
@@ -205,8 +205,8 @@ stderr_logfile_maxbytes=0
 # difit（直接supervisordで管理する場合）
 [program:difit]
 command=/home/<一般ユーザー>/.asdf/shims/difit
-user=hagevvashi
-directory=/home/<一般ユーザー>/hagevvashi.info-dev-hub
+user=<一般ユーザー>
+directory=/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>
 autostart=false
 autorestart=false
 priority=20
@@ -230,11 +230,11 @@ processes:
   # difit（開発支援ツール）
   difit:
     command: "difit"
-    working_dir: "/home/<一般ユーザー>/hagevvashi.info-dev-hub"
+    working_dir: "/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>"
     availability:
       restart: "no"  # エラーを見たいので自動再起動しない
     environment:
-      - HOME=/home/hagevvashi
+      - HOME=/home/<一般ユーザー>
 
   # 実験的なサービスの例
   # vite-preview:
@@ -253,7 +253,7 @@ processes:
   #   availability:
   #     restart: "no"
   #   environment:
-  #     - HOME=/home/hagevvashi
+  #     - HOME=/home/<一般ユーザー>
   #     - PORT=8080
 ```
 

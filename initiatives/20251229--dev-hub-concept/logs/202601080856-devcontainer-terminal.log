@@ -190,17 +190,17 @@
  => [dev_container_auto_added_stage_label 29/45] RUN groupadd -g 999 dock  0.1s
  => [dev_container_auto_added_stage_label 30/45] RUN if ! getent group st  0.1s
  => [dev_container_auto_added_stage_label 31/45] RUN useradd -o -l -u 501  0.2s
- => [dev_container_auto_added_stage_label 32/45] RUN chown hagevvashi:sta  0.1s
+ => [dev_container_auto_added_stage_label 32/45] RUN chown <一般ユーザー>:sta  0.1s
  => [dev_container_auto_added_stage_label 33/45] RUN mkdir -p /home/hagev  0.1s
  => [dev_container_auto_added_stage_label 34/45] RUN chown -R 501:20 /hom  0.1s
- => [dev_container_auto_added_stage_label 35/45] RUN echo "hagevvashi ALL  0.1s
+ => [dev_container_auto_added_stage_label 35/45] RUN echo "<一般ユーザー> ALL  0.1s
  => [dev_container_auto_added_stage_label 36/45] COPY .devcontainer/super  0.0s
- => [dev_container_auto_added_stage_label 37/45] WORKDIR /home/hagevvashi  0.0s
+ => [dev_container_auto_added_stage_label 37/45] WORKDIR /home/<一般ユーザー>  0.0s
  => [dev_container_auto_added_stage_label 38/45] RUN curl -fsSL https://r  0.2s
  => [dev_container_auto_added_stage_label 39/45] RUN git clone https://gi  2.4s
  => [dev_container_auto_added_stage_label 40/45] RUN pipx ensurepath &&   11.2s
- => [dev_container_auto_added_stage_label 41/45] RUN su - hagevvashi -c   27.5s
- => [dev_container_auto_added_stage_label 42/45] RUN su - hagevvashi -c   43.7s
+ => [dev_container_auto_added_stage_label 41/45] RUN su - <一般ユーザー> -c   27.5s
+ => [dev_container_auto_added_stage_label 42/45] RUN su - <一般ユーザー> -c   43.7s
  => [dev_container_auto_added_stage_label 43/45] ADD https://github.com/j  0.0s
  => [dev_container_auto_added_stage_label 44/45] RUN tar -C / -Jxpf /tmp/  0.1s
  => [dev_container_auto_added_stage_label 45/45] RUN ARCH=$(case "arm64"   0.3s
@@ -214,11 +214,11 @@
  => => exporting layers                                                   12.9s
  => => preparing layers for inline cache                                   0.1s
  => => writing image sha256:d1faecb8dfcdd2264ab363f5dfa94176ecbc15b9036fe  0.0s
- => => naming to docker.io/library/hagevvashiinfo-dev-hub_devcontainer-de  0.0s
+ => => naming to docker.io/library/<MonolithicDevContainerレポジトリ名>_devcontainer-de  0.0s
  => resolving provenance for metadata file                                 0.0s
 [+] Building 1/1
- ✔ hagevvashiinfo-dev-hub_devcontainer-dev  Built                          0.0s 
+ ✔ <MonolithicDevContainerレポジトリ名>_devcontainer-dev  Built                          0.0s 
 WARN[0000] The "DEBUG_MODE" variable is not set. Defaulting to a blank string. 
 [+] Running 0/1
- ⠸ Container hagevvashiinfo-dev-hub_devcontainer-dev-1  Starting           0.3s 
-Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint hagevvashiinfo-dev-hub_devcontainer-dev-1 (4c7c0e4225e38d8704f4b2ce9b0409e37461c19ad951c91a700c086b7778a55f): Bind for 0.0.0.0:4035 failed: port is already allocated
+ ⠸ Container <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1  Starting           0.3s 
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 (4c7c0e4225e38d8704f4b2ce9b0409e37461c19ad951c91a700c086b7778a55f): Bind for 0.0.0.0:4035 failed: port is already allocated

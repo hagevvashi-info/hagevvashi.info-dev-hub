@@ -116,7 +116,7 @@
 
 **ディレクトリ構造**:
 ```
-hagevvashi.info-dev-hub/
+<MonolithicDevContainerレポジトリ名>/
 ├── .devcontainer/
 │   ├── supervisord/
 │   │   └── seed.conf              # ダミー設定（ビルド用）
@@ -149,7 +149,7 @@ port=*:9001
 
 [program:code-server]
 command=/home/<一般ユーザー>/.local/bin/code-server --bind-addr 0.0.0.0:4035 --auth password
-user=hagevvashi
+user=<一般ユーザー>
 autostart=true
 autorestart=false
 ```
@@ -179,7 +179,7 @@ serverurl=unix:///var/run/supervisor.sock
 
 [program:docker-entrypoint]
 command=/usr/local/bin/docker-entrypoint.sh
-user=hagevvashi
+user=<一般ユーザー>
 autostart=true
 autorestart=false
 startsecs=0
@@ -187,14 +187,14 @@ priority=1
 
 [program:code-server]
 command=/home/<一般ユーザー>/.local/bin/code-server --bind-addr 0.0.0.0:4035 --auth password
-user=hagevvashi
+user=<一般ユーザー>
 autostart=true
 autorestart=false
 priority=10
 
 [program:difit]
 command=/home/<一般ユーザー>/.asdf/shims/difit
-user=hagevvashi
+user=<一般ユーザー>
 autostart=false
 autorestart=false
 priority=20
@@ -258,7 +258,7 @@ configs/
 ```ini
 # チーム共通のプロセス定義
 [include]
-files = /home/<一般ユーザー>/hagevvashi.info-dev-hub/configs/supervisord/*.local.conf
+files = /home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/configs/supervisord/*.local.conf
 
 [program:code-server]
 # 共通設定...
@@ -313,7 +313,7 @@ version: "0.5"
 processes:
   code-server:
     command: "/home/<一般ユーザー>/.local/bin/code-server --bind-addr 0.0.0.0:4035 --auth password"
-    working_dir: "/home/<一般ユーザー>/hagevvashi.info-dev-hub"
+    working_dir: "/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>"
 ```
 
 **project.yaml** (実運用):
@@ -326,13 +326,13 @@ log_level: info
 processes:
   code-server:
     command: "/home/<一般ユーザー>/.local/bin/code-server --bind-addr 0.0.0.0:4035 --auth password"
-    working_dir: "/home/<一般ユーザー>/hagevvashi.info-dev-hub"
+    working_dir: "/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>"
     availability:
       restart: "no"
 
   difit:
     command: "difit"
-    working_dir: "/home/<一般ユーザー>/hagevvashi.info-dev-hub"
+    working_dir: "/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>"
     availability:
       restart: "no"
     depends_on:
@@ -454,7 +454,7 @@ echo ""
 echo "🔍 Phase 4: Validating supervisord configuration..."
 
 UNAME=${UNAME:-$(whoami)}
-REPO_NAME=${REPO_NAME:-"hagevvashi.info-dev-hub"}
+REPO_NAME=${REPO_NAME:-"<MonolithicDevContainerレポジトリ名>"}
 
 PROJECT_CONF="/home/${UNAME}/${REPO_NAME}/configs/supervisord/project.conf"
 SEED_CONF="/etc/supervisor/seed.conf"

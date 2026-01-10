@@ -75,8 +75,8 @@
         ```bash
         cd .devcontainer
         docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml up -d
-        docker exec -it hagevvashiinfo-dev-hub_devcontainer-dev-1 ps aux | head -n 2
-        docker exec -it hagevvashiinfo-dev-hub_devcontainer-dev-1 cat /proc/1/cmdline
+        docker exec -it <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 ps aux | head -n 2
+        docker exec -it <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 cat /proc/1/cmdline
         ```
     - **完了基準**: PID 1のプロセス名を記録（`s6-svscan` or `supervisord`）
     - **参照**: 25_6_11_pid1_design_deviation_analysis.md セクション5.3

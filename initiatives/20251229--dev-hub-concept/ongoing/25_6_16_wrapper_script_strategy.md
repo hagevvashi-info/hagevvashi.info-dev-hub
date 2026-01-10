@@ -62,7 +62,7 @@ docker compose exec --help | grep -A 2 "user"
 
 ```bash
 # .devcontainer ディレクトリに移動
-cd /Users/${UNAME}/repos/hagevvashi.info-dev-hub/.devcontainer
+cd /Users/${UNAME}/repos/<MonolithicDevContainerレポジトリ名>/.devcontainer
 
 # 通常のログイン（rootになる）
 docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml exec dev /bin/bash
@@ -87,7 +87,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml exec -u ${UNAM
 **実装**:
 ```bash
 # .devcontainer ディレクトリに移動
-cd /Users/${UNAME}/repos/hagevvashi.info-dev-hub/.devcontainer
+cd /Users/${UNAME}/repos/<MonolithicDevContainerレポジトリ名>/.devcontainer
 
 # 毎回手動で -u フラグを付ける
 docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml exec -u ${UNAME} dev /bin/bash
@@ -108,7 +108,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml exec -u ${UNAM
 **実装**:
 ```bash
 # ~/.bashrc または ~/.zshrc
-alias dexec='cd /Users/${UNAME}/repos/hagevvashi.info-dev-hub/.devcontainer && docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml exec -u ${UNAME} dev /bin/bash'
+alias dexec='cd /Users/${UNAME}/repos/<MonolithicDevContainerレポジトリ名>/.devcontainer && docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml exec -u ${UNAME} dev /bin/bash'
 ```
 
 **メリット**:
@@ -324,7 +324,7 @@ alias dc='./bin/dc'
 export PATH="$PWD/bin:$PATH"
 
 # または、リポジトリルートを基準にする
-export PATH="/Users/${UNAME}/repos/hagevvashi.info-dev-hub/bin:$PATH"
+export PATH="/Users/${UNAME}/repos/<MonolithicDevContainerレポジトリ名>/bin:$PATH"
 ```
 
 **方法3: そのまま使う（推奨）**

@@ -285,7 +285,7 @@
   - **ログ抜粋**:
     ```
     🔍 Phase 5: Validating process-compose configuration...
-      ✅ Found: /home/<一般ユーザー>/hagevvashi.info-dev-hub/workloads/process-compose/project.yaml
+      ✅ Found: /home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/workloads/process-compose/project.yaml
       ✅ project.yaml appears valid
       Using config: /etc/process-compose/process-compose.yaml
     ```
@@ -294,7 +294,7 @@
 - [x] process-compose設定が作成されることを確認
   - **コマンド**: `docker exec devcontainer-dev-1 ls -l /etc/process-compose/process-compose.yaml`
   - **結果**: ✅ シンボリックリンクが正常作成
-  - **リンク先**: `/home/<一般ユーザー>/hagevvashi.info-dev-hub/workloads/process-compose/project.yaml`
+  - **リンク先**: `/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/workloads/process-compose/project.yaml`
   - **実施日**: 2026-01-08
 
 ---
@@ -372,8 +372,8 @@
 
 - [x] ポート競合エラーの詳細を分析
   - **現象**: `docker compose up -d` 実行時に `Bind for 0.0.0.0:4035 failed: port is already allocated` エラー
-  - **根本原因**: 手動起動したコンテナ（`devcontainer-dev-1`）とVSCode拡張が起動しようとするコンテナ（`hagevvashiinfo-dev-hub_devcontainer-dev-1`）がポート4035で競合
-  - **プロジェクト名の違い**: 手動起動は `.devcontainer` プレフィックス、VSCode拡張は `hagevvashiinfo-dev-hub_devcontainer` プレフィックス
+  - **根本原因**: 手動起動したコンテナ（`devcontainer-dev-1`）とVSCode拡張が起動しようとするコンテナ（`<MonolithicDevContainerレポジトリ名>_devcontainer-dev-1`）がポート4035で競合
+  - **プロジェクト名の違い**: 手動起動は `.devcontainer` プレフィックス、VSCode拡張は `<MonolithicDevContainerレポジトリ名>_devcontainer` プレフィックス
   - **実施日**: 2026-01-08
   - **参照**: 25_6_9
 
@@ -473,7 +473,7 @@
 
 - [x] **シンボリックリンク確認（supervisord）**:
   - **コマンド**: `docker exec devcontainer-dev-1 ls -l /etc/supervisor/supervisord.conf`
-  - **結果**: ✅ `/home/<一般ユーザー>/hagevvashi.info-dev-hub/workloads/supervisord/project.conf` を指している
+  - **結果**: ✅ `/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/workloads/supervisord/project.conf` を指している
   - **重要**: ★以前の問題（seed.confを指していた）が完全に解決★
 
 - [x] **supervisorctl動作確認**:
@@ -489,7 +489,7 @@
 - [x] **シンボリックリンク確認（process-compose）**:
   - **コマンド**: `docker exec devcontainer-dev-1 ls -l /etc/process-compose/process-compose.yaml`
   - **結果**: ✅ シンボリックリンクが正常作成（2026-01-08）
-  - **リンク先**: `/home/<一般ユーザー>/hagevvashi.info-dev-hub/workloads/process-compose/project.yaml`
+  - **リンク先**: `/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/workloads/process-compose/project.yaml`
   - **対応**: セクションHで解決完了（96f0613）
 
 - [⚠️] **サービス登録の確認（s6-rc）**:

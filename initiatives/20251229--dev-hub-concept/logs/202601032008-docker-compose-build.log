@@ -1331,11 +1331,11 @@
 #35 [29/44] RUN if ! getent group staff > /dev/null 2>&1; then         groupadd -o -g 20 staff;     fi
 #35 DONE 0.1s
 
-#36 [30/44] RUN useradd -o -l -u 501 -g staff -G docker -m hagevvashi
-#36 0.145 useradd warning: hagevvashi's uid 501 outside of the UID_MIN 1000 and UID_MAX 60000 range.
+#36 [30/44] RUN useradd -o -l -u 501 -g staff -G docker -m <一般ユーザー>
+#36 0.145 useradd warning: <一般ユーザー>'s uid 501 outside of the UID_MIN 1000 and UID_MAX 60000 range.
 #36 DONE 0.2s
 
-#37 [31/44] RUN chown hagevvashi:staff /home/hagevvashi
+#37 [31/44] RUN chown <一般ユーザー>:staff /home/<一般ユーザー>
 #37 DONE 0.1s
 
 #38 [32/44] RUN mkdir -p /home/<一般ユーザー>/repos
@@ -1344,7 +1344,7 @@
 #39 [33/44] RUN chown -R 501:20 /home/<一般ユーザー>/repos
 #39 DONE 0.1s
 
-#40 [34/44] RUN echo "hagevvashi ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+#40 [34/44] RUN echo "<一般ユーザー> ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 #40 DONE 0.1s
 
 #41 [35/44] RUN echo "🔍 Validating default supervisord configuration..." &&     supervisord -c /etc/supervisor/seed.conf -t &&     echo "✅ Default supervisord configuration is valid"

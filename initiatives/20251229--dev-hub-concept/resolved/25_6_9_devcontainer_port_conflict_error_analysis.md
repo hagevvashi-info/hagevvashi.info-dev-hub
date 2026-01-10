@@ -14,7 +14,7 @@ DevContainerの起動時に以下のエラーが発生し、コンテナの起�
 ```
 Error response from daemon: failed to set up container networking:
 driver failed programming external connectivity on endpoint
-hagevvashiinfo-dev-hub_devcontainer-dev-1
+<MonolithicDevContainerレポジトリ名>_devcontainer-dev-1
 (4c7c0e4225e38d8704f4b2ce9b0409e37461c19ad951c91a700c086b7778a55f):
 Bind for 0.0.0.0:4035 failed: port is already allocated
 ```
@@ -98,8 +98,8 @@ Bind for 0.0.0.0:4035 failed: port is already allocated
 
 **根拠**:
 1. 手動起動時のコンテナ名: `devcontainer-dev-1`
-2. VSCode/Cursor拡張が作成しようとしたコンテナ名: `hagevvashiinfo-dev-hub_devcontainer-dev-1`
-3. プロジェクト名のプレフィックスが異なる（VSCode拡張は `hagevvashiinfo-dev-hub_devcontainer` を使用）
+2. VSCode/Cursor拡張が作成しようとしたコンテナ名: `<MonolithicDevContainerレポジトリ名>_devcontainer-dev-1`
+3. プロジェクト名のプレフィックスが異なる（VSCode拡張は `<MonolithicDevContainerレポジトリ名>_devcontainer` を使用）
 4. 既存コンテナ削除ログ（line 142）で削除されたのは `5fa4fa56cebd` だが、これは手動起動したものではない可能性
 
 **検証方法**:
@@ -138,8 +138,8 @@ docker-compose.ymlで定義されたポート（4035, 8035, 9001, 8080）のい�
 docker ps --filter "name=dev-1"
 
 # ステップ2: 該当コンテナの停止と削除
-docker compose -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.yml \
-  -f /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/docker-compose.dev-vm.yml \
+docker compose -f /Users/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/.devcontainer/docker-compose.yml \
+  -f /Users/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/.devcontainer/docker-compose.dev-vm.yml \
   down
 
 # または直接削除
@@ -189,7 +189,7 @@ lsof -i :4035  # macOSの場合
 **手順**:
 1. 手動起動時に `--project-name` を指定:
    ```bash
-   docker compose --project-name hagevvashiinfo-dev-hub_devcontainer \
+   docker compose --project-name <MonolithicDevContainerレポジトリ名>_devcontainer \
      -f docker-compose.yml -f docker-compose.dev-vm.yml up -d
    ```
 
@@ -209,7 +209,7 @@ lsof -i :4035  # macOSの場合
 
 1. **解決策1を実施**:
    ```bash
-   cd /Users/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer
+   cd /Users/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/.devcontainer
    docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml down
    docker ps -a  # 確認
    ```

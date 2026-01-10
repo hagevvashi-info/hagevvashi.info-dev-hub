@@ -163,7 +163,7 @@ docker system prune -a --volumes -f
 
 ##### Step 2: 再ビルド実行
 ```bash
-cd /Users/<一般ユーザー>/hagevvashi.info-dev-hub
+cd /Users/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>
 docker compose --progress plain \
   -f .devcontainer/docker-compose.yml \
   -f .devcontainer/docker-compose.dev-vm.yml \
@@ -208,7 +208,7 @@ docker system prune -a --volumes -f
 
 ##### Step 3: 再ビルド
 ```bash
-cd /Users/<一般ユーザー>/hagevvashi.info-dev-hub
+cd /Users/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>
 docker compose --progress plain \
   -f .devcontainer/docker-compose.yml \
   -f .devcontainer/docker-compose.dev-vm.yml \
@@ -392,7 +392,7 @@ docker system df
 #### タスク1-2: DevContainer 再ビルド
 
 ```bash
-cd /Users/<一般ユーザー>/hagevvashi.info-dev-hub
+cd /Users/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>
 docker compose --progress plain \
   -f .devcontainer/docker-compose.yml \
   -f .devcontainer/docker-compose.dev-vm.yml \
@@ -597,7 +597,7 @@ docker compose build
   ```
 - [ ] **タスク1-2**: DevContainer 再ビルド
   ```bash
-  cd /Users/<一般ユーザー>/hagevvashi.info-dev-hub
+  cd /Users/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>
   docker compose --progress plain \
     -f .devcontainer/docker-compose.yml \
     -f .devcontainer/docker-compose.dev-vm.yml \

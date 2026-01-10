@@ -19,7 +19,7 @@
 ```bash
 bash: /root/.atuin/bin/env: No such file or directory
 bash: /root/.atuin/bin/env: No such file or directory
-root@6d2ce443203a:/home/<一般ユーザー>/hagevvashi.info-dev-hub#
+root@6d2ce443203a:/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>#
 ```
 
 **問題の要約**:
@@ -385,7 +385,7 @@ docker compose --progress plain -f docker-compose.yml -f docker-compose.dev-vm.y
 
 ```bash
 cd <repo_root>/.devcontainer
-docker compose --project-name hagevvashiinfo-dev-hub_devcontainer -f docker-compose.yml -f docker-compose.dev-vm.yml up -d
+docker compose --project-name <MonolithicDevContainerレポジトリ名>_devcontainer -f docker-compose.yml -f docker-compose.dev-vm.yml up -d
 ```
 
 **期待結果**: コンテナが正常起動
@@ -393,7 +393,7 @@ docker compose --project-name hagevvashiinfo-dev-hub_devcontainer -f docker-comp
 #### 検証3: ユーザー確認
 
 ```bash
-docker exec -it hagevvashiinfo-dev-hub_devcontainer-dev-1 whoami
+docker exec -it <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 whoami
 ```
 
 **期待結果**: `<一般ユーザー>`
@@ -401,7 +401,7 @@ docker exec -it hagevvashiinfo-dev-hub_devcontainer-dev-1 whoami
 #### 検証4: Atuinエラーの解消
 
 ```bash
-docker exec -it hagevvashiinfo-dev-hub_devcontainer-dev-1 bash
+docker exec -it <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 bash
 # プロンプトでAtuinエラーが出ないことを確認
 ```
 
@@ -410,7 +410,7 @@ docker exec -it hagevvashiinfo-dev-hub_devcontainer-dev-1 bash
 #### 検証5: supervisord動作確認
 
 ```bash
-docker exec hagevvashiinfo-dev-hub_devcontainer-dev-1 supervisorctl status
+docker exec <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 supervisorctl status
 ```
 
 **期待結果**: code-serverが正常に動作

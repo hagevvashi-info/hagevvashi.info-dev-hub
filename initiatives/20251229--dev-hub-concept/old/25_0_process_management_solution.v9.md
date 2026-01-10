@@ -134,7 +134,7 @@ PID 1: s6-overlay (init + プロセス監視)
 ### ディレクトリ構造
 
 ```
-hagevvashi.info-dev-hub/
+<MonolithicDevContainerレポジトリ名>/
 ├── .devcontainer/
 │   ├── s6-rc.d/                              # s6-overlay サービス定義
 │   │   ├── user/contents.d/
@@ -193,8 +193,8 @@ FROM ubuntu:22.04
 ARG TARGETARCH
 ARG UID=1000
 ARG GID=1000
-ARG UNAME=hagevvashi
-ARG GNAME=hagevvashi
+ARG UNAME=<一般ユーザー>
+ARG GNAME=<一般ユーザー>
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # s6-overlay: PID 1 保護・プロセス監視
@@ -446,7 +446,7 @@ echo ""
 echo "🔍 Phase 4: Validating supervisord configuration..."
 
 UNAME=${UNAME:-$(whoami)}
-REPO_NAME=${REPO_NAME:-"hagevvashi.info-dev-hub"}
+REPO_NAME=${REPO_NAME:-"<MonolithicDevContainerレポジトリ名>"}
 
 PROJECT_CONF="/home/${UNAME}/${REPO_NAME}/configs/supervisord/project.conf"
 SEED_CONF="/etc/supervisor/seed.conf"
@@ -584,8 +584,8 @@ serverurl=http://127.0.0.1:9001
 # 最小限のプロセス: code-server のみ
 [program:code-server]
 command=/home/<一般ユーザー>/.local/bin/code-server --bind-addr 0.0.0.0:4035 --auth password
-user=hagevvashi
-directory=/home/<一般ユーザー>/hagevvashi.info-dev-hub
+user=<一般ユーザー>
+directory=/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>
 autostart=true
 autorestart=false
 priority=10
@@ -664,8 +664,8 @@ serverurl=unix:///var/run/supervisor.sock
 
 [program:code-server]
 command=/home/<一般ユーザー>/.local/bin/code-server --bind-addr 0.0.0.0:4035 --auth password
-user=hagevvashi
-directory=/home/<一般ユーザー>/hagevvashi.info-dev-hub
+user=<一般ユーザー>
+directory=/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>
 autostart=true
 autorestart=false
 priority=10
@@ -681,8 +681,8 @@ stderr_logfile_maxbytes=0
 
 [program:difit]
 command=/home/<一般ユーザー>/.asdf/shims/difit
-user=hagevvashi
-directory=/home/<一般ユーザー>/hagevvashi.info-dev-hub
+user=<一般ユーザー>
+directory=/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>
 autostart=false
 autorestart=false
 priority=20
@@ -723,7 +723,7 @@ processes:
   #   availability:
   #     restart: "no"
   #   environment:
-  #     - HOME=/home/hagevvashi
+  #     - HOME=/home/<一般ユーザー>
 
   # 例: 実験的なサービス
   # my-experiment:

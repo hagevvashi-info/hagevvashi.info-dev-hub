@@ -185,7 +185,7 @@
         ```bash
         cd .devcontainer
         docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml down
-        docker compose --project-name hagevvashiinfo-dev-hub_devcontainer \
+        docker compose --project-name <MonolithicDevContainerレポジトリ名>_devcontainer \
           -f docker-compose.yml -f docker-compose.dev-vm.yml up -d
         ```
     - **完了基準**: エラーなく起動
@@ -409,7 +409,7 @@
 - [ ] process-compose 設定ファイルの `<一般ユーザー>` ハードコード問題を解決
     - **問題**: `workloads/process-compose/project.yaml` に `<一般ユーザー>` がハードコードされており、他のユーザーで使用できない
     - **影響箇所**:
-        - Line 11: `working_dir: "/home/<一般ユーザー>/hagevvashi.info-dev-hub"`
+        - Line 11: `working_dir: "/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>"`
         - Line 15: `environment: HOME=/home/<一般ユーザー>`
         - Line 20: コメント内の `working_dir: "/home/<一般ユーザー>/repos/some-project"`
         - Line 30: コメント内の `working_dir: "/home/<一般ユーザー>/repos/product-a"`
@@ -430,15 +430,15 @@
     - **決定した実装方針**: ✅ **環境変数化（`${UNAME}`）を採用**
     - **修正内容（2026-01-10T11:05:00+09:00）**:
         - ✅ `workloads/process-compose/project.yaml`:
-            - Line 11: `working_dir: "/home/<一般ユーザー>/hagevvashi.info-dev-hub"` → `working_dir: "/home/<一般ユーザー>/hagevvashi.info-dev-hub"`
+            - Line 11: `working_dir: "/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>"` → `working_dir: "/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>"`
             - Line 15: `HOME=/home/<一般ユーザー>` → `HOME=/home/<一般ユーザー>`
             - Line 20: `working_dir: "/home/<一般ユーザー>/repos/some-project"` → `working_dir: "/home/${UNAME}/repos/some-project"`
             - Line 30: `working_dir: "/home/<一般ユーザー>/repos/product-a"` → `working_dir: "/home/${UNAME}/repos/product-a"`
             - Line 34: `HOME=/home/<一般ユーザー>` → `HOME=/home/<一般ユーザー>`
     - **追加修正（2026-01-10T11:10:00+09:00）**:
-        - ✅ リポジトリ名のハードコード（`hagevvashi.info-dev-hub`）も環境変数化
+        - ✅ リポジトリ名のハードコード（`<MonolithicDevContainerレポジトリ名>`）も環境変数化
         - ✅ `REPO_NAME` 環境変数を使用（docker-compose.yml line 43 で定義済み、デフォルト: `dev-hub`）
-        - ✅ Line 11: `working_dir: "/home/<一般ユーザー>/hagevvashi.info-dev-hub"` → `working_dir: "/home/${UNAME}/${REPO_NAME}"`
+        - ✅ Line 11: `working_dir: "/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>"` → `working_dir: "/home/${UNAME}/${REPO_NAME}"`
         - ✅ これにより、ユーザー名とリポジトリ名の両方が完全に環境変数化され、汎用性が向上
     - **完了基準**:
         - ✅ process-compose 環境変数展開サポートを確認
@@ -453,7 +453,7 @@
     - **問題**: `workloads/supervisord/project.conf` に `<一般ユーザー>` がハードコードされており、他のユーザーで使用できない
     - **影響箇所**:
         - Line 31: `user=<一般ユーザー>`
-        - Line 32: `directory=/home/<一般ユーザー>/hagevvashi.info-dev-hub`
+        - Line 32: `directory=/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>`
         - Line 36: `environment=CODE_SERVER_PORT="4035",HOME="/home/<一般ユーザー>"`
     - **参照**: 25_6_20_supervisord_hardcoded_username_issue.md（supervisord と同様の問題）
     - **実施内容**:
@@ -463,7 +463,7 @@
     - **修正内容（2026-01-10T11:15:00+09:00）**:
         - ✅ `workloads/supervisord/project.conf`:
             - Line 31: `user=<一般ユーザー>` → `user=%(ENV_UNAME)s`
-            - Line 32: `directory=/home/<一般ユーザー>/hagevvashi.info-dev-hub` → `directory=/home/%(ENV_UNAME)s/%(ENV_REPO_NAME)s`
+            - Line 32: `directory=/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>` → `directory=/home/%(ENV_UNAME)s/%(ENV_REPO_NAME)s`
             - Line 36: `HOME="/home/<一般ユーザー>"` → `HOME="/home/%(ENV_UNAME)s"`
         - ✅ `REPO_NAME` 環境変数も使用（docker-compose.yml line 43 で定義済み、デフォルト: `dev-hub`）
     - **完了基準**:
@@ -640,9 +640,9 @@
 - [ ] s6-overlayのサービスがすべて起動していることを確認
     - **コマンド**:
         ```bash
-        docker exec hagevvashiinfo-dev-hub_devcontainer-dev-1 /command/s6-rc -a list
-        docker exec hagevvashiinfo-dev-hub_devcontainer-dev-1 /command/s6-svstat /run/service/supervisord
-        docker exec hagevvashiinfo-dev-hub_devcontainer-dev-1 /command/s6-svstat /run/service/process-compose
+        docker exec <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 /command/s6-rc -a list
+        docker exec <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 /command/s6-svstat /run/service/supervisord
+        docker exec <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 /command/s6-svstat /run/service/process-compose
         ```
     - **完了基準**: `docker-entrypoint`, `supervisord`, `process-compose`が表示され、すべて`up`状態
     - **参照**: 25_6_12_v10_completion_strategy.md Phase 2 タスク2-4
@@ -653,7 +653,7 @@
 - [ ] docker-entrypoint.sh Phase 1-5が実行されたことを確認
     - **コマンド**:
         ```bash
-        docker logs hagevvashiinfo-dev-hub_devcontainer-dev-1 2>&1 | grep "Phase"
+        docker logs <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 2>&1 | grep "Phase"
         ```
     - **完了基準**: Phase 1-5の実行ログが表示される
     - **参照**: 25_6_12_v10_completion_strategy.md Phase 2 タスク2-5
@@ -675,8 +675,8 @@
 - [ ] graceful shutdownが正常に動作することを確認
     - **コマンド**:
         ```bash
-        docker stop hagevvashiinfo-dev-hub_devcontainer-dev-1
-        docker logs hagevvashiinfo-dev-hub_devcontainer-dev-1 2>&1 | tail -n 20
+        docker stop <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1
+        docker logs <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 2>&1 | tail -n 20
         ```
     - **完了基準**: s6-overlayによる正常なシャットダウンログが表示される
     - **参照**: 25_6_12_v10_completion_strategy.md Phase 2 タスク2-7

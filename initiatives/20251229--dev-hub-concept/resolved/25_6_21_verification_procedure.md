@@ -115,14 +115,14 @@ whoami
 
 # カレントディレクトリ確認
 pwd
-# 期待結果: /home/<一般ユーザー>/hagevvashi.info-dev-hub (または /home/${UNAME}/${REPO_NAME})
+# 期待結果: /home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名> (または /home/${UNAME}/${REPO_NAME})
 
 # 環境変数確認
 echo $UNAME
 # 期待結果: <一般ユーザー>
 
 echo $REPO_NAME
-# 期待結果: hagevvashi.info-dev-hub (リポジトリ名)
+# 期待結果: <MonolithicDevContainerレポジトリ名> (リポジトリ名)
 
 # ログアウト
 exit
@@ -130,7 +130,7 @@ exit
 
 **確認項目**:
 - [x] `whoami` が `<一般ユーザー>` の値と一致 - `<一般ユーザー>` 確認
-- [x] `pwd` が `/home/<一般ユーザー>/${REPO_NAME}` と一致 - `/home/<一般ユーザー>/hagevvashi.info-dev-hub` 確認
+- [x] `pwd` が `/home/<一般ユーザー>/${REPO_NAME}` と一致 - `/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>` 確認
 - [x] 環境変数 `UNAME` と `REPO_NAME` が正しく設定されている - 確認済み
 - [x] ログイン時にエラーがない - クリーンにログイン成功
 
@@ -582,7 +582,7 @@ docker exec devcontainer-dev-1 cat /var/log/supervisor/process-compose.log
   - 検証結果: `root 1 ... /package/admin/s6/command/s6-svscan`
   - supervisord と process-compose が s6-overlay で管理されていることを確認
 - ✅ 2-2: 一般ユーザーログイン確認（2026-01-10T14:26:00+09:00） - エラーなくログイン、環境変数正常
-  - 検証結果: `whoami` = ${UNAME}, `pwd` = /home/<一般ユーザー>/hagevvashi.info-dev-hub
+  - 検証結果: `whoami` = ${UNAME}, `pwd` = /home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>
   - 環境変数 UNAME, REPO_NAME が正しく設定されていることを確認
 - ✅ 2-3: rootユーザーログイン確認（2026-01-10T14:27:00+09:00） - Atuinエラーなし
   - 検証結果: root ログイン時に Atuin エラーが発生しない（.bashrc_custom の条件分岐が正常動作）

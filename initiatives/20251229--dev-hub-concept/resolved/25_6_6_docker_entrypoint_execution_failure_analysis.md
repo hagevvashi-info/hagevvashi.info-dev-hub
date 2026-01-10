@@ -500,7 +500,7 @@ $ ls -l /etc/supervisor/supervisord.conf
 lrwxrwxrwx 1 root root 25 Jan  4 22:53 /etc/supervisor/supervisord.conf -> /etc/supervisor/seed.conf
 
 $ ls -l /etc/process-compose/process-compose.yaml
-lrwxrwxrwx 1 root root 79 Jan  4 22:53 /etc/process-compose/process-compose.yaml -> /home/<一般ユーザー>/hagevvashi.info-dev-hub/workloads/process-compose/project.yaml
+lrwxrwxrwx 1 root root 79 Jan  4 22:53 /etc/process-compose/process-compose.yaml -> /home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/workloads/process-compose/project.yaml
 ```
 
 **結果**:
@@ -528,14 +528,14 @@ if supervisord -c "${TARGET_CONF}" -t 2>&1; then
 このコマンドを手動で実行すると:
 
 ```bash
-$ supervisord -c /home/<一般ユーザー>/hagevvashi.info-dev-hub/workloads/supervisord/project.conf -t
+$ supervisord -c /home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/workloads/supervisord/project.conf -t
 Error: Can't drop privilege as nonroot user
 For help, use /usr/bin/supervisord -h
 ```
 
 **問題**: `supervisord -t` (検証モード) は root 権限が必要だが、コマンドに `sudo` が付いていない。
 
-docker-entrypoint.sh は非 root ユーザー（hagevvashi）として実行されるため、supervisord の検証が失敗し、フォールバックが発生していた。
+docker-entrypoint.sh は非 root ユーザー（<一般ユーザー>）として実行されるため、supervisord の検証が失敗し、フォールバックが発生していた。
 
 ### 14.4 修正案
 
@@ -573,7 +573,7 @@ if sudo supervisord -c "${TARGET_CONF}" -t 2>&1; then
 2. シンボリックリンクを確認:
    ```bash
    ls -l /etc/supervisor/supervisord.conf
-   # 期待: -> /home/<一般ユーザー>/hagevvashi.info-dev-hub/workloads/supervisord/project.conf
+   # 期待: -> /home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/workloads/supervisord/project.conf
    ```
 3. supervisorctl が動作することを確認:
    ```bash
@@ -693,7 +693,7 @@ DevContainerを再ビルド後、以下の検証を実施:
 
 ```bash
 $ ls -l /etc/supervisor/supervisord.conf
-lrwxrwxrwx 1 root root 75 Jan  4 23:10 /etc/supervisor/supervisord.conf -> /home/<一般ユーザー>/hagevvashi.info-dev-hub/workloads/supervisord/project.conf
+lrwxrwxrwx 1 root root 75 Jan  4 23:10 /etc/supervisor/supervisord.conf -> /home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/workloads/supervisord/project.conf
 
 $ ls -l /etc/process-compose/process-compose.yaml
 ls: cannot access '/etc/process-compose/process-compose.yaml': No such file or directory

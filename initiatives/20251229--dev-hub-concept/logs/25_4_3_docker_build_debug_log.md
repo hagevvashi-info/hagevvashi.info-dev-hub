@@ -19,23 +19,23 @@
 
 ```
  => [35/44] RUN echo "🔍 Validating default supervisord configuration..." &&     supervisord -c /etc/supervisor/seed.conf -t &&     ech     533.4s
- => => # supervisor: couldn't chdir to /home/<一般ユーザー>hagevvashi.info-dev-hub: ENOENT
+ => => # supervisor: couldn't chdir to /home/<一般ユーザー><MonolithicDevContainerレポジトリ名>: ENOENT
  => => # supervisor: child process was not spawned
  => => # 2026-01-03 19:41:54,779 INFO gave up: code-server entered FATAL state, too many start retries too quickly
 ```
 
 ### 3. 原因分析
 
--   **エラー内容**: `supervisor: couldn't chdir to /home/<一般ユーザー>/hagevvashi.info-dev-hub: ENOENT`
-    *   これは、`supervisord`が`seed.conf`を読み込み、その中の`[program:code-server]`セクションに定義されている`directory=/home/<一般ユーザー>/hagevvashi.info-dev-hub`というワーキングディレクトリに移動しようとしたが、**そのディレクトリが見つからなかった（ENOENT）**ために発生している。
+-   **エラー内容**: `supervisor: couldn't chdir to /home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>: ENOENT`
+    *   これは、`supervisord`が`seed.conf`を読み込み、その中の`[program:code-server]`セクションに定義されている`directory=/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>`というワーキングディレクトリに移動しようとしたが、**そのディレクトリが見つからなかった（ENOENT）**ために発生している。
 -   **なぜ見つからないのか**:
     *   このエラーが発生しているビルドのステップ(`[35/44]`)は、`Dockerfile`の`RUN`コマンドの実行中である。
-    *   この時点では、ホストからバインドマウントされるべき`/home/<一般ユーザー>/hagevvashi.info-dev-hub`ディレクトリは、**まだコンテナ内に存在していない**。バインドマウントはコンテナ起動時に行われるため、ビルド時には利用できない。
+    *   この時点では、ホストからバインドマウントされるべき`/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>`ディレクトリは、**まだコンテナ内に存在していない**。バインドマウントはコンテナ起動時に行われるため、ビルド時には利用できない。
     *   `supervisord -t`コマンドは設定ファイルの文法チェックだけでなく、`directory`オプションに指定されたパスの存在もチェックしようとするため、パスが見つからずにエラーとなっている。
 
 ### 4. 解決策
 
-`seed.conf`の主な目的は、**ビルド時の構文チェック**と、メイン設定が壊れた際の**フォールバック**です。どちらの目的においても、`code-server`を起動する際のワーキングディレクトリを`hagevvashi.info-dev-hub`に厳密に指定する必要はありません。`code-server`自体が適切なパスで実行されるためです。
+`seed.conf`の主な目的は、**ビルド時の構文チェック**と、メイン設定が壊れた際の**フォールバック**です。どちらの目的においても、`code-server`を起動する際のワーキングディレクトリを`<MonolithicDevContainerレポジトリ名>`に厳密に指定する必要はありません。`code-server`自体が適切なパスで実行されるためです。
 
 したがって、`seed.conf`内の`[program:code-server]`セクションから、ビルド時には問題となる`directory`オプションを**削除**します。
 
@@ -83,7 +83,7 @@ docker compose --progress plain -f docker-compose.yml -f docker-compose.dev-vm.y
     `supervisord`の`directory`オプションは、プログラムが実行される際の**カレントワーキングディレクトリ**を指定するものです。これは`code-server`自体の起動可否には直接影響しません。
 
 2.  **`code-server`のフォールバック時の目的**:
-    フォールバックの目的は、**`code-server`を起動させること**にあります。`code-server`は起動後、ブラウザ経由でアクセスされ、VS Codeとして機能します。ユーザーはVS Code内でファイルを開いたり、ターミナルを開いたりして作業を行います。この際のVS Codeの「作業ディレクトリ」は、VS Codeがリポジトリをマウントしているパス（例: `/home/<一般ユーザー>/hagevvashi.info-dev-hub`）が基準となります。
+    フォールバックの目的は、**`code-server`を起動させること**にあります。`code-server`は起動後、ブラウザ経由でアクセスされ、VS Codeとして機能します。ユーザーはVS Code内でファイルを開いたり、ターミナルを開いたりして作業を行います。この際のVS Codeの「作業ディレクトリ」は、VS Codeがリポジトリをマウントしているパス（例: `/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>`）が基準となります。
 
 3.  **役割の維持**:
     `code-server`が起動する際のカレントワーキングディレクトリがどこであっても、ユーザーがブラウザでVS Codeを利用してデバッグするというフォールバックの本質的な目的は達成されます。したがって、`directory`オプションを削除しても、フォールバック時のデバッグ能力は維持されます。

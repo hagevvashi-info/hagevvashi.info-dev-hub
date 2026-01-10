@@ -33,7 +33,7 @@
  => [dev_container_auto_added_stage_label 17/26] COPY .devcontainer/shell  0.0s
  => [dev_container_auto_added_stage_label 18/26] RUN echo '\n# Load custo  0.1s
  => [dev_container_auto_added_stage_label 19/26] RUN groupadd -g 999 dock  0.2s
- => [dev_container_auto_added_stage_label 20/26] WORKDIR /home/hagevvashi  0.0s
+ => [dev_container_auto_added_stage_label 20/26] WORKDIR /home/<一般ユーザー>  0.0s
  => [dev_container_auto_added_stage_label 21/26] RUN curl -fsSL https://r  0.2s
  => [dev_container_auto_added_stage_label 22/26] RUN git clone https://gi  2.6s
  => [dev_container_auto_added_stage_label 23/26] RUN pipx ensurepath &&   12.5s
@@ -50,15 +50,15 @@
  => => exporting layers                                                    5.0s
  => => preparing layers for inline cache                                   0.0s
  => => writing image sha256:558b8e797d965ca03d83cd2fa65186d0b7c66b5f03c2b  0.0s
- => => naming to docker.io/library/hagevvashiinfo-dev-hub_devcontainer-de  0.0s
+ => => naming to docker.io/library/<MonolithicDevContainerレポジトリ名>_devcontainer-de  0.0s
  => resolving provenance for metadata file                                 0.0s
 [+] Building 1/1
- ✔ hagevvashiinfo-dev-hub_devcontainer-dev  Built                          0.0s 
+ ✔ <MonolithicDevContainerレポジトリ名>_devcontainer-dev  Built                          0.0s 
 [+] Running 1/1
- ✔ Container hagevvashiinfo-dev-hub_devcontainer-dev-1  Started            0.2s 
+ ✔ Container <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1  Started            0.2s 
 Running the postCreateCommand from devcontainer.json...
 
-/bin/sh: 1: /home/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/post-create.sh: not found
+/bin/sh: 1: /home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/.devcontainer/post-create.sh: not found
 
 What's next:
     Try Docker Debug for seamless, persistent debugging tools in any container or image → docker debug 08e94f1f517400d6b38bf1b11a945434d5446ee4a3da41e3a9e708f5fe4e6d12

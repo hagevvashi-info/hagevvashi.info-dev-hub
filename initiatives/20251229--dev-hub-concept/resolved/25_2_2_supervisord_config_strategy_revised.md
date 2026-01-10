@@ -557,7 +557,7 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
 supervisord.conf に以下を追加:
 ```ini
 [include]
-files = /home/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/supervisord/conf.d/*.conf
+files = /home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/.devcontainer/supervisord/conf.d/*.conf
 ```
 
 これにより、新しいプロセスを追加する際は:

@@ -12,7 +12,7 @@
 ## 1. 問題の発見
 
 **ユーザーからの指摘**:
-> ".devcontainer/supervisord/seed.conf .devcontainer/supervisord/supervisord.conf これらのファイルに「hagevvashi」というユーザー名がハードコードされているの、絶対にやめたいのです これほかのユーザーで使えないから。それともダミーだから大丈夫？それならそれでダミーとわかる名前にしてほしいです"
+> ".devcontainer/supervisord/seed.conf .devcontainer/supervisord/supervisord.conf これらのファイルに「<一般ユーザー>」というユーザー名がハードコードされているの、絶対にやめたいのです これほかのユーザーで使えないから。それともダミーだから大丈夫？それならそれでダミーとわかる名前にしてほしいです"
 
 **発見日時**: 2026-01-10T10:00:00+09:00
 

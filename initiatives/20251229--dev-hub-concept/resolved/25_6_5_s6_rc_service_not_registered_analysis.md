@@ -21,7 +21,7 @@
 DevContainer 再ビルド後、セクションD-2 の検証コマンドを実行:
 
 ```bash
-<一般ユーザー>@8c255c35141f:~/hagevvashi.info-dev-hub$ s6-rc -d list | grep docker-entrypoint
+<一般ユーザー>@8c255c35141f:~/<MonolithicDevContainerレポジトリ名>$ s6-rc -d list | grep docker-entrypoint
 bash: s6-rc: command not found
 ```
 

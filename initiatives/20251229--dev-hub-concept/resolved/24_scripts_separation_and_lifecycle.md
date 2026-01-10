@@ -98,7 +98,7 @@ RUN echo '\n# Load custom dev container configurations' >> /etc/skel/.bashrc && 
 ```bash
 echo "Loading environment variables..."
 
-TEST_ENV_VAR="hagevvashi.info_test"
+TEST_ENV_VAR="<一般ユーザー>.info_test"
 ```
 
 **役割**: プロジェクト固有の環境変数を設定
@@ -574,7 +574,7 @@ RUN useradd -o -l -u ${UID} -g ${GNAME} -G docker -m ${UNAME}
 
 ```yaml
 volumes:
-  # hagevvashi.info-dev-hub リポジトリ全体をバインドマウント
+  # <MonolithicDevContainerレポジトリ名> リポジトリ全体をバインドマウント
   - type: bind
     source: ..
     target: /home/${UNAME:-vscode}/${REPO_NAME}

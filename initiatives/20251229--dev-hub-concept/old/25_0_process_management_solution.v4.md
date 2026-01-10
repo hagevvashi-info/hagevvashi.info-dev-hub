@@ -175,7 +175,7 @@ longrun
 
 # code-server/run
 #!/command/execlineb -P
-s6-setuidgid hagevvashi
+s6-setuidgid <一般ユーザー>
 code-server --bind-addr 0.0.0.0:4035 --auth password
 ```
 
@@ -218,7 +218,7 @@ nodaemon=true
 
 [program:code-server]
 command=/usr/local/bin/code-server --bind-addr 0.0.0.0:4035 --auth password
-user=hagevvashi
+user=<一般ユーザー>
 autostart=true
 autorestart=true
 ```

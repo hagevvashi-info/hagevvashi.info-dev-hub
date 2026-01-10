@@ -288,7 +288,7 @@ echo "🔍 Phase 4: Validating supervisord configuration..."
 
 # 環境変数から値を取得（フォールバック付き）
 UNAME=${UNAME:-$(whoami)}
-REPO_NAME=${REPO_NAME:-"hagevvashi.info-dev-hub"}
+REPO_NAME=${REPO_NAME:-"<MonolithicDevContainerレポジトリ名>"}
 
 # マウントされた設定ファイルのパス
 SUPERVISORD_CONF_SOURCE="/home/${UNAME}/${REPO_NAME}/.devcontainer/supervisord/supervisord.conf"

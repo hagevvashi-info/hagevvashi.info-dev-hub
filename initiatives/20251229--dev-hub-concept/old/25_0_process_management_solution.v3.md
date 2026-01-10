@@ -332,7 +332,7 @@ serverurl=unix:///var/run/supervisor.sock
 # docker-entrypoint.sh を最初に実行（初期化処理）
 [program:docker-entrypoint]
 command=/usr/local/bin/docker-entrypoint.sh
-user=hagevvashi
+user=<一般ユーザー>
 autostart=true
 autorestart=false
 startsecs=0
@@ -344,7 +344,7 @@ stderr_logfile_maxbytes=0
 # code-server
 [program:code-server]
 command=/usr/local/bin/code-server --bind-addr 0.0.0.0:4035 --auth password
-user=hagevvashi
+user=<一般ユーザー>
 autostart=true
 autorestart=false  # 手動再起動
 environment=CODE_SERVER_PORT=4035
@@ -356,7 +356,7 @@ stderr_logfile_maxbytes=0
 # difit（必要なときだけ起動）
 [program:difit]
 command=/usr/local/bin/difit
-user=hagevvashi
+user=<一般ユーザー>
 autostart=false  # 手動起動
 autorestart=false
 stdout_logfile=/dev/stdout

@@ -266,7 +266,7 @@ ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLA
 | s6サービス登録 | `docker-entrypoint`, `supervisord`, `process-compose` が認識される | `/command/s6-rc -d list` |
 | 設計の明確性 | docker-entrypoint.sh の実行ユーザーがコメントで明示されている | Dockerfile確認 |
 | sudo の適切性 | 不要なsudoが削除されている | `grep sudo .devcontainer/docker-entrypoint.sh` が0件 |
-| **ユーザー切り替え** | **ログイン時のデフォルトユーザーがhagevvashi** | **`docker exec -it devcontainer-dev-1 whoami`** |
+| **ユーザー切り替え** | **ログイン時のデフォルトユーザーが<一般ユーザー>** | **`docker exec -it devcontainer-dev-1 whoami`** |
 | **Atuinエラー解消** | **bashプロンプトでAtuinエラーが表示されない** | **コンテナ内でbash起動** |
 
 ---

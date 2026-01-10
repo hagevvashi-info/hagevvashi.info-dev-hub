@@ -31,7 +31,7 @@ For help, use /usr/bin/supervisord -h
 
 ```bash
 $ docker ps -a | grep devcontainer
-f36bb424848a   hagevvashiinfo-dev-hub_devcontainer-dev   "/bin/sh -c 'echo Co…"   7 minutes ago   Exited (2) 7 minutes ago
+f36bb424848a   <MonolithicDevContainerレポジトリ名>_devcontainer-dev   "/bin/sh -c 'echo Co…"   7 minutes ago   Exited (2) 7 minutes ago
 ```
 
 **Exit code 2**: supervisord が設定ファイルを見つけられず異常終了
@@ -353,7 +353,7 @@ version: "0.5"
 processes:
   difit:
     command: "difit"
-    working_dir: "/home/<一般ユーザー>/hagevvashi.info-dev-hub"
+    working_dir: "/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>"
     availability:
       restart: "no"
 ```

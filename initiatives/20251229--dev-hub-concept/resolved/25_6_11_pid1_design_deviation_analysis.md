@@ -60,7 +60,7 @@
 
 ```dockerfile
 # ENTRYPOINTを最後に設定（ユーザー切り替え後）
-# これにより、コンテナ起動時のデフォルトユーザーがhagevvashiになる
+# これにより、コンテナ起動時のデフォルトユーザーが<一般ユーザー>になる
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 # s6-overlay を PID 1 として起動
 # s6-overlay が docker-entrypoint, supervisord, process-compose を管理

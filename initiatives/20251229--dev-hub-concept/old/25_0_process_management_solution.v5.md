@@ -262,7 +262,7 @@ serverurl=unix:///var/run/supervisor.sock
 # docker-entrypoint.sh を最初に実行（初期化処理）
 [program:docker-entrypoint]
 command=/usr/local/bin/docker-entrypoint.sh
-user=hagevvashi
+user=<一般ユーザー>
 autostart=true
 autorestart=false
 startsecs=0
@@ -275,8 +275,8 @@ stderr_logfile_maxbytes=0
 # code-server
 [program:code-server]
 command=/home/<一般ユーザー>/.local/bin/code-server --bind-addr 0.0.0.0:4035 --auth password
-user=hagevvashi
-directory=/home/<一般ユーザー>/hagevvashi.info-dev-hub
+user=<一般ユーザー>
+directory=/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>
 autostart=true
 autorestart=false
 priority=10
@@ -289,8 +289,8 @@ stderr_logfile_maxbytes=0
 # difit（必要なときだけ起動）
 [program:difit]
 command=/home/<一般ユーザー>/.asdf/shims/difit
-user=hagevvashi
-directory=/home/<一般ユーザー>/hagevvashi.info-dev-hub
+user=<一般ユーザー>
+directory=/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>
 autostart=false
 autorestart=false
 priority=20

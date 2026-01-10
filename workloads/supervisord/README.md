@@ -27,7 +27,7 @@
 [program:your-custom-service]
 command=/usr/local/bin/your-command --arg1 value
 user=<一般ユーザー>
-directory=/home/<一般ユーザー>/hagevvashi.info-dev-hub/repos/your-project
+directory=/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/repos/your-project
 autostart=true
 autorestart=false # エラーを見たいので自動再起動しない
 environment=YOUR_ENV_VAR="some_value"

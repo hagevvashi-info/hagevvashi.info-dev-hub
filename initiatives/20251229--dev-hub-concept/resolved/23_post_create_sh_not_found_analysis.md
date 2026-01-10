@@ -9,7 +9,7 @@
 
 エラーログ（[20260102_error.log:61](20260102_error.log#L61)）:
 ```
-/bin/sh: 1: /home/<一般ユーザー>/hagevvashi.info-dev-hub/.devcontainer/post-create.sh: not found
+/bin/sh: 1: /home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/.devcontainer/post-create.sh: not found
 ```
 
 **状況**:
@@ -156,7 +156,7 @@ RUN chmod +x /tmp/post-create.sh
 **修正内容**:
 ```yaml
 volumes:
-  # hagevvashi.info-dev-hub リポジトリ全体をバインドマウント
+  # <MonolithicDevContainerレポジトリ名> リポジトリ全体をバインドマウント
   - type: bind
     source: ..
     target: /home/${UNAME:-vscode}/${REPO_NAME}

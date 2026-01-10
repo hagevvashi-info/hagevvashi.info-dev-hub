@@ -9,7 +9,7 @@ services:
         UNAME: ${UNAME:-vscode}
         GNAME: ${GNAME:-vscode}
     volumes:
-      # hagevvashi.info-dev-hub リポジトリ全体をバインドマウント
+      # <MonolithicDevContainerレポジトリ名> リポジトリ全体をバインドマウント
       - type: bind
         source: ..
         target: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}

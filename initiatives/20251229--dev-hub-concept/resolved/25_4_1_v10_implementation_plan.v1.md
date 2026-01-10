@@ -309,8 +309,8 @@ v10設計ドキュメントは完成しているが、実装が追いついて�
    # 最小限のプロセス: code-server のみ
    [program:code-server]
    command=/home/<一般ユーザー>/.local/bin/code-server --bind-addr 0.0.0.0:4035 --auth password
-   user=hagevvashi
-   directory=/home/<一般ユーザー>/hagevvashi.info-dev-hub
+   user=<一般ユーザー>
+   directory=/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>
    autostart=true
    autorestart=false
    priority=10

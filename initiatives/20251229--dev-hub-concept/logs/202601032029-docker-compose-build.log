@@ -1333,11 +1333,11 @@
 #37 [31/43] RUN if ! getent group staff > /dev/null 2>&1; then         groupadd -o -g 20 staff;     fi
 #37 DONE 0.1s
 
-#38 [32/43] RUN useradd -o -l -u 501 -g staff -G docker -m hagevvashi
-#38 0.147 useradd warning: hagevvashi's uid 501 outside of the UID_MIN 1000 and UID_MAX 60000 range.
+#38 [32/43] RUN useradd -o -l -u 501 -g staff -G docker -m <一般ユーザー>
+#38 0.147 useradd warning: <一般ユーザー>'s uid 501 outside of the UID_MIN 1000 and UID_MAX 60000 range.
 #38 DONE 0.2s
 
-#39 [33/43] RUN chown hagevvashi:staff /home/hagevvashi
+#39 [33/43] RUN chown <一般ユーザー>:staff /home/<一般ユーザー>
 #39 DONE 0.1s
 
 #40 [34/43] RUN mkdir -p /home/<一般ユーザー>/repos
@@ -1346,10 +1346,10 @@
 #41 [35/43] RUN chown -R 501:20 /home/<一般ユーザー>/repos
 #41 DONE 0.1s
 
-#42 [36/43] RUN echo "hagevvashi ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+#42 [36/43] RUN echo "<一般ユーザー> ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 #42 DONE 0.1s
 
-#43 [37/43] WORKDIR /home/hagevvashi
+#43 [37/43] WORKDIR /home/<一般ユーザー>
 #43 DONE 0.0s
 
 #44 [38/43] RUN curl -fsSL https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh -o ~/.bash_preexec

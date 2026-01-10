@@ -195,7 +195,7 @@ Requires=docker-entrypoint.service
 
 [Service]
 Type=simple
-User=hagevvashi
+User=<一般ユーザー>
 Group=staff
 Environment="CODE_SERVER_PORT=4035"
 ExecStart=/usr/local/bin/code-server --bind-addr 0.0.0.0:4035 --auth password
@@ -334,7 +334,7 @@ pidfile=/var/run/supervisord.pid
 
 [program:docker-entrypoint]
 command=/usr/local/bin/docker-entrypoint.sh
-user=hagevvashi
+user=<一般ユーザー>
 autostart=true
 autorestart=false
 startsecs=0
@@ -345,7 +345,7 @@ stderr_logfile_maxbytes=0
 
 [program:code-server]
 command=/usr/local/bin/code-server --bind-addr 0.0.0.0:4035 --auth password
-user=hagevvashi
+user=<一般ユーザー>
 autostart=true
 autorestart=true
 environment=CODE_SERVER_PORT=4035
@@ -356,7 +356,7 @@ stderr_logfile_maxbytes=0
 
 [program:difit]
 command=/usr/local/bin/difit
-user=hagevvashi
+user=<一般ユーザー>
 autostart=true
 autorestart=true
 stdout_logfile=/dev/stdout

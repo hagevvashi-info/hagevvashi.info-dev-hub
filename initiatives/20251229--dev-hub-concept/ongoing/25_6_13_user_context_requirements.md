@@ -161,7 +161,7 @@ USER ${UNAME}
 ```json
 {
   "remoteUser": "${UNAME}",
-  "workspaceFolder": "/home/${UNAME}/repos/hagevvashi.info-dev-hub"
+  "workspaceFolder": "/home/${UNAME}/repos/<MonolithicDevContainerレポジトリ名>"
 }
 ```
 
@@ -313,7 +313,7 @@ pwd
 **期待結果**:
 ```
 ${UNAME}
-/home/${UNAME}/repos/hagevvashi.info-dev-hub
+/home/${UNAME}/repos/<MonolithicDevContainerレポジトリ名>
 ```
 
 #### 5.3.2 docker composeからのログイン

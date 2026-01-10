@@ -454,7 +454,7 @@ docker compose up -d
 # 検証
 docker exec -it <container-name> bash
 ls -l /etc/supervisor/supervisord.conf
-# 期待: -> /home/<一般ユーザー>/hagevvashi.info-dev-hub/workloads/supervisord/project.conf
+# 期待: -> /home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/workloads/supervisord/project.conf
 
 supervisorctl status
 # 期待: エラーなく、プロセスリストが表示される

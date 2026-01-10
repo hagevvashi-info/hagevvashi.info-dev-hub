@@ -349,7 +349,7 @@ echo "Loading environment variables..."
 **実行頻度**: シェル起動ごと
 
 **主な処理**:
-1. テスト用環境変数の設定（`TEST_ENV_VAR="hagevvashi.info_test"`）
+1. テスト用環境変数の設定（`TEST_ENV_VAR="<一般ユーザー>.info_test"`）
 
 **役割分類**: **環境変数設定ファイル（Environment Variables）**
 

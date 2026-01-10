@@ -1,4 +1,4 @@
-hagevvashi@hagewashinoMacBook-Pro hagevvashi.info-dev-hub % docker compose -f .devcontainer/docker-compose.yml build --no-cache
+<一般ユーザー>@hagewashinoMacBook-Pro <MonolithicDevContainerレポジトリ名> % docker compose -f .devcontainer/docker-compose.yml build --no-cache
 WARN[0000] The "DEBUG_MODE" variable is not set. Defaulting to a blank string. 
 [+] Building 479.8s (34/44)                                                                                                                       
  => [18/38] RUN curl -fsSL https://code-server.dev/install.sh | sh                                                                           8.1s

@@ -393,7 +393,7 @@ echo ""
 #### タスク2-1: DevContainerビルド
 
 ```bash
-cd /Users/<一般ユーザー>/repos/hagevvashi.info-dev-hub/.devcontainer
+cd /Users/<一般ユーザー>/repos/<MonolithicDevContainerレポジトリ名>/.devcontainer
 
 # ビルド（キャッシュなし）
 docker compose --progress plain -f docker-compose.yml -f docker-compose.dev-vm.yml build --no-cache
@@ -408,7 +408,7 @@ docker compose --progress plain -f docker-compose.yml -f docker-compose.dev-vm.y
 docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml down
 
 # 起動
-docker compose --project-name hagevvashiinfo-dev-hub_devcontainer \
+docker compose --project-name <MonolithicDevContainerレポジトリ名>_devcontainer \
   -f docker-compose.yml -f docker-compose.dev-vm.yml up -d
 ```
 
@@ -417,7 +417,7 @@ docker compose --project-name hagevvashiinfo-dev-hub_devcontainer \
 #### タスク2-3: PID 1確認
 
 ```bash
-docker exec hagevvashiinfo-dev-hub_devcontainer-dev-1 ps aux | head -n 10
+docker exec <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 ps aux | head -n 10
 ```
 
 **期待結果**:
@@ -429,14 +429,14 @@ root         1  s6-svscan /run/service
 #### タスク2-4: サービス状態確認
 
 ```bash
-docker exec hagevvashiinfo-dev-hub_devcontainer-dev-1 /command/s6-rc -a list
+docker exec <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 /command/s6-rc -a list
 ```
 
 **期待結果**: `docker-entrypoint`, `supervisord`, `process-compose` が表示される
 
 ```bash
-docker exec hagevvashiinfo-dev-hub_devcontainer-dev-1 /command/s6-svstat /run/service/supervisord
-docker exec hagevvashiinfo-dev-hub_devcontainer-dev-1 /command/s6-svstat /run/service/process-compose
+docker exec <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 /command/s6-svstat /run/service/supervisord
+docker exec <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 /command/s6-svstat /run/service/process-compose
 ```
 
 **期待結果**: 両方とも`up`状態
@@ -444,7 +444,7 @@ docker exec hagevvashiinfo-dev-hub_devcontainer-dev-1 /command/s6-svstat /run/se
 #### タスク2-5: docker-entrypoint.sh実行確認
 
 ```bash
-docker logs hagevvashiinfo-dev-hub_devcontainer-dev-1 2>&1 | grep "Phase"
+docker logs <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 2>&1 | grep "Phase"
 ```
 
 **期待結果**: Phase 1-5の実行ログが表示される
@@ -460,8 +460,8 @@ curl -I http://localhost:4035
 #### タスク2-7: graceful shutdown確認
 
 ```bash
-docker stop hagevvashiinfo-dev-hub_devcontainer-dev-1
-docker logs hagevvashiinfo-dev-hub_devcontainer-dev-1 2>&1 | tail -n 20
+docker stop <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1
+docker logs <MonolithicDevContainerレポジトリ名>_devcontainer-dev-1 2>&1 | tail -n 20
 ```
 
 **期待結果**: s6-overlayによる正常なシャットダウンログ
