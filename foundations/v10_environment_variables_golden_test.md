@@ -2,7 +2,7 @@
 
 **作成日**: 2026-01-10
 **ステータス**: ✅ 検証完了
-**目的**: v10設計における環境変数実装（${UNAME}, ${REPO_NAME}）の動作を保証する標準テストケース
+**目的**: v10設計における環境変数実装（${UNAME}, ${MDC_REPO_ROOT}）の動作を保証する標準テストケース
 
 このドキュメントは、v10環境変数実装の正しい動作を検証するためのゴールデンテストケースです。新しい変更を加えた際や、環境を再構築した際には、必ずこのテストケースを実行してください。
 
@@ -15,7 +15,7 @@
 
 | 項目 | 内容 |
 |------|------|
-| テスト対象 | v10環境変数実装（${UNAME}, ${REPO_NAME}） |
+| テスト対象 | v10環境変数実装（${UNAME}, ${MDC_REPO_ROOT}） |
 | 検証範囲 | ビルド、起動、プロセス管理、環境変数展開、ログ出力 |
 | 実行時間 | 約30-40分（ビルド時間含む） |
 | 前提条件 | Docker、docker compose がインストール済み |
@@ -26,13 +26,13 @@
 
 | セクション | 項目数 | 所要時間 |
 |-----------|--------|---------|
-| 1. ビルドと起動 | 3 | 約15-20分 |
+| 1. ビルドと起動 | 4 | 約15-20分 |
 | 2. 基本動作確認 | 3 | 約5分 |
 | 3. supervisord設定確認 | 4 | 約5分 |
 | 4. process-compose設定確認 | 2 | 約3分 |
 | 5. 環境変数展開の確認 | 4 | 約3分 |
 | 6. ログ確認 | 3 | 約2分 |
-| **合計** | **21** | **約30-40分** |
+| **合計** | **22** | **約30-40分** |
 
 ---
 
@@ -42,9 +42,7 @@
 
 ```bash
 # リポジトリルートから実行
-cd .devcontainer
-docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml down
-cd ..
+./bin/dc down
 ```
 
 **期待結果**: エラーなくコンテナが停止・削除される
@@ -55,16 +53,47 @@ cd ..
 
 ---
 
-### 1-2: Docker システムクリーンアップとキャッシュなしビルド
+### 1-2: セットアップスクリプトの実行
+
+**重要**: ビルド前に必ず実行が必要です
+
+```bash
+# リポジトリルートから実行
+.devcontainer/setup.sh
+.devcontainer/generate-env.sh
+```
+
+**期待結果**:
+- `setup.sh`: `.devcontainer/devcontainer.json` が生成される
+- `generate-env.sh`: `.devcontainer/.env` が生成される
+
+**確認項目**:
+- [ ] `.devcontainer/devcontainer.json` が生成される
+- [ ] `.devcontainer/.env` が生成される
+- [ ] `.env` に `MDC_REPO_ROOT` が設定されている
+- [ ] スクリプト実行時にエラーが発生しない
+
+**生成ファイルの確認**:
+```bash
+# devcontainer.json の確認
+cat .devcontainer/devcontainer.json | grep workspaceFolder
+# 期待結果: "workspaceFolder": "/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>"
+
+# .env の確認
+cat .devcontainer/.env | grep MDC_REPO_ROOT
+# 期待結果: MDC_REPO_ROOT="<MonolithicDevContainerレポジトリ名>"
+```
+
+---
+
+### 1-3: Docker システムクリーンアップとキャッシュなしビルド
 
 ```bash
 # 未使用リソースのクリーンアップ（オプション）
 docker system prune -f
 
-# .devcontainer ディレクトリに移動してビルド
-cd .devcontainer
-docker compose --progress plain -f docker-compose.yml -f docker-compose.dev-vm.yml build --no-cache
-cd ..
+# キャッシュなしビルド
+./bin/dc build --progress plain --no-cache
 ```
 
 **期待結果**: エラーなくビルドが完了する
@@ -78,13 +107,11 @@ cd ..
 
 ---
 
-### 1-3: コンテナ起動
+### 1-4: コンテナ起動
 
 ```bash
 # コンテナを起動
-cd .devcontainer
-docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml up -d
-cd ..
+./bin/dc up -d
 
 # コンテナステータス確認
 docker ps
@@ -110,7 +137,7 @@ docker logs devcontainer-dev-1 2>&1 | tail -30
 ### 2-1: PID 1 確認
 
 ```bash
-docker exec devcontainer-dev-1 ps aux | head -n 10
+./bin/dc exec dev ps aux | head -n 10
 ```
 
 **期待結果**:
@@ -147,7 +174,7 @@ pwd
 echo $UNAME
 # 期待結果: 一般ユーザー名
 
-echo $REPO_NAME
+echo $MDC_REPO_ROOT
 # 期待結果: <MonolithicDevContainerレポジトリ名>
 
 # ログアウト
@@ -157,7 +184,7 @@ exit
 **確認項目**:
 - [ ] `whoami` が一般ユーザー名と一致
 - [ ] `pwd` が `/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>` と一致
-- [ ] 環境変数 `UNAME` と `REPO_NAME` が正しく設定されている
+- [ ] 環境変数 `UNAME` と `MDC_REPO_ROOT` が正しく設定されている
 - [ ] ログイン時にエラーがない
 
 ---
@@ -203,7 +230,7 @@ exit
 ### 3-3: code-server プロセス確認
 
 ```bash
-docker exec devcontainer-dev-1 ps aux | grep code-server
+./bin/dc exec dev ps aux | grep code-server
 ```
 
 **期待結果**:
@@ -245,7 +272,7 @@ HTTP/1.1 200 OK
 ### 4-1: process-compose プロセス確認
 
 ```bash
-docker exec devcontainer-dev-1 ps aux | grep process-compose
+./bin/dc exec dev ps aux | grep process-compose
 ```
 
 **期待結果**:
@@ -263,7 +290,7 @@ root  XXXX  ... /usr/local/bin/process-compose -t=false -f /etc/process-compose/
 ### 4-2: dummy-watcher プロセス確認
 
 ```bash
-docker exec devcontainer-dev-1 ps aux | grep "tail -f"
+./bin/dc exec dev ps aux | grep "tail -f"
 ```
 
 **期待結果**:
@@ -283,7 +310,7 @@ root  XXXX  ... tail -f /dev/null
 
 ```bash
 ./bin/dc exec dev /bin/bash
-cat /etc/supervisor/conf.d/seed.conf | grep -E "user=|HOME="
+cat /etc/supervisor/seed.conf | grep -E "user=|directory=|HOME="
 exit
 ```
 
@@ -300,50 +327,48 @@ environment=CODE_SERVER_PORT="4035",HOME="/home/%(ENV_UNAME)s"
 
 ---
 
-### 5-2: supervisord.conf の確認
+### 5-2: project.conf の確認
+
+**注記**: `/etc/supervisor/supervisord.conf` は `workloads/supervisord/project.conf` へのシンボリックリンクです。
 
 ```bash
 ./bin/dc exec dev /bin/bash
-cat /etc/supervisor/supervisord.conf | grep -E "user=|HOME="
+cat /etc/supervisor/supervisord.conf | grep -E "user=|directory=|HOME="
 exit
 ```
 
 **期待結果**:
 ```
 user=%(ENV_UNAME)s
-environment=HOME="/home/%(ENV_UNAME)s"
-user=%(ENV_UNAME)s
-environment=HOME="/home/%(ENV_UNAME)s"
+directory=/home/%(ENV_UNAME)s/%(ENV_MDC_REPO_ROOT)s
+environment=CODE_SERVER_PORT="4035",HOME="/home/%(ENV_UNAME)s"
 ```
 
 **確認項目**:
-- [ ] `user=%(ENV_UNAME)s` が確認できる（2箇所）
-- [ ] `HOME="/home/%(ENV_UNAME)s"` が確認できる（2箇所）
+- [ ] `user=%(ENV_UNAME)s` が確認できる
+- [ ] `directory=/home/%(ENV_UNAME)s/%(ENV_MDC_REPO_ROOT)s` が確認できる
+- [ ] `HOME="/home/%(ENV_UNAME)s"` が確認できる
 
 ---
 
-### 5-3: project.conf の確認（スキップ）
+### 5-3: project.yaml の確認
 
-**注記**: v10実装では `project.conf` は存在しません。プロジェクト固有のプロセス管理には process-compose を使用します。このセクションはスキップしてください。
-
----
-
-### 5-4: project.yaml の確認
+**注記**: `/etc/process-compose/process-compose.yaml` は `workloads/process-compose/project.yaml` へのシンボリックリンクです。
 
 ```bash
 ./bin/dc exec dev /bin/bash
-cat /etc/process-compose/project.yaml | grep -E "working_dir:|HOME="
+cat /etc/process-compose/process-compose.yaml | grep -E "working_dir:|HOME="
 exit
 ```
 
 **期待結果**:
 ```
-    working_dir: "/home/${UNAME}/${REPO_NAME}"
+    working_dir: "/home/${UNAME}/${MDC_REPO_ROOT}"
       - HOME=/home/${UNAME}
 ```
 
 **確認項目**:
-- [ ] `working_dir: "/home/${UNAME}/${REPO_NAME}"` が確認できる
+- [ ] `working_dir: "/home/${UNAME}/${MDC_REPO_ROOT}"` が確認できる
 - [ ] `HOME=/home/${UNAME}` が確認できる
 
 ---
@@ -371,7 +396,7 @@ docker logs devcontainer-dev-1 2>&1 | grep -i error
 ### 6-2: supervisord ログ確認（code-server）
 
 ```bash
-docker exec devcontainer-dev-1 cat /var/log/supervisor/code-server.log
+./bin/dc exec dev cat /var/log/supervisor/code-server.log
 ```
 
 **期待結果**:
@@ -390,7 +415,7 @@ cat: /var/log/supervisor/code-server.log: No such file or directory
 ### 6-3: supervisord ログ確認（process-compose）
 
 ```bash
-docker exec devcontainer-dev-1 cat /var/log/supervisor/process-compose.log
+./bin/dc exec dev cat /var/log/supervisor/process-compose.log
 ```
 
 **期待結果**:

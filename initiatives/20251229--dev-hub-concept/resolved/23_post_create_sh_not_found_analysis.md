@@ -25,8 +25,8 @@
 
 設計v10（[14_詳細設計_ディレクトリ構成.v10.md](../20251229--dev-hub-concept/14_詳細設計_ディレクトリ構成.v10.md)）では:
 - `post-create.sh` は `postCreateCommand` で実行される前提
-- コンテナ内に `/home/<user>/${REPO_NAME}/.devcontainer/post-create.sh` が存在する必要がある
-- **実行時点では既に `${REPO_NAME}` がバインドマウントされている想定**
+- コンテナ内に `/home/<user>/${MDC_REPO_ROOT}/.devcontainer/post-create.sh` が存在する必要がある
+- **実行時点では既に `${MDC_REPO_ROOT}` がバインドマウントされている想定**
 
 ### 現在のDockerfileの状況
 
@@ -39,11 +39,11 @@
 
 **重要な考察**:
 - `post-create.sh` は「コンテナ作成後」に実行される
-- 実行時点では既に `${REPO_NAME}` がバインドマウントされている想定
+- 実行時点では既に `${MDC_REPO_ROOT}` がバインドマウントされている想定
 - **つまり、ホスト側の `.devcontainer/post-create.sh` がそのままコンテナ内で見えるべき**
 
 現在の問題:
-- `${localWorkspaceFolder}` が `/home/<user>/${REPO_NAME}` に明示的にマウントされていない可能性
+- `${localWorkspaceFolder}` が `/home/<user>/${MDC_REPO_ROOT}` に明示的にマウントされていない可能性
 - VS Codeのデフォルトマウント挙動に依存している可能性
 - マウント設定が不明確
 
@@ -53,13 +53,13 @@
 
 具体的には:
 1. `post-create.sh` がコンテナ内に配置されている（バインドマウント経由）
-2. Devin互換用シンボリックリンク `/home/<user>/repos` → `/home/<user>/${REPO_NAME}/repos` が作成される
-3. CLI版AIエージェントが `/home/<user>/${REPO_NAME}` から全体を参照可能
+2. Devin互換用シンボリックリンク `/home/<user>/repos` → `/home/<user>/${MDC_REPO_ROOT}/repos` が作成される
+3. CLI版AIエージェントが `/home/<user>/${MDC_REPO_ROOT}` から全体を参照可能
 
 これにより、設計v10の3つの要求を満たす:
 1. **Devin互換性**: `~/repos/<product-repo>` でアクセス可能
 2. **VS Code拡張版コンテキストエンジニアリング**: `workspace.code-workspace` で論理的に統合
-3. **CLI版コンテキストエンジニアリング**: 物理的に `${REPO_NAME}/` 配下に統合
+3. **CLI版コンテキストエンジニアリング**: 物理的に `${MDC_REPO_ROOT}/` 配下に統合
 
 ## ４．戦略・アプローチ（解決の方針）
 
@@ -81,15 +81,15 @@
 **修正内容**:
 ```json
 "mounts": [
-  "source=${localWorkspaceFolder},target=/home/__UNAME__/__REPO_NAME__,type=bind,consistency=cached",
+  "source=${localWorkspaceFolder},target=/home/__UNAME__/__MDC_REPO_ROOT__,type=bind,consistency=cached",
   "source=__HOME__/.bash_history,target=/home/__UNAME__/.bash_history,type=bind,consistency=cached",
   ...
 ]
 ```
 
 **動作**:
-- ホストの `${localWorkspaceFolder}` が `/home/<user>/${REPO_NAME}` にバインドマウントされる
-- `.devcontainer/post-create.sh` が自動的にコンテナ内で `/home/<user>/${REPO_NAME}/.devcontainer/post-create.sh` として見える
+- ホストの `${localWorkspaceFolder}` が `/home/<user>/${MDC_REPO_ROOT}` にバインドマウントされる
+- `.devcontainer/post-create.sh` が自動的にコンテナ内で `/home/<user>/${MDC_REPO_ROOT}/.devcontainer/post-create.sh` として見える
 
 **メリット**:
 - ✅ 設計v10の意図に最も近い
@@ -149,7 +149,7 @@ RUN chmod +x /tmp/post-create.sh
 
 ### 解決策3: `docker-compose.yml` でバインドマウントを明示（推奨）
 
-**アプローチ**: `docker-compose.yml` で `${REPO_NAME}` 全体を明示的にバインドマウント
+**アプローチ**: `docker-compose.yml` で `${MDC_REPO_ROOT}` 全体を明示的にバインドマウント
 
 **修正箇所**: [.devcontainer/docker-compose.yml](../../.devcontainer/docker-compose.yml)
 
@@ -159,12 +159,12 @@ volumes:
   # <MonolithicDevContainerレポジトリ名> リポジトリ全体をバインドマウント
   - type: bind
     source: ..
-    target: /home/${UNAME:-vscode}/${REPO_NAME}
+    target: /home/${UNAME:-vscode}/${MDC_REPO_ROOT}
     consistency: cached
   # repos/ を Docker Volume で直接マウント（I/Oパフォーマンス）
   - type: volume
     source: repos
-    target: /home/${UNAME:-vscode}/${REPO_NAME}/repos
+    target: /home/${UNAME:-vscode}/${MDC_REPO_ROOT}/repos
   # その他の既存マウント
   - type: bind
     source: ${HOME}/.bash_history
@@ -174,9 +174,9 @@ volumes:
 ```
 
 **動作**:
-- ホストの `..`（リポジトリルート）が `/home/<user>/${REPO_NAME}` にバインドマウントされる
+- ホストの `..`（リポジトリルート）が `/home/<user>/${MDC_REPO_ROOT}` にバインドマウントされる
 - `.devcontainer/post-create.sh` が自動的にコンテナ内で見える
-- `repos/` は Docker Volume で `/home/<user>/${REPO_NAME}/repos` に直接マウント（設計v10準拠）
+- `repos/` は Docker Volume で `/home/<user>/${MDC_REPO_ROOT}/repos` に直接マウント（設計v10準拠）
 
 **メリット**:
 - ✅ 設計v10に完全準拠（最も重要）
@@ -216,8 +216,8 @@ volumes:
 
 1. **設計v10に完全準拠**
    - マウント構造が設計ドキュメント（[14_詳細設計_ディレクトリ構成.v10.md](../20251229--dev-hub-concept/14_詳細設計_ディレクトリ構成.v10.md)）通りになる
-   - `${REPO_NAME}` 全体が `/home/<user>/${REPO_NAME}` にバインドマウント
-   - `repos/` が `/home/<user>/${REPO_NAME}/repos` に直接Docker Volumeマウント
+   - `${MDC_REPO_ROOT}` 全体が `/home/<user>/${MDC_REPO_ROOT}` にバインドマウント
+   - `repos/` が `/home/<user>/${MDC_REPO_ROOT}/repos` に直接Docker Volumeマウント
 
 2. **問題の根本解決**
    - `${localWorkspaceFolder}` が明示的にマウントされる
@@ -250,8 +250,8 @@ volumes:
 ## 次のアクション
 
 1. **`docker-compose.yml` を修正**
-   - `${REPO_NAME}` 全体のバインドマウント設定を追加
-   - `repos/` のマウント先を `/home/${UNAME}/${REPO_NAME}/repos` に変更（既に実施済み）
+   - `${MDC_REPO_ROOT}` 全体のバインドマウント設定を追加
+   - `repos/` のマウント先を `/home/${UNAME}/${MDC_REPO_ROOT}/repos` に変更（既に実施済み）
 
 2. **コンテナを再起動してテスト**
    - DevContainerをリビルド
@@ -259,7 +259,7 @@ volumes:
 
 3. **動作確認**
    - シンボリックリンク `/home/<user>/repos` が作成されているか確認
-   - CLI版AIエージェントが `/home/<user>/${REPO_NAME}` から全体を参照可能か確認
+   - CLI版AIエージェントが `/home/<user>/${MDC_REPO_ROOT}` から全体を参照可能か確認
    - Devin互換性が維持されているか確認
 
 4. **結果のドキュメント化**

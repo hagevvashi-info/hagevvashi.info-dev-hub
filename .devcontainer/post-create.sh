@@ -10,16 +10,16 @@ UNAME=$(whoami)
 # スクリプトのディレクトリから相対的にリポジトリ名を取得
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 REPO_ROOT=$(cd "${SCRIPT_DIR}/.." && pwd)
-REPO_NAME=$(basename "${REPO_ROOT}")
+MDC_REPO_ROOT=$(basename "${REPO_ROOT}")
 
 echo "User: ${UNAME}"
-echo "Repository: ${REPO_NAME}"
+echo "Repository: ${MDC_REPO_ROOT}"
 echo "Repository root: ${REPO_ROOT}"
 
 # Devin互換用のシンボリックリンクを作成
 # /home/<user>/repos -> /home/<user>/<repo-name>/repos
 SYMLINK_PATH="/home/${UNAME}/repos"
-TARGET_PATH="/home/${UNAME}/${REPO_NAME}/repos"
+TARGET_PATH="/home/${UNAME}/${MDC_REPO_ROOT}/repos"
 
 if [ ! -L "${SYMLINK_PATH}" ]; then
     echo "Creating symlink: ${SYMLINK_PATH} -> ${TARGET_PATH}"

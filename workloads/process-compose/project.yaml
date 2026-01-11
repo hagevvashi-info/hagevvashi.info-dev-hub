@@ -9,7 +9,7 @@ processes:
   # リソース消費ゼロで永続的に動作
   dummy-watcher:
     command: "tail -f /dev/null"
-    working_dir: "/home/${UNAME}/${REPO_NAME}"
+    working_dir: "/home/${UNAME}/${MDC_REPO_ROOT}"
     availability:
       restart: "always"
     environment:

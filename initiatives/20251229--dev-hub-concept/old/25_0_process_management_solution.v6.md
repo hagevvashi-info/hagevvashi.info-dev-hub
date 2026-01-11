@@ -273,12 +273,12 @@ services:
     volumes:
       - type: bind
         source: ..
-        target: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}
+        target: /home/${UNAME:-vscode}/${MDC_REPO_ROOT:-dev-hub}
         consistency: cached
       - type: volume
         source: repos
-        target: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}/repos
-    working_dir: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}
+        target: /home/${UNAME:-vscode}/${MDC_REPO_ROOT:-dev-hub}/repos
+    working_dir: /home/${UNAME:-vscode}/${MDC_REPO_ROOT:-dev-hub}
     ports:
       - "4035:4035"  # code-server
       - "8035:8035"  # difit

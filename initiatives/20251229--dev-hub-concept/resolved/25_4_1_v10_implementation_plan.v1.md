@@ -455,13 +455,13 @@ v10設計ドキュメントは完成しているが、実装が追いついて�
 
    現在:
    ```bash
-   SUPERVISORD_CONF_SOURCE="/home/${UNAME}/${REPO_NAME}/.devcontainer/supervisord/supervisord.conf"
+   SUPERVISORD_CONF_SOURCE="/home/${UNAME}/${MDC_REPO_ROOT}/.devcontainer/supervisord/supervisord.conf"
    SUPERVISORD_CONF_TARGET="/etc/supervisor/supervisord.conf"
    ```
 
    修正後:
    ```bash
-   PROJECT_CONF="/home/${UNAME}/${REPO_NAME}/workloads/supervisord/project.conf"
+   PROJECT_CONF="/home/${UNAME}/${MDC_REPO_ROOT}/workloads/supervisord/project.conf"
    SEED_CONF="/etc/supervisor/seed.conf"
    TARGET_CONF="/etc/supervisor/supervisord.conf"
 
@@ -516,12 +516,12 @@ v10設計ドキュメントは完成しているが、実装が追いついて�
 
    現在:
    ```bash
-   PROCESS_COMPOSE_YAML_SOURCE="/home/${UNAME}/${REPO_NAME}/.devcontainer/process-compose/process-compose.yaml"
+   PROCESS_COMPOSE_YAML_SOURCE="/home/${UNAME}/${MDC_REPO_ROOT}/.devcontainer/process-compose/process-compose.yaml"
    ```
 
    修正後:
    ```bash
-   PROJECT_YAML="/home/${UNAME}/${REPO_NAME}/workloads/process-compose/project.yaml"
+   PROJECT_YAML="/home/${UNAME}/${MDC_REPO_ROOT}/workloads/process-compose/project.yaml"
    SEED_YAML="/etc/process-compose/seed.yaml"
    TARGET_YAML="/etc/process-compose/process-compose.yaml"
 

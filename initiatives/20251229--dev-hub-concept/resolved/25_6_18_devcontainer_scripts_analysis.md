@@ -83,7 +83,7 @@ set -euox pipefail
 1. Docker Volume `repos` の作成
 2. ホストOSアーキテクチャ判定（linux/amd64 or linux/arm64）
 3. リポジトリ名の取得
-4. `devcontainer.json.template` から `devcontainer.json` を生成（`__UNAME__`, `__HOME__`, `__PLATFORM__`, `__REPO_NAME__` を置換）
+4. `devcontainer.json.template` から `devcontainer.json` を生成（`__UNAME__`, `__HOME__`, `__PLATFORM__`, `__MDC_REPO_ROOT__` を置換）
 5. `docker-compose.dev-vm.yml.template` から `docker-compose.dev-vm.yml` を生成
 
 **入出力**:
@@ -171,7 +171,7 @@ set -euo pipefail
 - **Phase 6**: （削除済み）s6-overlayがsupervisordとprocess-composeを起動
 
 **入出力**:
-- 入力: 環境変数（UNAME, GNAME, REPO_NAME）、マウントされたボリューム
+- 入力: 環境変数（UNAME, GNAME, MDC_REPO_ROOT）、マウントされたボリューム
 - 出力: 初期化されたコンテナ環境
 
 **役割分類**: **コンテナ初期化スクリプト（Container Initialization）**
@@ -195,12 +195,12 @@ set -euo pipefail
 **実行頻度**: DevContainerビルド後の初回のみ（devcontainer.json の `postCreateCommand`）
 
 **主な処理**:
-1. 環境変数の確認（UNAME, REPO_NAME）
-2. Devin互換用のシンボリックリンク作成（`/home/${UNAME}/repos` → `/home/${UNAME}/${REPO_NAME}/repos`）
+1. 環境変数の確認（UNAME, MDC_REPO_ROOT）
+2. Devin互換用のシンボリックリンク作成（`/home/${UNAME}/repos` → `/home/${UNAME}/${MDC_REPO_ROOT}/repos`）
 3. repos/ ディレクトリの存在確認と内容表示
 
 **入出力**:
-- 入力: 環境変数（UNAME, REPO_NAME）
+- 入力: 環境変数（UNAME, MDC_REPO_ROOT）
 - 出力: シンボリックリンク（/home/${UNAME}/repos）
 
 **役割分類**: **DevContainerビルド後処理スクリプト（Post-create Setup）**

@@ -517,9 +517,9 @@ echo ""
 echo "🔍 Phase 4: Validating supervisord configuration..."
 
 UNAME=${UNAME:-$(whoami)}
-REPO_NAME=${REPO_NAME:-"<MonolithicDevContainerレポジトリ名>"}
+MDC_REPO_ROOT=${MDC_REPO_ROOT:-"<MonolithicDevContainerレポジトリ名>"}
 
-PROJECT_CONF="/home/${UNAME}/${REPO_NAME}/configs/supervisord/project.conf"
+PROJECT_CONF="/home/${UNAME}/${MDC_REPO_ROOT}/configs/supervisord/project.conf"
 SEED_CONF="/etc/supervisor/seed.conf"
 TARGET_CONF="/etc/supervisor/supervisord.conf"
 
