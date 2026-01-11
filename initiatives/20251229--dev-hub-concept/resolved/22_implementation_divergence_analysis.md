@@ -711,22 +711,22 @@ devcontainer.json
 ### 実装内容
 
 1. **`generate-env.sh` の修正**
-   - `REPO_NAME` 環境変数を追加（リポジトリ名を自動取得）
+   - `MDC_REPO_ROOT` 環境変数を追加（リポジトリ名を自動取得）
 
 2. **`docker-compose.yml` の修正**
-   - `repos/` のマウント先を `/home/${UNAME}/${REPO_NAME}/repos` に変更
-   - `working_dir` を `/home/${UNAME}/${REPO_NAME}` に変更
+   - `repos/` のマウント先を `/home/${UNAME}/${MDC_REPO_ROOT}/repos` に変更
+   - `working_dir` を `/home/${UNAME}/${MDC_REPO_ROOT}` に変更
 
 3. **`setup.sh` の修正**
-   - `REPO_NAME` のテンプレート置換処理を追加
+   - `MDC_REPO_ROOT` のテンプレート置換処理を追加
 
 4. **`devcontainer.json.template` の修正**
-   - `workspaceFolder` を `/home/__UNAME__/__REPO_NAME__` に変更
+   - `workspaceFolder` を `/home/__UNAME__/__MDC_REPO_ROOT__` に変更
    - `postCreateCommand` を追加（post-create.sh実行）
 
 5. **`post-create.sh` の新規作成**
    - Devin互換用シンボリックリンク作成処理
-   - `/home/${UNAME}/repos` → `/home/${UNAME}/${REPO_NAME}/repos`
+   - `/home/${UNAME}/repos` → `/home/${UNAME}/${MDC_REPO_ROOT}/repos`
    - カレントディレクトリに依存しない実装
 
 6. **`workspace.code-workspace` の記述**
@@ -740,7 +740,7 @@ devcontainer.json
 
 - `workspaceFolder`: `/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>` ✅
 - `postCreateCommand`: `bash /home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/.devcontainer/post-create.sh` ✅
-- `REPO_NAME`: `<MonolithicDevContainerレポジトリ名>` ✅
+- `MDC_REPO_ROOT`: `<MonolithicDevContainerレポジトリ名>` ✅
 - Docker Volume `repos` のマウント先: `/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>/repos` ✅
 
 ### 次のステップ

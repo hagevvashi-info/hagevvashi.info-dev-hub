@@ -288,10 +288,10 @@ echo "🔍 Phase 4: Validating supervisord configuration..."
 
 # 環境変数から値を取得（フォールバック付き）
 UNAME=${UNAME:-$(whoami)}
-REPO_NAME=${REPO_NAME:-"<MonolithicDevContainerレポジトリ名>"}
+MDC_REPO_ROOT=${MDC_REPO_ROOT:-"<MonolithicDevContainerレポジトリ名>"}
 
 # マウントされた設定ファイルのパス
-SUPERVISORD_CONF_SOURCE="/home/${UNAME}/${REPO_NAME}/.devcontainer/supervisord/supervisord.conf"
+SUPERVISORD_CONF_SOURCE="/home/${UNAME}/${MDC_REPO_ROOT}/.devcontainer/supervisord/supervisord.conf"
 SUPERVISORD_CONF_TARGET="/etc/supervisor/supervisord.conf"
 
 # 設定ファイルの存在確認
@@ -337,7 +337,7 @@ echo "  ✅ supervisord.conf is valid"
 echo ""
 echo "🔍 Phase 5: Setting up process-compose configuration..."
 
-PROCESS_COMPOSE_YAML_SOURCE="/home/${UNAME}/${REPO_NAME}/.devcontainer/process-compose/process-compose.yaml"
+PROCESS_COMPOSE_YAML_SOURCE="/home/${UNAME}/${MDC_REPO_ROOT}/.devcontainer/process-compose/process-compose.yaml"
 PROCESS_COMPOSE_YAML_TARGET="/etc/process-compose/process-compose.yaml"
 
 if [ -f "${PROCESS_COMPOSE_YAML_SOURCE}" ]; then
@@ -389,13 +389,13 @@ services:
     volumes:
       - type: bind
         source: ..
-        target: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}
+        target: /home/${UNAME:-vscode}/${MDC_REPO_ROOT:-dev-hub}
         consistency: cached
       - type: volume
         source: repos
-        target: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}/repos
+        target: /home/${UNAME:-vscode}/${MDC_REPO_ROOT:-dev-hub}/repos
 
-    working_dir: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}
+    working_dir: /home/${UNAME:-vscode}/${MDC_REPO_ROOT:-dev-hub}
 
     ports:
       - "4035:4035"  # code-server

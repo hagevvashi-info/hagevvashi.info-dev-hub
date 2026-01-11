@@ -437,13 +437,13 @@
             - Line 34: `HOME=/home/<一般ユーザー>` → `HOME=/home/<一般ユーザー>`
     - **追加修正（2026-01-10T11:10:00+09:00）**:
         - ✅ リポジトリ名のハードコード（`<MonolithicDevContainerレポジトリ名>`）も環境変数化
-        - ✅ `REPO_NAME` 環境変数を使用（docker-compose.yml line 43 で定義済み、デフォルト: `dev-hub`）
-        - ✅ Line 11: `working_dir: "/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>"` → `working_dir: "/home/${UNAME}/${REPO_NAME}"`
+        - ✅ `MDC_REPO_ROOT` 環境変数を使用（docker-compose.yml line 43 で定義済み、デフォルト: `dev-hub`）
+        - ✅ Line 11: `working_dir: "/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>"` → `working_dir: "/home/${UNAME}/${MDC_REPO_ROOT}"`
         - ✅ これにより、ユーザー名とリポジトリ名の両方が完全に環境変数化され、汎用性が向上
     - **完了基準**:
         - ✅ process-compose 環境変数展開サポートを確認
         - ✅ `working_dir` および `environment` フィールドを `${UNAME}` で動的設定
-        - ✅ リポジトリ名も `${REPO_NAME}` で動的設定（2026-01-10T11:10:00+09:00追加）
+        - ✅ リポジトリ名も `${MDC_REPO_ROOT}` で動的設定（2026-01-10T11:10:00+09:00追加）
         - ⏳ 実行時に正しいユーザーのホームディレクトリでプロセスが起動する（ユーザー検証待ち）
     - **実施日時**: 2026-01-10T11:00:00+09:00（調査完了）、2026-01-10T11:05:00+09:00（修正完了）、2026-01-10T11:10:00+09:00（リポジトリ名環境変数化完了）
 
@@ -459,13 +459,13 @@
     - **実施内容**:
         1. ✅ 設定ファイル修正（supervisord の環境変数展開構文を使用）
         2. ⏳ 実行時検証（code-server 起動確認）- ユーザーが実施（**検証手順**: 25_6_21 セクション3.3, 3.4, 5.3）
-    - **決定した実装方針**: ✅ **環境変数化（`%(ENV_UNAME)s`, `%(ENV_REPO_NAME)s`）を採用**
+    - **決定した実装方針**: ✅ **環境変数化（`%(ENV_UNAME)s`, `%(ENV_MDC_REPO_ROOT)s`）を採用**
     - **修正内容（2026-01-10T11:15:00+09:00）**:
         - ✅ `workloads/supervisord/project.conf`:
             - Line 31: `user=<一般ユーザー>` → `user=%(ENV_UNAME)s`
-            - Line 32: `directory=/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>` → `directory=/home/%(ENV_UNAME)s/%(ENV_REPO_NAME)s`
+            - Line 32: `directory=/home/<一般ユーザー>/<MonolithicDevContainerレポジトリ名>` → `directory=/home/%(ENV_UNAME)s/%(ENV_MDC_REPO_ROOT)s`
             - Line 36: `HOME="/home/<一般ユーザー>"` → `HOME="/home/%(ENV_UNAME)s"`
-        - ✅ `REPO_NAME` 環境変数も使用（docker-compose.yml line 43 で定義済み、デフォルト: `dev-hub`）
+        - ✅ `MDC_REPO_ROOT` 環境変数も使用（docker-compose.yml line 43 で定義済み、デフォルト: `dev-hub`）
     - **完了基準**:
         - ✅ `user`, `directory`, `environment` フィールドを環境変数で動的設定
         - ⏳ 実行時に正しいユーザーのホームディレクトリで code-server が起動する（ユーザー検証待ち）

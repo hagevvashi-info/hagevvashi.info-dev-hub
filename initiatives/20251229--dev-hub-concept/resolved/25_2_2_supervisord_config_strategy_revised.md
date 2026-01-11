@@ -100,24 +100,24 @@ services:
       # リポジトリ全体をバインドマウント
       - type: bind
         source: ..
-        target: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}
+        target: /home/${UNAME:-vscode}/${MDC_REPO_ROOT:-dev-hub}
         consistency: cached
 
       # repos/ を Docker Volume で直接マウント
       - type: volume
         source: repos
-        target: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}/repos
+        target: /home/${UNAME:-vscode}/${MDC_REPO_ROOT:-dev-hub}/repos
 
       # ★★★ supervisord 設定をバインドマウント ★★★
       - type: bind
         source: .devcontainer/supervisord/supervisord.conf
-        target: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}/.devcontainer/supervisord/supervisord.conf
+        target: /home/${UNAME:-vscode}/${MDC_REPO_ROOT:-dev-hub}/.devcontainer/supervisord/supervisord.conf
         read_only: true
 
       # ★★★ process-compose 設定をバインドマウント ★★★
       - type: bind
         source: .devcontainer/process-compose/process-compose.yaml
-        target: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}/.devcontainer/process-compose/process-compose.yaml
+        target: /home/${UNAME:-vscode}/${MDC_REPO_ROOT:-dev-hub}/.devcontainer/process-compose/process-compose.yaml
         read_only: true
 ```
 
@@ -134,7 +134,7 @@ echo "🔧 Running post-create setup..."
 # ... 既存の処理 ...
 
 # supervisord設定ファイルのシンボリックリンク作成
-SUPERVISORD_CONF_SOURCE="/home/${UNAME}/${REPO_NAME}/.devcontainer/supervisord/supervisord.conf"
+SUPERVISORD_CONF_SOURCE="/home/${UNAME}/${MDC_REPO_ROOT}/.devcontainer/supervisord/supervisord.conf"
 SUPERVISORD_CONF_TARGET="/etc/supervisor/supervisord.conf"  # 標準パスに変更
 
 if [ -f "${SUPERVISORD_CONF_SOURCE}" ]; then
@@ -146,7 +146,7 @@ else
 fi
 
 # process-compose設定ファイルのシンボリックリンク作成
-PROCESS_COMPOSE_YAML_SOURCE="/home/${UNAME}/${REPO_NAME}/.devcontainer/process-compose/process-compose.yaml"
+PROCESS_COMPOSE_YAML_SOURCE="/home/${UNAME}/${MDC_REPO_ROOT}/.devcontainer/process-compose/process-compose.yaml"
 PROCESS_COMPOSE_YAML_TARGET="/etc/process-compose/process-compose.yaml"
 
 if [ -f "${PROCESS_COMPOSE_YAML_SOURCE}" ]; then
@@ -222,7 +222,7 @@ set -euo pipefail
 echo "�� Initializing supervisord configuration..."
 
 # バインドマウントされた設定があればそちらを優先
-MOUNTED_SUPERVISORD_CONF="/home/${UNAME}/${REPO_NAME}/.devcontainer/supervisord/supervisord.conf"
+MOUNTED_SUPERVISORD_CONF="/home/${UNAME}/${MDC_REPO_ROOT}/.devcontainer/supervisord/supervisord.conf"
 if [ -f "${MOUNTED_SUPERVISORD_CONF}" ]; then
     echo "Using mounted supervisord.conf: ${MOUNTED_SUPERVISORD_CONF}"
     sudo ln -sf "${MOUNTED_SUPERVISORD_CONF}" /etc/supervisor/supervisord.conf
@@ -232,7 +232,7 @@ else
 fi
 
 # process-compose も同様
-MOUNTED_PROCESS_COMPOSE_YAML="/home/${UNAME}/${REPO_NAME}/.devcontainer/process-compose/process-compose.yaml"
+MOUNTED_PROCESS_COMPOSE_YAML="/home/${UNAME}/${MDC_REPO_ROOT}/.devcontainer/process-compose/process-compose.yaml"
 if [ -f "${MOUNTED_PROCESS_COMPOSE_YAML}" ]; then
     echo "Using mounted process-compose.yaml: ${MOUNTED_PROCESS_COMPOSE_YAML}"
     sudo mkdir -p /etc/process-compose

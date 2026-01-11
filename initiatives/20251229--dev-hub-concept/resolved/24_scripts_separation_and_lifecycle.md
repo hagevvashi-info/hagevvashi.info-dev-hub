@@ -289,7 +289,7 @@ CMD ["sh", "-c", "code-server --bind-addr 0.0.0.0:${CODE_SERVER_PORT} --auth pas
 **devcontainer.json.template での設定**:
 ```json
 {
-  "postCreateCommand": "/home/__UNAME__/__REPO_NAME__/.devcontainer/post-create.sh"
+  "postCreateCommand": "/home/__UNAME__/__MDC_REPO_ROOT__/.devcontainer/post-create.sh"
 }
 ```
 
@@ -307,16 +307,16 @@ UNAME=$(whoami)
 # スクリプトのディレクトリから相対的にリポジトリ名を取得
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 REPO_ROOT=$(cd "${SCRIPT_DIR}/.." && pwd)
-REPO_NAME=$(basename "${REPO_ROOT}")
+MDC_REPO_ROOT=$(basename "${REPO_ROOT}")
 
 echo "User: ${UNAME}"
-echo "Repository: ${REPO_NAME}"
+echo "Repository: ${MDC_REPO_ROOT}"
 echo "Repository root: ${REPO_ROOT}"
 
 # Devin互換用のシンボリックリンクを作成
 # /home/<user>/repos -> /home/<user>/<repo-name>/repos
 SYMLINK_PATH="/home/${UNAME}/repos"
-TARGET_PATH="/home/${UNAME}/${REPO_NAME}/repos"
+TARGET_PATH="/home/${UNAME}/${MDC_REPO_ROOT}/repos"
 
 if [ ! -L "${SYMLINK_PATH}" ]; then
     echo "Creating symlink: ${SYMLINK_PATH} -> ${TARGET_PATH}"
@@ -366,7 +366,7 @@ echo "✅ Post-create setup completed"
   - 変更のたびにイメージ再ビルドが必要
   - デバッグが困難
 - **DevContainerの設定の一部として管理したい**
-  - `${REPO_NAME}` と同じリポジトリで管理
+  - `${MDC_REPO_ROOT}` と同じリポジトリで管理
   - Git履歴で変更を追跡可能
 
 **設計意図**:
@@ -559,9 +559,9 @@ RUN useradd -o -l -u ${UID} -g ${GNAME} -G docker -m ${UNAME}
 **`post-create.sh` はバインドマウント経由でアクセスする前提だが、マウント設定が不足している**
 
 **設計意図**:
-- `post-create.sh` は `${REPO_NAME}/.devcontainer/post-create.sh` としてホスト側に存在
-- コンテナ内では `/home/<user>/${REPO_NAME}/.devcontainer/post-create.sh` としてアクセス
-- これには `${REPO_NAME}` が `/home/<user>/${REPO_NAME}` にバインドマウントされている必要がある
+- `post-create.sh` は `${MDC_REPO_ROOT}/.devcontainer/post-create.sh` としてホスト側に存在
+- コンテナ内では `/home/<user>/${MDC_REPO_ROOT}/.devcontainer/post-create.sh` としてアクセス
+- これには `${MDC_REPO_ROOT}` が `/home/<user>/${MDC_REPO_ROOT}` にバインドマウントされている必要がある
 
 **現状の問題**:
 - `${localWorkspaceFolder}` の明示的なマウント設定がない
@@ -577,12 +577,12 @@ volumes:
   # <MonolithicDevContainerレポジトリ名> リポジトリ全体をバインドマウント
   - type: bind
     source: ..
-    target: /home/${UNAME:-vscode}/${REPO_NAME}
+    target: /home/${UNAME:-vscode}/${MDC_REPO_ROOT}
     consistency: cached
   # repos/ を Docker Volume で直接マウント（I/Oパフォーマンス）
   - type: volume
     source: repos
-    target: /home/${UNAME:-vscode}/${REPO_NAME}/repos
+    target: /home/${UNAME:-vscode}/${MDC_REPO_ROOT}/repos
 ```
 
 **これにより**:

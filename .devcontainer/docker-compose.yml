@@ -12,17 +12,17 @@ services:
       # <MonolithicDevContainerレポジトリ名> リポジトリ全体をバインドマウント
       - type: bind
         source: ..
-        target: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}
+        target: /home/${UNAME:-vscode}/${MDC_REPO_ROOT:-dev-hub}
         consistency: cached
       # repos/ を Docker Volume で直接マウント（I/Oパフォーマンス）
       - type: volume
         source: repos
-        target: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}/repos
+        target: /home/${UNAME:-vscode}/${MDC_REPO_ROOT:-dev-hub}/repos
       # /var/run/docker.sock をマウント ― Docker from Docker のための設定
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
-    working_dir: /home/${UNAME:-vscode}/${REPO_NAME:-dev-hub}
+    working_dir: /home/${UNAME:-vscode}/${MDC_REPO_ROOT:-dev-hub}
     ports:
       - "4035:4035"
       - "8035:8035"
@@ -40,7 +40,7 @@ services:
     environment:
       - DEBUG_MODE=false  # true にするとデバッグモード
       - UNAME=${UNAME:-vscode}
-      - REPO_NAME=${REPO_NAME:-dev-hub}
+      - MDC_REPO_ROOT=${MDC_REPO_ROOT:-dev-hub}
       - GNAME=${GNAME:-vscode}
 
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
