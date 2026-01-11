@@ -11,6 +11,7 @@
   "workspaceFolder": "/home/__UNAME__/__MDC_REPO_ROOT__",
   "initializeCommand": "./.devcontainer/generate-env.sh",
   "postCreateCommand": "/home/__UNAME__/__MDC_REPO_ROOT__/.devcontainer/post-create.sh",
+  "remoteUser": "__UNAME__",
 
   "mounts": [
     "source=__HOME__/.bash_history,target=/home/__UNAME__/.bash_history,type=bind,consistency=cached",
