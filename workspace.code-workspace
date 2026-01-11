@@ -1,9 +1,8 @@
 {
   "folders": [
     {
-      "path": ".",
-      "name": "hagevvashi.info-dev-hub"
-    }
+      "path": "."
+    },
     // 以下、repos/ 配下のプロダクトリポジトリを追加
     // 例:
     // {
