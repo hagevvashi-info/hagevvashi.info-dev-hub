@@ -28,18 +28,84 @@ cd "${DEVCONTAINER_DIR}"
 # docker compose コマンドの基本形
 COMPOSE_CMD="docker compose -f docker-compose.yml -f docker-compose.dev-vm.yml"
 
+# VSCodeコンテナ検出関数
+check_vscode_container() {
+  # docker-compose.ymlから動的にプロジェクト名を取得
+  #
+  # 【重要】プロジェクト名取得の技術的根拠:
+  # Docker Composeの公式実装において、`docker compose config --format json`の
+  # JSON出力は、compose-spec/compose-goライブラリのProject.MarshalJSON()により
+  # 生成される。このメソッドは"name"フィールドを**最初に**出力する。
+  #
+  # 出典: https://github.com/compose-spec/compose-go/blob/8c75dbf7f75b23d1fff41b56fbd80c6ad0916e4a/types/project.go#L648-L671
+  # MarshalJSON実装（抜粋）:
+  #   out := map[string]interface{}{
+  #       "name":     p.Name,        // ← 1番目に出力
+  #       "services": p.Services,    // ← 2番目に出力
+  #       ...
+  #   }
+  #
+  # したがって、`grep -o '"name": "[^"]*"' | head -1`で取得される"name"は
+  # **確実にトップレベルのプロジェクト名**である。
+  #
+  # 注意: JSON仕様(RFC 8259)ではオブジェクトのキー順序は保証されないが、
+  # Docker Composeの実装上、この順序は安定している。
+  project_name=$(${COMPOSE_CMD} config --format json 2>/dev/null | grep -o '"name": "[^"]*"' | head -1 | cut -d'"' -f4)
+
+  if [ -z "${project_name}" ]; then
+    # プロジェクト名取得失敗時はコンテナなしとみなす
+    return 1
+  fi
+
+  # プロジェクト名-devパターンでコンテナを検索
+  container_id=$(docker ps -q --filter "name=${project_name}-dev" 2>/dev/null)
+
+  if [ -z "${container_id}" ]; then
+    return 1  # コンテナなし
+  fi
+
+  # VSCodeのdevcontainerラベルを確認
+  vscode_label=$(docker inspect "${container_id}" \
+    --format='{{index .Config.Labels "devcontainer.local_folder"}}' 2>/dev/null)
+
+  if [ -n "${vscode_label}" ]; then
+    return 0  # VSCodeコンテナあり
+  fi
+  return 1  # bin/dcコンテナ
+}
+
+# up/start/restart コマンドの前にVSCodeコンテナを検証
+case "${1:-}" in
+  up|start|restart)
+    if check_vscode_container; then
+      echo "❌ エラー: VSCodeで起動されたコンテナが既に存在します" >&2
+      echo "" >&2
+      echo "VSCodeで起動したコンテナに対して './bin/dc ${1}' を実行すると、" >&2
+      echo "コンテナが再作成され、VSCodeの接続が切断されます。" >&2
+      echo "" >&2
+      echo "以下のいずれかを選択してください:" >&2
+      echo "  1. コンテナ内でコマンドを実行: ./bin/dc exec dev bash" >&2
+      echo "  2. コンテナを削除して再起動: ./bin/dc down && ./bin/dc ${1} -d" >&2
+      exit 1
+    fi
+    ;;
+esac
+
 # exec サブコマンドの場合のみ -u フラグを自動付与
 if [ "${1:-}" = "exec" ]; then
-    shift  # "exec" を引数から削除
+  shift  # "exec" を引数から削除
 
-    # 既に -u または --user が指定されている場合はそのまま実行
-    if [[ "$*" =~ -u|--user ]]; then
-        exec ${COMPOSE_CMD} exec "$@"
-    else
-        # -u ${USER} を自動付与
-        exec ${COMPOSE_CMD} exec -u "${USER}" "$@"
-    fi
+  # 既に -u または --user が指定されている場合はそのまま実行
+  case "$*" in
+    *-u*|*--user*)
+      exec ${COMPOSE_CMD} exec "$@"
+      ;;
+    *)
+      # -u ${USER} を自動付与
+      exec ${COMPOSE_CMD} exec -u "${USER}" "$@"
+      ;;
+  esac
 else
-    # exec 以外のサブコマンドはそのまま実行
-    exec ${COMPOSE_CMD} "$@"
+  # exec 以外のサブコマンドはそのまま実行
+  exec ${COMPOSE_CMD} "$@"
 fi

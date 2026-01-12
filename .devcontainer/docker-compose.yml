@@ -1,3 +1,5 @@
+name: hagevvashi-info-dev-hub--mdc
+
 services:
   dev:
     build:

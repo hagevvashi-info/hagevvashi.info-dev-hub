@@ -1,17 +1,26 @@
-# v10環境変数実装 ゴールデンテストケース
+# v10設計 ゴールデンテストケース
 
 **作成日**: 2026-01-10
 **ステータス**: ✅ 検証完了
-**目的**: v10設計における環境変数実装（${UNAME}, ${MDC_REPO_ROOT}）の動作を保証する標準テストケース
+**目的**: v10設計における各種実装の動作を保証する標準テストケース集
 
-このドキュメントは、v10環境変数実装の正しい動作を検証するためのゴールデンテストケースです。新しい変更を加えた際や、環境を再構築した際には、必ずこのテストケースを実行してください。
+このドキュメントは、v10設計の重要な実装について、正しい動作を検証するためのゴールデンテストケース集です。新しい変更を加えた際や、環境を再構築した際には、必ずこれらのテストケースを実行してください。
 
 **関連ドキュメント**:
 - [14_詳細設計_ディレクトリ構成.v12.md](../initiatives/20251229--dev-hub-concept/decisions/14_詳細設計_ディレクトリ構成.v12.md) - v10設計の全体像
 
 ---
 
-## テストケース概要
+## 目次
+
+1. [v10環境変数実装テスト](#1-v10環境変数実装テスト)
+2. [bin/dcスマートラッパーテスト](#2-bindcスマートラッパーテスト)
+
+---
+
+## 1. v10環境変数実装テスト
+
+### テストケース概要
 
 | 項目 | 内容 |
 |------|------|
@@ -22,23 +31,23 @@
 
 ---
 
-## 検証項目サマリー
+### 検証項目サマリー
 
 | セクション | 項目数 | 所要時間 |
 |-----------|--------|---------|
-| 1. ビルドと起動 | 4 | 約15-20分 |
-| 2. 基本動作確認 | 3 | 約5分 |
-| 3. supervisord設定確認 | 4 | 約5分 |
-| 4. process-compose設定確認 | 2 | 約3分 |
-| 5. 環境変数展開の確認 | 4 | 約3分 |
-| 6. ログ確認 | 3 | 約2分 |
+| 1-1. ビルドと起動 | 4 | 約15-20分 |
+| 1-2. 基本動作確認 | 3 | 約5分 |
+| 1-3. supervisord設定確認 | 4 | 約5分 |
+| 1-4. process-compose設定確認 | 2 | 約3分 |
+| 1-5. 環境変数展開の確認 | 4 | 約3分 |
+| 1-6. ログ確認 | 3 | 約2分 |
 | **合計** | **22** | **約30-40分** |
 
 ---
 
-## 1. ビルドと起動
+### 1-1. ビルドと起動
 
-### 1-1: コンテナ停止・削除
+#### 1-1-1: コンテナ停止・削除
 
 ```bash
 # リポジトリルートから実行
@@ -513,14 +522,184 @@ cat: /var/log/supervisor/process-compose.log: No such file or directory
 
 ---
 
+---
+
+## 2. bin/dcスマートラッパーテスト
+
+### テストケース概要
+
+| 項目 | 内容 |
+|------|------|
+| テスト対象 | bin/dcスマートラッパー（VSCodeコンテナ検出機能） |
+| 検証範囲 | VSCodeコンテナ検出、エラーメッセージ表示、bin/dcコンテナ管理 |
+| 実行時間 | 約10分 |
+| 前提条件 | Docker、docker compose、VSCode DevContainers拡張 |
+
+---
+
+### 検証項目サマリー
+
+| セクション | 項目数 | 所要時間 |
+|-----------|--------|---------|
+| 2-1. VSCodeコンテナ検出 | 2 | 約3分 |
+| 2-2. bin/dcコンテナ管理 | 2 | 約3分 |
+| 2-3. execコマンド動作 | 1 | 約2分 |
+| **合計** | **5** | **約10分** |
+
+---
+
+### 2-1. VSCodeコンテナ検出
+
+#### 2-1-1: VSCodeコンテナ起動とラベル確認
+
+```bash
+# 1. VSCodeでコンテナ起動
+# VSCode → "Reopen in Container"
+
+# 2. コンテナとラベルを確認
+docker ps --filter "name=<docker-composeプロジェクト名>-dev" --format "{{.ID}}\t{{.Command}}"
+docker inspect <docker-composeプロジェクト名>-dev-1 --format '{{index .Config.Labels "devcontainer.local_folder"}}'
+```
+
+**期待結果**:
+- コンテナのCOMMAND: `/bin/sh -c 'echo Co…'`
+- ラベル値: `/Users/<一般ユーザー>/repos/<MDCレポジトリ>`（リポジトリパス）
+
+#### 2-1-2: VSCodeコンテナへのbin/dc up実行とエラー確認
+
+```bash
+# VSCodeコンテナが起動している状態で実行
+./bin/dc up -d
+```
+
+**期待結果**:
+```
+❌ エラー: VSCodeで起動されたコンテナが既に存在します
+
+VSCodeで起動したコンテナに対して './bin/dc up' を実行すると、
+コンテナが再作成され、VSCodeの接続が切断されます。
+
+以下のいずれかを選択してください:
+  1. コンテナ内でコマンドを実行: ./bin/dc exec dev bash
+  2. コンテナを削除して再起動: ./bin/dc down && ./bin/dc up -d
+```
+
+**確認項目**:
+- ✅ エラーメッセージが表示される
+- ✅ コンテナが再作成されない（コンテナIDが変わらない）
+- ✅ VSCodeの接続が維持される
+
+---
+
+### 2-2. bin/dcコンテナ管理
+
+#### 2-2-1: bin/dcでコンテナ起動
+
+```bash
+# 1. VSCodeコンテナを削除
+./bin/dc down
+
+# 2. bin/dcでコンテナ起動
+./bin/dc up -d
+```
+
+**期待結果**:
+- コンテナが正常に起動する
+- コンテナのCOMMAND: `/init`
+
+#### 2-2-2: bin/dcコンテナへの連続up実行
+
+```bash
+# bin/dcコンテナが起動している状態で実行
+./bin/dc up -d
+```
+
+**期待結果**:
+```
+[+] Running 1/1
+ ✔ Container <docker-composeプロジェクト名>-dev-1  Running
+```
+
+**確認項目**:
+- ✅ エラーメッセージが表示されない
+- ✅ コンテナが再作成されない
+- ✅ "Running"と表示される
+
+---
+
+### 2-3. execコマンド動作
+
+#### 2-3-1: VSCodeコンテナへのexec実行
+
+```bash
+# VSCodeコンテナが起動している状態で実行
+./bin/dc exec dev bash -c "echo 'Hello from VSCode container'"
+```
+
+**期待結果**:
+```
+Hello from VSCode container
+```
+
+**確認項目**:
+- ✅ execコマンドが正常に実行される
+- ✅ エラーが発生しない
+
+---
+
+### 実装詳細
+
+#### VSCodeコンテナ検出ロジック
+
+bin/dcスクリプト（[bin/dc](../bin/dc)）は以下のロジックでVSCodeコンテナを検出します：
+
+1. **動的プロジェクト名取得**:
+   ```bash
+   project_name=$(docker compose config --format json 2>/dev/null | grep -o '"name": "[^"]*"' | head -1 | cut -d'"' -f4)
+   ```
+   - `docker compose config --format json`でプロジェクト設定をJSON形式で取得
+   - `compose-spec/compose-go`の`MarshalJSON()`実装により、`"name"`フィールドが最初に出力されることが保証される
+   - 技術的根拠: [compose-spec/compose-go types/project.go#L648-L671](https://github.com/compose-spec/compose-go/blob/8c75dbf7f75b23d1fff41b56fbd80c6ad0916e4a/types/project.go#L648-L671)
+
+2. **VSCodeラベル検出**:
+   ```bash
+   vscode_label=$(docker inspect "$container_id" --format='{{index .Config.Labels "devcontainer.local_folder"}}' 2>/dev/null)
+   ```
+   - VSCode DevContainerが自動的に付与する`devcontainer.local_folder`ラベルを確認
+   - このラベルが存在する場合、VSCodeが起動したコンテナと判定
+
+3. **コマンド前の検証**:
+   ```bash
+   case "${1:-}" in
+       up|start|restart)
+           if check_vscode_container; then
+               # エラーメッセージを表示して終了
+               exit 1
+           fi
+           ;;
+   esac
+   ```
+
+#### POSIX準拠
+
+- bash固有の`[[`や`=~`を使用せず、POSIX準拠の`case`文を使用
+- 最大限の互換性を確保
+
+**関連ドキュメント**:
+- 仮説立案: [25_6_28_overridecommand_container_replacement_hypothesis.v2.md](../initiatives/20251229--dev-hub-concept/resolved/25_6_28_overridecommand_container_replacement_hypothesis.v2.md)
+- 検証トラッカー: [25_6_29_overridecommand_verification_tracker.md](../initiatives/20251229--dev-hub-concept/resolved/25_6_29_overridecommand_verification_tracker.md)
+
+---
+
 ## 9. 履歴
 
 | 日付 | バージョン | 変更内容 |
 |------|----------|---------|
 | 2026-01-10 | 1.0 | 初版作成（検証手順から抽出してゴールデンテスト化） |
 | 2026-01-11 | 1.1 | セットアップスクリプト実行手順追加、ファイルパス修正、`./bin/dc`ラッパー適用、関連ドキュメントパス修正 |
+| 2026-01-13 | 2.0 | ファイル名変更（v10_design_golden_tests.md）、bin/dcスマートラッパーテストセクション追加 |
 
 ---
 
-**最終更新**: 2026-01-11
+**最終更新**: 2026-01-13
 **ステータス**: ✅ ゴールデンテストケースとして確立
