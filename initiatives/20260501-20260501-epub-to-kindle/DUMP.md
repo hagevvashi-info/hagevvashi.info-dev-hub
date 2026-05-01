@@ -1,0 +1,6 @@
+- アーキテクチャの基礎 第二版 を Kindle で読みたい
+- O'reilly からは PDF or epub 形式で落とせる
+- [Send to Kindle](https://www.amazon.co.jp/sendtokindle/) にアップロードすると Kindle に配信できる
+- O'reilly からダウンロードした epub は内部エラーが出る
+- calibre というツールで epub -> mobi -> epub と変換し直すとアップロード可能になった
+    - 使い方は直感的だけど、変換時に右上で形式を選べることが最初はわからなかった
