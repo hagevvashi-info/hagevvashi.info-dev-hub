@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Compose - Log Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #569cd6;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .back-btn {
+            padding: 8px 16px;
+            background: #3e3e42;
+            color: #d4d4d4;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .back-btn:hover {
+            background: #4e4e52;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        label {
+            font-size: 12px;
+            color: #9cdcfe;
+            font-weight: bold;
+        }
+        select, input, button {
+            padding: 8px 12px;
+            background: #252526;
+            color: #d4d4d4;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #569cd6;
+        }
+        button {
+            cursor: pointer;
+            background: #0e639c;
+            border-color: #0e639c;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #1177bb;
+        }
+        button:disabled {
+            background: #3e3e42;
+            border-color: #3e3e42;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        .status {
+            padding: 10px;
+            background: #252526;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+        .status.connected {
+            border-color: #4ec9b0;
+            background: #1a3a34;
+        }
+        .status.error {
+            border-color: #f48771;
+            background: #3a1a1a;
+        }
+        .log-container {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            height: calc(100vh - 250px);
+            overflow-y: auto;
+            padding: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .log-line {
+            margin-bottom: 2px;
+            user-select: text;
+            cursor: text;
+        }
+        .log-line:hover {
+            background: #2a2d2e;
+        }
+        .log-timestamp {
+            color: #858585;
+        }
+        .log-message {
+            color: #d4d4d4;
+        }
+        .stats {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: #858585;
+        }
+        .clear-btn {
+            background: #5a5a5a;
+            border-color: #5a5a5a;
+        }
+        .clear-btn:hover {
+            background: #6a6a6a;
+        }
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #424242;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4e4e4e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Process Compose - Log Viewer</h1>
+            <a href="/" class="back-btn">← ダッシュボード</a>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="processSelect">プロセス</label>
+                <select id="processSelect">
+                    <option value="">読み込み中...</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="offsetInput">オフセット</label>
+                <input type="number" id="offsetInput" value="0" min="0">
+            </div>
+            
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button id="connectBtn" disabled>接続</button>
+            </div>
+            
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button id="disconnectBtn" disabled>切断</button>
+            </div>
+            
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button id="clearBtn" class="clear-btn">ログクリア</button>
+            </div>
+        </div>
+        
+        <div id="status" class="status">
+            準備中...
+        </div>
+        
+        <div class="stats">
+            <span>受信行数: <strong id="lineCount">0</strong></span>
+            <span>接続時間: <strong id="connectionTime">-</strong></span>
+        </div>
+        
+        <div id="logContainer" class="log-container">
+            <!-- ログがここに表示されます -->
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        const WS_BASE = '/ws';
+        
+        let ws = null;
+        let lineCount = 0;
+        let connectionStartTime = null;
+        let connectionTimeInterval = null;
+        let processes = [];
+        
+        const elements = {
+            processSelect: document.getElementById('processSelect'),
+            offsetInput: document.getElementById('offsetInput'),
+            connectBtn: document.getElementById('connectBtn'),
+            disconnectBtn: document.getElementById('disconnectBtn'),
+            clearBtn: document.getElementById('clearBtn'),
+            status: document.getElementById('status'),
+            logContainer: document.getElementById('logContainer'),
+            lineCount: document.getElementById('lineCount'),
+            connectionTime: document.getElementById('connectionTime')
+        };
+        
+        // プロセス一覧を取得
+        async function loadProcesses() {
+            try {
+                const response = await fetch(`${API_BASE}/processes`);
+                const data = await response.json();
+                processes = data.data || [];
+                
+                elements.processSelect.innerHTML = processes.length === 0
+                    ? '<option value="">プロセスがありません</option>'
+                    : processes.map(p => 
+                        `<option value="${p.name}">${p.name} (${p.status})</option>`
+                      ).join('');
+                
+                elements.connectBtn.disabled = processes.length === 0;
+                updateStatus(`${processes.length} 個のプロセスを読み込みました`, 'info');
+            } catch (error) {
+                updateStatus(`エラー: プロセス一覧の取得に失敗 - ${error.message}`, 'error');
+                console.error('Failed to load processes:', error);
+            }
+        }
+        
+        // WebSocket接続
+        function connect() {
+            const processName = elements.processSelect.value;
+            const offset = elements.offsetInput.value || '0';
+            
+            if (!processName) {
+                updateStatus('エラー: プロセスを選択してください', 'error');
+                return;
+            }
+            
+            if (ws) {
+                ws.close();
+            }
+            
+            // WebSocketのURLを構築（Nginxプロキシ経由）
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}${WS_BASE}/process/logs/ws?name=${encodeURIComponent(processName)}&offset=${offset}&follow=true`;
+            
+            updateStatus(`接続中: ${processName}...`, 'info');
+            
+            try {
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = () => {
+                    connectionStartTime = Date.now();
+                    updateConnectionTime();
+                    connectionTimeInterval = setInterval(updateConnectionTime, 1000);
+                    
+                    updateStatus(`✅ 接続成功: ${processName}`, 'connected');
+                    elements.connectBtn.disabled = true;
+                    elements.disconnectBtn.disabled = false;
+                    elements.processSelect.disabled = true;
+                    elements.offsetInput.disabled = true;
+                };
+                
+                ws.onmessage = (event) => {
+                    const logLine = event.data;
+                    appendLog(logLine);
+                };
+                
+                ws.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    updateStatus(`❌ WebSocketエラーが発生しました`, 'error');
+                };
+                
+                ws.onclose = () => {
+                    updateStatus(`切断されました`, 'info');
+                    elements.connectBtn.disabled = false;
+                    elements.disconnectBtn.disabled = true;
+                    elements.processSelect.disabled = false;
+                    elements.offsetInput.disabled = false;
+                    
+                    if (connectionTimeInterval) {
+                        clearInterval(connectionTimeInterval);
+                        connectionTimeInterval = null;
+                    }
+                };
+            } catch (error) {
+                updateStatus(`エラー: ${error.message}`, 'error');
+                console.error('Connection error:', error);
+            }
+        }
+        
+        // WebSocket切断
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+        
+        // ログを追加
+        function appendLog(message) {
+            const timestamp = new Date().toLocaleTimeString('ja-JP', { hour12: false });
+            
+            const logLine = document.createElement('div');
+            logLine.className = 'log-line';
+            
+            const timestampSpan = document.createElement('span');
+            timestampSpan.className = 'log-timestamp';
+            timestampSpan.textContent = `[${timestamp}] `;
+            
+            const messageSpan = document.createElement('span');
+            messageSpan.className = 'log-message';
+            messageSpan.textContent = message;
+            
+            logLine.appendChild(timestampSpan);
+            logLine.appendChild(messageSpan);
+            
+            elements.logContainer.appendChild(logLine);
+            elements.logContainer.scrollTop = elements.logContainer.scrollHeight;
+            
+            lineCount++;
+            elements.lineCount.textContent = lineCount;
+        }
+        
+        // ログクリア
+        function clearLogs() {
+            elements.logContainer.innerHTML = '';
+            lineCount = 0;
+            elements.lineCount.textContent = '0';
+        }
+        
+        // ステータス更新
+        function updateStatus(message, type = 'info') {
+            elements.status.textContent = message;
+            elements.status.className = `status ${type}`;
+        }
+        
+        // 接続時間更新
+        function updateConnectionTime() {
+            if (!connectionStartTime) return;
+            
+            const elapsed = Math.floor((Date.now() - connectionStartTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            
+            elements.connectionTime.textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+        
+        // イベントリスナー
+        elements.connectBtn.addEventListener('click', connect);
+        elements.disconnectBtn.addEventListener('click', disconnect);
+        elements.clearBtn.addEventListener('click', clearLogs);
+        
+        // セレクトボックス変更時にURLパラメータを更新
+        elements.processSelect.addEventListener('change', (e) => {
+            const processName = e.target.value;
+            if (processName) {
+                const url = new URL(window.location);
+                url.searchParams.set('process', processName);
+                window.history.pushState({}, '', url);
+            }
+        });
+        
+        // オフセット変更時にURLパラメータを更新
+        elements.offsetInput.addEventListener('change', (e) => {
+            const offset = e.target.value;
+            const url = new URL(window.location);
+            url.searchParams.set('offset', offset);
+            window.history.pushState({}, '', url);
+        });
+        
+        // Enterキーで接続
+        elements.processSelect.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !elements.connectBtn.disabled) {
+                connect();
+            }
+        });
+        
+        elements.offsetInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !elements.connectBtn.disabled) {
+                connect();
+            }
+        });
+        
+        // 初期化
+        loadProcesses();
+        
+        // URLパラメータからプロセス名を取得（初回のみ自動選択）
+        const urlParams = new URLSearchParams(window.location.search);
+        const processParam = urlParams.get('process');
+        
+        if (processParam) {
+            // プロセスリストの読み込みを待ってから選択
+            const checkProcessesLoaded = setInterval(() => {
+                if (processes.length > 0) {
+                    clearInterval(checkProcessesLoaded);
+                    
+                    // プロセスが存在するか確認
+                    const processExists = processes.find(p => p.name === processParam);
+                    if (processExists) {
+                        elements.processSelect.value = processParam;
+                        // URLパラメータがある場合のみ自動接続
+                        // 手動で選択を変更した後は自動接続しない
+                        updateStatus(`プロセス "${processParam}" を選択しました。接続ボタンを押してください。`, 'info');
+                    } else {
+                        updateStatus(`エラー: プロセス "${processParam}" が見つかりません`, 'error');
+                    }
+                }
+            }, 100);
+        }
+    </script>
+</body>
+</html>

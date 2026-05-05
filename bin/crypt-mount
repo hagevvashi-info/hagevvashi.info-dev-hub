@@ -1,0 +1,123 @@
+#!/bin/bash
+set -euo pipefail
+
+# =============================================================================
+# crypt-mount
+# 暗号化ディレクトリをマウントするスクリプト
+#
+# 役割:
+#   1. age でマスターキーを復号（SSH秘密鍵）
+#   2. gocryptfs で暗号化ディレクトリをマウント
+#   3. *.plain/ ディレクトリで透過的にアクセス可能にする
+#
+# 依存:
+#   - age (https://github.com/FiloSottile/age)
+#   - gocryptfs (https://github.com/rfjakob/gocryptfs)
+# =============================================================================
+
+usage() {
+  cat <<EOF
+Usage: $0 <directory-name>
+
+Example:
+  $0 initiatives/20251215--greptile-security
+
+This will:
+  1. Decrypt master key using your SSH private key
+  2. Mount gocryptfs encrypted directory
+  3. You can work on <directory-name>.plain/
+
+After editing, unmount with:
+  bin/crypt-umount <directory-name>
+
+Required tools: age, gocryptfs
+EOF
+  exit 1
+}
+
+if [ $# -ne 1 ]; then
+  usage
+fi
+
+BASE_NAME="$1"
+ENCRYPTED_DIR="${BASE_NAME}.encrypted"
+MASTERKEY_FILE="${BASE_NAME}.masterkey.age"
+PLAIN_DIR="${BASE_NAME}.plain"
+
+# 依存チェック
+for cmd in age gocryptfs; do
+  if ! command -v "$cmd" &> /dev/null; then
+    echo "ERROR: $cmd is not installed" >&2
+    exit 1
+  fi
+done
+
+# ファイル存在チェック
+if [ ! -d "$ENCRYPTED_DIR" ]; then
+  echo "ERROR: Encrypted directory not found: $ENCRYPTED_DIR" >&2
+  echo "Run crypt-setup first." >&2
+  exit 1
+fi
+
+if [ ! -f "$MASTERKEY_FILE" ]; then
+  echo "ERROR: Master key file not found: $MASTERKEY_FILE" >&2
+  exit 1
+fi
+
+# マウント済みチェック
+if mountpoint -q "$PLAIN_DIR" 2>/dev/null; then
+  echo "Already mounted: $PLAIN_DIR"
+  exit 0
+fi
+
+# 1. age でマスターキーを復号（SSH秘密鍵）
+echo "Decrypting master key..."
+MASTERKEY=""
+for key_file in ~/.ssh/id_ed25519 ~/.ssh/id_rsa ~/.ssh/id_ecdsa; do
+  if [ -f "$key_file" ]; then
+    if MASTERKEY=$(age --decrypt -i "$key_file" "$MASTERKEY_FILE" 2>/dev/null); then
+      echo "  Decrypted with SSH key: $(basename "$key_file")"
+      break
+    fi
+  fi
+done
+
+if [ -z "$MASTERKEY" ]; then
+  echo "ERROR: Failed to decrypt master key" >&2
+  echo "Are you authorized to access this directory?" >&2
+  echo "" >&2
+  echo "Check your access with:" >&2
+  echo "  cat ${BASE_NAME}.users" >&2
+  echo "" >&2
+  echo "Your SSH public keys must be registered on GitHub." >&2
+  exit 1
+fi
+
+# 2. gocryptfs マウント
+echo "Mounting encrypted directory..."
+mkdir -p "$PLAIN_DIR"
+
+if gocryptfs -q -masterkey "$MASTERKEY" "$ENCRYPTED_DIR" "$PLAIN_DIR"; then
+  echo ""
+  echo "Mounted successfully!"
+  echo ""
+  echo "Work directory: $PLAIN_DIR/"
+  echo ""
+  echo "When done, unmount with:"
+  echo "  bin/crypt-umount $BASE_NAME"
+  echo ""
+  echo "Then commit encrypted changes:"
+  echo "  git add $ENCRYPTED_DIR/"
+  echo "  git commit -m 'docs: update documents'"
+  echo "  git push"
+else
+  echo "ERROR: Failed to mount" >&2
+  echo "" >&2
+  echo "Possible causes:" >&2
+  echo "  - FUSE not installed (Linux: sudo apt install fuse, macOS: brew install macfuse)" >&2
+  echo "  - /dev/fuse not available" >&2
+  exit 1
+fi
+
+# クリーンアップ
+unset MASTERKEY

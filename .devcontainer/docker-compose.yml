@@ -10,6 +10,8 @@ services:
         GID: ${GID:-1000}
         UNAME: ${UNAME:-vscode}
         GNAME: ${GNAME:-vscode}
+        MDC_REPO_ROOT: ${MDC_REPO_ROOT}
+        DOCKER_GID: ${DOCKER_GID}
     volumes:
       # <MonolithicDevContainerレポジトリ名> リポジトリ全体をバインドマウント
       - type: bind
@@ -20,48 +22,125 @@ services:
       - type: volume
         source: repos
         target: /home/${UNAME:-vscode}/${MDC_REPO_ROOT:-dev-hub}/repos
+      # Redis データディレクトリを Docker Volume でマウント
+      - type: volume
+        source: redis-data
+        target: /var/lib/redis
       # /var/run/docker.sock をマウント ― Docker from Docker のための設定
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
     working_dir: /home/${UNAME:-vscode}/${MDC_REPO_ROOT:-dev-hub}
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Port Allocation Rule
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # 4000番台: MDC Infrastructure ports
+    # 8000番台: Application ports
+    #
+    # ⚠️ 重要: Dockerfile の EXPOSE セクションと同期すること
+    #
+    # 新しいポートを追加する場合:
+    # 1. 4000番台（インフラ）または8000番台（アプリ）から選択
+    # 2. Dockerfile の EXPOSE に追加
+    # 3. 以下に追加（long syntax推奨）
+    # 4. コンテナを再構築
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     ports:
-      - "4035:4035"
-      - "8035:8035"
-      - "9001:9001"
-      - "8080:8080"
-    
-    tty: true
-    stdin_open: true
+      # === 4000番台: MDC Infrastructure ===
+      # code-server
+      - target: 4035
+        published: "4035"
+        protocol: tcp
+        host_ip: 0.0.0.0
+        mode: host
+
+      # supervisord
+      - target: 4222
+        published: "4222"
+        protocol: tcp
+        host_ip: 0.0.0.0
+        mode: host
+
+      # process-compose
+      - target: 4040
+        published: "4040"
+        protocol: tcp
+        host_ip: 0.0.0.0
+        mode: host
+
+      # difit
+      - target: 4025
+        published: "4025"
+        protocol: tcp
+        host_ip: 0.0.0.0
+        mode: host
+
+      # nginx (process-compose dashboard)
+      - target: 4802
+        published: "4802"
+        protocol: tcp
+        host_ip: 0.0.0.0
+        mode: host
+
+      # redisinsight
+      - target: 4803
+        published: "4803"
+        protocol: tcp
+        host_ip: 0.0.0.0
+        mode: host
+      
+      # nginx (static-file-server)
+      - target: 4001
+        published: "4001"
+        protocol: tcp
+        host_ip: 0.0.0.0
+        mode: host
+
+      # === MCP OAuth Callback Ports ===
+      # 複数の MCP サーバー認証フローに対応
+      # .mcp.json の oauth.callbackPort と同期すること
+
+      # Slack MCP OAuth callback
+      - target: 3118
+        published: "3118"
+        protocol: tcp
+        host_ip: 0.0.0.0
+        mode: host
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # FUSE support for gocryptfs (crypt-mount)
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    devices:
+      - /dev/fuse:/dev/fuse
+    cap_add:
+      - SYS_ADMIN
 
     tmpfs:
       - /run:exec
       - /run/lock
-      - /tmp
+      - /tmp:exec
 
     environment:
       - DEBUG_MODE=false  # true にするとデバッグモード
       - UNAME=${UNAME:-vscode}
       - MDC_REPO_ROOT=${MDC_REPO_ROOT:-dev-hub}
       - GNAME=${GNAME:-vscode}
+      - DOCKER_API_VERSION=${DOCKER_API_VERSION}
 
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     # Healthcheck: supervisord の動作状態を監視
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     healthcheck:
-      test: |
-        if [ "$DEBUG_MODE" = "true" ]; then
-          # DEBUG_MODE 時はヘルスチェックをパス（常に healthy）
-          exit 0
-        else
-          # 通常モード: supervisorctl で code-server の状態を確認
-          supervisorctl status code-server | grep -q RUNNING || exit 1
-        fi
-      interval: 10s
-      timeout: 5s
+      test: ["CMD", "/home/${UNAME}/${MDC_REPO_ROOT}/.devcontainer/build/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
       retries: 3
-      start_period: 30s
+      start_period: 60s
 
 volumes:
   repos:
     external: true
+  redis-data:
+    # 実際の volume 名: <mdc_repo>--mdc_redis-data
+    # docker compose up で自動作成される

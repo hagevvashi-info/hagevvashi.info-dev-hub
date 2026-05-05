@@ -7,16 +7,36 @@
 ehthumbs.db
 Thumbs.db
 
-# Dev container files
-devcontainer.json
-docker-compose.dev-vm.yml
-.env
+# Local MDC/MD files
+*.local.mdc
+*.local.md
+
+# SpecStory files
 .specstory
 
-# Cursor files
-.cursor/projects
-.cursor/ide_state.json
+# Dev container files
+.devcontainer/devcontainer.json
+.devcontainer/docker-compose.dev-vm.yml
+.devcontainer/tmp/
+
+# Environment variables
+.env
+
+# Claude settings
 .claude/settings.local.json
 
-# Product repositories (managed via Docker Volume)
-repos/
+# repos directory
+/repos/
+
+# secret directories
+*.secret/
+*.secret.tar.gz
+
+# gocryptfs mount points (plaintext, never commit)
+*.plain/
+
+# node_modules
+node_modules/
+
+# Playwright test results and artifacts
+.playwright-mcp/

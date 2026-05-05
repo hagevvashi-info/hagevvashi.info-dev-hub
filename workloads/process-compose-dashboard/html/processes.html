@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Compose - Process Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #569cd6;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 32px;
+        }
+        .back-btn {
+            padding: 10px 20px;
+            background: #3e3e42;
+            color: #d4d4d4;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .back-btn:hover {
+            background: #4e4e52;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .refresh-btn {
+            padding: 10px 20px;
+            background: #0e639c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .refresh-btn:hover {
+            background: #1177bb;
+        }
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .auto-refresh input {
+            cursor: pointer;
+        }
+        .last-updated {
+            color: #858585;
+            font-size: 13px;
+        }
+        .process-table {
+            background: #252526;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #2d2d30;
+            color: #9cdcfe;
+            text-align: left;
+            padding: 16px;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        td {
+            padding: 16px;
+            border-top: 1px solid #3e3e42;
+            font-size: 14px;
+        }
+        tr:hover {
+            background: #2a2a2e;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-running {
+            background: #1a3a34;
+            color: #4ec9b0;
+        }
+        .status-disabled {
+            background: #3a3a1a;
+            color: #dcdcaa;
+        }
+        .status-failed {
+            background: #3a1a1a;
+            color: #f48771;
+        }
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-start {
+            background: #4ec9b0;
+            color: #1e1e1e;
+        }
+        .btn-stop {
+            background: #f48771;
+            color: #1e1e1e;
+        }
+        .btn-restart {
+            background: #dcdcaa;
+            color: #1e1e1e;
+        }
+        .btn-logs {
+            background: #569cd6;
+            color: white;
+        }
+        .metrics {
+            display: flex;
+            gap: 6px;
+            flex-direction: column;
+        }
+        .metric-item {
+            font-size: 12px;
+            color: #858585;
+        }
+        .metric-value {
+            color: #d4d4d4;
+            font-weight: 500;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #858585;
+        }
+        .error {
+            background: #3a1a1a;
+            color: #f48771;
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Process Management</h1>
+            <a href="/" class="back-btn">← ダッシュボード</a>
+        </div>
+
+        <div class="controls">
+            <button class="refresh-btn" onclick="loadProcesses()">🔄 更新</button>
+            <div class="auto-refresh">
+                <input type="checkbox" id="autoRefresh" checked>
+                <label for="autoRefresh">自動更新 (5秒)</label>
+            </div>
+            <div class="last-updated" id="lastUpdated">-</div>
+        </div>
+
+        <div id="errorContainer"></div>
+
+        <div class="process-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>プロセス名</th>
+                        <th>ステータス</th>
+                        <th>起動時間</th>
+                        <th>リソース</th>
+                        <th>再起動回数</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="processTableBody">
+                    <tr>
+                        <td colspan="6" class="loading">読み込み中...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let autoRefreshInterval = null;
+
+        // プロセス一覧を取得
+        async function loadProcesses() {
+            try {
+                const response = await fetch(`${API_BASE}/processes`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const data = await response.json();
+                const processes = data.data || [];
+                
+                renderProcesses(processes);
+                updateLastUpdated();
+                clearError();
+            } catch (error) {
+                showError(`プロセス一覧の取得に失敗しました: ${error.message}`);
+                console.error('Failed to load processes:', error);
+            }
+        }
+
+        // プロセス一覧を表示
+        function renderProcesses(processes) {
+            const tbody = document.getElementById('processTableBody');
+            
+            if (processes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="loading">プロセスがありません</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = processes.map(process => `
+                <tr>
+                    <td><strong>${process.name}</strong></td>
+                    <td>
+                        <span class="status-badge ${getStatusClass(process.status)}">
+                            ${process.status}
+                        </span>
+                    </td>
+                    <td>${formatUptime(process.system_time)}</td>
+                    <td>
+                        <div class="metrics">
+                            <div class="metric-item">
+                                CPU: <span class="metric-value">${formatCPU(process.cpu)}</span>
+                            </div>
+                            <div class="metric-item">
+                                MEM: <span class="metric-value">${formatMemory(process.mem)}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${process.restarts}</td>
+                    <td>
+                        <div class="actions">
+                            <button class="action-btn btn-start" 
+                                onclick="startProcess('${process.name}')"
+                                ${process.is_running ? 'disabled' : ''}>
+                                ▶️ 起動
+                            </button>
+                            <button class="action-btn btn-stop" 
+                                onclick="stopProcess('${process.name}')"
+                                ${!process.is_running ? 'disabled' : ''}>
+                                ⏹️ 停止
+                            </button>
+                            <button class="action-btn btn-restart" 
+                                onclick="restartProcess('${process.name}')">
+                                🔄 再起動
+                            </button>
+                            <button class="action-btn btn-logs" 
+                                onclick="viewLogs('${process.name}')">
+                                📋 ログ
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ステータスクラスを取得
+        function getStatusClass(status) {
+            if (status === 'Running') return 'status-running';
+            if (status === 'Disabled') return 'status-disabled';
+            return 'status-failed';
+        }
+
+        // 稼働時間をフォーマット
+        function formatUptime(systemTime) {
+            return systemTime || '-';
+        }
+
+        // CPU使用率をフォーマット
+        function formatCPU(cpu) {
+            return `${(cpu * 100).toFixed(2)}%`;
+        }
+
+        // メモリをフォーマット
+        function formatMemory(bytes) {
+            if (bytes === 0) return '0 B';
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(1024));
+            return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+        }
+
+        // プロセス操作
+        async function startProcess(name) {
+            await executeProcessAction(name, 'start');
+        }
+
+        async function stopProcess(name) {
+            await executeProcessAction(name, 'stop');
+        }
+
+        async function restartProcess(name) {
+            await executeProcessAction(name, 'restart');
+        }
+
+        async function executeProcessAction(name, action) {
+            try {
+                // process-compose API の仕様に従って HTTP メソッドを選択
+                // start: POST, stop: PATCH, restart: POST
+                const method = action === 'stop' ? 'PATCH' : 'POST';
+                
+                const response = await fetch(`${API_BASE}/process/${action}/${name}`, {
+                    method: method
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                // 少し待ってから再読み込み
+                setTimeout(loadProcesses, 500);
+            } catch (error) {
+                showError(`操作に失敗しました (${action} ${name}): ${error.message}`);
+                console.error(`Failed to ${action} process:`, error);
+            }
+        }
+
+        // ログビューアに移動
+        function viewLogs(name) {
+            window.location.href = `/logs.html?process=${encodeURIComponent(name)}`;
+        }
+
+        // 最終更新時刻を表示
+        function updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = 
+                `最終更新: ${now.toLocaleTimeString('ja-JP')}`;
+        }
+
+        // エラー表示
+        function showError(message) {
+            const container = document.getElementById('errorContainer');
+            container.innerHTML = `<div class="error">❌ ${message}</div>`;
+        }
+
+        function clearError() {
+            document.getElementById('errorContainer').innerHTML = '';
+        }
+
+        // 自動更新の制御
+        document.getElementById('autoRefresh').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                autoRefreshInterval = setInterval(loadProcesses, 5000);
+            } else {
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                    autoRefreshInterval = null;
+                }
+            }
+        });
+
+        // 初期化
+        loadProcesses();
+        autoRefreshInterval = setInterval(loadProcesses, 5000);
+    </script>
+</body>
+</html>

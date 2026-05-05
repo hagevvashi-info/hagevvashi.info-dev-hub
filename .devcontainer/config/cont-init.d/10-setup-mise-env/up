@@ -1,0 +1,2 @@
+foreground { echo "Setting up mise environment..." }
+/etc/s6-overlay/scripts/10-setup-mise-env.sh

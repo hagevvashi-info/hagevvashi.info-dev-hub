@@ -1,0 +1,20 @@
+# ユーザーグループ定義
+# このファイルは中央集権的にユーザーグループを管理します。
+# 各暗号化ディレクトリの *.users ファイルからグループ名で参照されます。
+#
+# 使い方:
+#   グループ名は *.users ファイルに記述すると、
+#   スクリプトが自動的にメンバーを展開します。
+#
+# GitHubユーザー名を使用してください（SSH公開鍵の取得に使用）。
+
+groups:
+  # primary
+  primary:
+    - hagevvashi
+  #   - member2_github_username
+
+  # 例: エグゼクティブチーム
+  # executives:
+  #   - exec1_github_username
+  #   - exec2_github_username

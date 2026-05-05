@@ -34,6 +34,10 @@ services:
         target: /home/${UNAME:-vscode}/.claude.json
         consistency: cached
       - type: bind
+        source: __HOME__/.cursor
+        target: /home/${UNAME:-vscode}/.cursor
+        consistency: cached
+      - type: bind
         source: __HOME__/.config/code-server
         target: /home/${UNAME:-vscode}/.config/code-server
         consistency: cached
@@ -54,6 +58,34 @@ services:
         target: /home/${UNAME:-vscode}/.local/share/atuin
         consistency: cached
       - type: bind
-        source: __HOME__/.cursor
-        target: /home/${UNAME:-vscode}/.cursor
+        source: __HOME__/.local/share/code-server
+        target: /home/${UNAME:-vscode}/.local/share/code-server
+        consistency: cached
+      - type: bind
+        source: __HOME__/.local/state/claude
+        target: /home/${UNAME:-vscode}/.local/state/claude
+        consistency: cached
+      - type: bind
+        source: __HOME__/.local/state/mise
+        target: /home/${UNAME:-vscode}/.local/state/mise
+        consistency: cached
+      - type: bind
+        source: __HOME__/.config/mise
+        target: /home/${UNAME:-vscode}/.config/mise
+        consistency: cached
+      - type: bind
+        source: __HOME__/.tmux.conf
+        target: /home/${UNAME:-vscode}/.tmux.conf
+        consistency: cached
+      - type: bind
+        source: __HOME__/.tmux
+        target: /home/${UNAME:-vscode}/.tmux
+        consistency: cached
+      - type: bind
+        source: __HOME__/.codex
+        target: /home/${UNAME:-vscode}/.codex
+        consistency: cached
+      - type: bind
+        source: __HOME__/.vscode-server
+        target: /home/${UNAME:-vscode}/.vscode-server
         consistency: cached

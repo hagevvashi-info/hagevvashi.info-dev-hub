@@ -9,8 +9,8 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "dev",
   "workspaceFolder": "/home/__UNAME__/__MDC_REPO_ROOT__",
-  "initializeCommand": "./.devcontainer/generate-env.sh",
-  "postCreateCommand": "/home/__UNAME__/__MDC_REPO_ROOT__/.devcontainer/post-create.sh",
+  "initializeCommand": "WATCH_FILE='.devcontainer/tmp/trigger.flag' ./.devcontainer/host-scripts/pre-build.sh",
+  "postAttachCommand": "WATCH_FILE='.devcontainer/tmp/trigger.flag' ./.devcontainer/build/post-attach.sh",
   "remoteUser": "__UNAME__",
 
   "runServices": ["dev"],
@@ -26,11 +26,20 @@
     "source=__HOME__/.gemini,target=/home/__UNAME__/.gemini,type=bind,consistency=cached",
     "source=__HOME__/.claude,target=/home/__UNAME__/.claude,type=bind,consistency=cached",
     "source=__HOME__/.claude.json,target=/home/__UNAME__/.claude.json,type=bind,consistency=cached",
+    "source=__HOME__/.cursor,target=/home/__UNAME__/.cursor,type=bind,consistency=cached",
     "source=__HOME__/.config/code-server,target=/home/__UNAME__/.config/code-server,type=bind,consistency=cached",
     "source=__HOME__/.config/gh,target=/home/__UNAME__/.config/gh,type=bind,consistency=cached",
     "source=__HOME__/.config/gcloud,target=/home/__UNAME__/.config/gcloud,type=bind,consistency=cached",
     "source=__HOME__/.config/atuin,target=/home/__UNAME__/.config/atuin,type=bind,consistency=cached",
-    "source=__HOME__/.local/share/atuin,target=/home/__UNAME__/.local/share/atuin,type=bind,consistency=cached"
+    "source=__HOME__/.local/share/atuin,target=/home/__UNAME__/.local/share/atuin,type=bind,consistency=cached",
+    "source=__HOME__/.local/share/code-server,target=/home/__UNAME__/.local/share/code-server,type=bind,consistency=cached",
+    "source=__HOME__/.local/state/claude,target=/home/__UNAME__/.local/state/claude,type=bind,consistency=cached",
+    "source=__HOME__/.local/state/mise,target=/home/__UNAME__/.local/state/mise,type=bind,consistency=cached",
+    "source=__HOME__/.config/mise,target=/home/__UNAME__/.config/mise,type=bind,consistency=cached",
+    "source=__HOME__/.tmux.conf,target=/home/__UNAME__/.tmux.conf,type=bind,consistency=cached",
+    "source=__HOME__/.tmux,target=/home/__UNAME__/.tmux,type=bind,consistency=cached",
+    "source=__HOME__/.codex,target=/home/__UNAME__/.codex,type=bind,consistency=cached",
+    "source=__HOME__/.vscode-server,target=/home/__UNAME__/.vscode-server,type=bind,consistency=cached",
   ],
 
   "features": {
@@ -44,12 +53,14 @@
         "ms-azuretools.vscode-docker",
         "4ops.terraform",
         "GitHub.vscode-pull-request-github",
-        "GitHub.copilot",
-        "GitHub.copilot-chat",
         "Anthropic.claude-code",
-        "RooVeterinaryInc.roo-cline",
         "google.gemini-cli-vscode-ide-companion",
-        "Google.geminicodeassist"
+        "Google.geminicodeassist",
+        "bierner.markdown-mermaid",
+        "ms-python.python",
+        "antfu.browse-lite",
+        "ms-vscode-remote.remote-containers",
+        "openai.chatgpt"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",

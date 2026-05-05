@@ -1,36 +1,120 @@
 version: "0.5"
 
+# 重要: 環境変数 (${HOME}) について
+#
+# ■ 根本的解決（2026-01-21実装）:
+# process-compose起動スクリプト(.devcontainer/s6-rc.d/process-compose/run)で
+# 明示的に `export HOME=/home/${UNAME}` を設定しています。
+# これにより、process-composeおよび全ての子プロセスで ${HOME} が正しく使えます。
+#
+# ■ 背景:
+# - s6-setuidgid は UID/GID のみ変更し、HOME は変更しない
+# - 明示的な設定なしでは HOME=/root のままになる
+# - 子プロセス（npm, Python等）も親の HOME を継承するため影響大
+#
+# ■ 検証方法:
+# env-validator プロセスで常時監視しています:
+#   process-compose -p 4040 process logs env-validator
+# 期待される出力: "✅ HOME is correct"
+#
+# ■ 重要な注意:
+# もし起動スクリプトの `export HOME=/home/${UNAME}` が削除されると、
+# 全プロセスで HOME=/root になり、以下のような問題が発生します:
+# - npm: ~/.npm が /root/.npm を参照
+# - Python: ~/.cache が /root/.cache を参照
+# - Git: ~/.gitconfig が /root/.gitconfig を参照
+# env-validator の警告メッセージで即座に検出できます。
+
 # TUIの設定
 log_location: /tmp/process-compose-${UNAME}.log
 log_level: info
 
 processes:
-  # ダミープロセス: process-compose の動作確認用
-  # リソース消費ゼロで永続的に動作
-  dummy-watcher:
-    command: "tail -f /dev/null"
+  # 環境変数検証プロセス: 起動時に環境変数の状態を検証・可視化
+  # process-composeは s6-setuidgid で一般ユーザーとして起動されるが、
+  # HOMEが正しく設定されているか、mise管理のツールが利用可能かを継続的に検証する
+  env-validator:
+    command: |
+      bash -c '
+        echo "=== Environment Variables Validation ==="
+        echo "HOME: ${HOME}"
+        echo "UNAME: ${UNAME}"
+        echo "USER: ${USER}"
+        echo "LOGNAME: ${LOGNAME}"
+        echo "PWD: ${PWD}"
+        echo "Expected HOME: /home/${UNAME}"
+        echo "Actual HOME: ${HOME}"
+        
+        # HOME チェック
+        if [ "${HOME}" = "/home/${UNAME}" ]; then
+          echo "✅ HOME is correct"
+        else
+          echo "⚠️ WARNING: HOME=${HOME} (expected /home/${UNAME})"
+        fi
+        
+        # mise PATH チェック
+        echo ""
+        echo "=== mise Tools Validation ==="
+        if command -v node >/dev/null 2>&1; then
+          echo "✅ node: $(which node) ($(node --version))"
+        else
+          echo "⚠️ WARNING: node not found in PATH"
+        fi
+        
+        if command -v npm >/dev/null 2>&1; then
+          echo "✅ npm: $(which npm) ($(npm --version))"
+        else
+          echo "⚠️ WARNING: npm not found in PATH"
+        fi
+        
+        echo ""
+        echo "Validation completed at $(date)"
+        tail -f /dev/null
+      '
     working_dir: "/home/${UNAME}/${MDC_REPO_ROOT}"
     availability:
       restart: "always"
+
+  # RedisInsight (Redis GUI Tool - Web Server)
+  # 用途: パフォーマンス分析・メモリ使用状況の可視化
+  # デフォルトで無効。使いたい場合は手動起動:
+  #   process-compose -p 4040 process start redisinsight
+  redisinsight:
+    command: "mise exec node@20.14.0 -- node redisinsight/api/dist/src/main"
+    working_dir: "/usr/src/app"
+    disabled: true
+    availability:
+      restart: "on_failure"
+      backoff_seconds: 10
+      max_restarts: 3
     environment:
-      - HOME=/home/${UNAME}
+      - RI_APP_PORT=${REDISINSIGHT_PORT}
+      - RI_APP_HOST=0.0.0.0
+      - RI_APP_FOLDER_ABSOLUTE_PATH=/data
+      - NODE_ENV=production
+      - RI_SERVE_STATICS=true
+      - RI_BUILD_TYPE=DOCKER_ON_PREMISE
 
-  # 実験的なサービスの例
-  # vite-preview:
-  #   command: "npm run preview"
-  #   working_dir: "/home/${UNAME}/repos/some-project"
-  #   availability:
-  #     restart: "no"
-  #   depends_on:
-  #     difit:
-  #       condition: process_started
+  # difit: GitHub風Gitdiffビューア (Webサーバー)
+  # ダッシュボードからパラメータ付きで起動:
+  #   http://localhost:4802/difit.html
+  # 直接起動する場合:
+  #   process-compose -p 4040 process start difit
+  difit:
+    command: "difit . --no-open --host 0.0.0.0 --port ${DIFIT_PORT}"
+    working_dir: "/home/${UNAME}"
+    disabled: true
+    availability:
+      restart: "always"
+      backoff_seconds: 3
+    environment:
+      - DIFIT_PORT=${DIFIT_PORT}
 
-  # アプリケーションサーバーの例
-  # app-server:
-  #   command: "npm run dev"
-  #   working_dir: "/home/${UNAME}/repos/product-a"
-  #   availability:
-  #     restart: "no"
-  #   environment:
-  #     - HOME=/home/${UNAME}
-  #     - PORT=8080
+  # 環境変数監視プロセス（オプション）: 5分ごとに環境変数を出力
+  env-monitor:
+    command: "bash -c 'while true; do echo \"[$(date +%H:%M:%S)] HOME=${HOME} UNAME=${UNAME}\"; sleep 300; done'"
+    working_dir: "/home/${UNAME}/${MDC_REPO_ROOT}"
+    availability:
+      restart: "always"
+    disabled: true  # 必要に応じて有効化
+

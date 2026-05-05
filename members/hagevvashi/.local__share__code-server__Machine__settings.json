@@ -1,0 +1,12 @@
+{
+  "browse-lite.chromeExecutable": "/home/hagevvashi/.cache/ms-playwright/chromium-1217/chrome-linux64/chrome",
+  "claudeCode.allowDangerouslySkipPermissions": true,
+  "editor.language.colorizedBracketPairs": [
+
+  ],
+  "workbench.colorTheme": "Solarized Light",
+  "terminal.integrated.macOptionIsMeta": true,
+  "json.schemas": [
+    
+  ]
+}

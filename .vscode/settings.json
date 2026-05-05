@@ -9,13 +9,13 @@
   "editor.rulers": [80, 120],
   "editor.semanticHighlighting.enabled": true,
   "terminal.integrated.minimumContrastRatio": 1,
-  "workbench.colorTheme": "Quiet Light",
-  "workbench.preferredLightColorTheme": "Quiet Light",
-  "workbench.preferredDarkColorTheme": "Cursor Dark",
   "files.autoSave": "afterDelay",
   "editor.tabSize": 2,
   "specstory.autoSave.enabled": true,
   "specstory.helpUsImprove": false,
   "specstory.coordinatedUniversalTimezone": false,
-  "search.followSymlinks": false
+  "claude-code.environmentVariables": [
+  ],
+  "search.followSymlinks": false,
+  "specstory.cloudSync.enabled": "never"
 }
