@@ -6,16 +6,16 @@ disable-model-invocation: false
 
 # Git Create PR Skill
 
-## STEP 1: 現状確認とリモート・ベースブランチの特定
+## STEP 0: 現状確認とリモート設定の特定
 
 ```bash
 git status
 git remote -v
 
-# upstream が存在する場合は fork workflow とみなす
+# fork workflow か単純なリポジトリかを判定
 if git remote | grep -qx upstream; then
   base_remote=upstream
-  push_remote=$(git remote | grep -x origin || git remote | grep -v upstream | head -1)
+  push_remote=origin
 else
   base_remote=$(git remote | grep -x origin || git remote | head -1)
   push_remote=$base_remote
@@ -28,21 +28,41 @@ base=$(git remote show -n "$base_remote" | grep "HEAD branch" | awk '{print $NF}
 |---|---|---|
 | `upstream` あり（fork） | `origin` | `upstream` |
 | `upstream` なし・`origin` あり | `origin` | `origin` |
-| `upstream` なし・`origin` なし・1つ | そのリモート | そのリモート |
 | 複数あって判定不能 | ユーザーに選択を求める | ユーザーに選択を求める |
 
-- **未コミットの変更がある場合** → `push` スキルを呼び出してコミット＆プッシュを完了させてから STEP 2 へ進む
-- **コミット済みだがプッシュ未完了の場合** → `push` スキルを呼び出してプッシュのみ行ってから STEP 2 へ進む
-- **プッシュ済みの場合** → そのまま STEP 2 へ進む
+## STEP 1: ブランチ命名とブランチ作成
 
-## STEP 2: PR内容の把握
-
-STEP 1 で特定した `base_remote` / `base` を使って差分を確認する。
+新しいブランチを作成する。命名規則は `.claude/rules/002_git_guidelines.md` のプレフィックスに従う。
 
 ```bash
-git log --oneline "$base_remote/$base"..HEAD
-git diff --stat "$base_remote/$base"..HEAD
+# ブランチ名を決定（例：feat/xxx, fix/xxx, docs/xxx, refactor/xxx）
+branch_name="<prefix>/<description>"
+
+# 新ブランチを作成してチェックアウト
+git switch -c "$branch_name"
 ```
+
+**例**:
+- `docs/remote-llm-bridge-design`
+- `feat/new-auth-system`
+- `fix/login-bug`
+
+## STEP 2: コミット＆プッシュ
+
+- **未コミットの変更がある場合** → `push` スキルを呼び出してコミット＆プッシュを完了させてから STEP 3 へ進む
+- **コミット済みだがプッシュ未完了の場合** → `push` スキルを呼び出してプッシュのみ行ってから STEP 3 へ進む
+- **プッシュ済みの場合** → そのまま STEP 3 へ進む
+
+## STEP 3: PR内容の把握
+
+STEP 0 で特定した `base_remote` / `base` を使って差分を確認する。3-dot diff で共通祖先からの変更を確認。
+
+```bash
+git log --oneline "$base_remote/$base"..."HEAD"
+git diff --stat "$base_remote/$base"..."HEAD"
+```
+
+**3-dot diff の意味**: 共通祖先からの変更を表示。fork workflow で正確に「この PR が何を追加するか」を示す。
 
 ## STEP 3: PR タイトル・本文の作成
 
