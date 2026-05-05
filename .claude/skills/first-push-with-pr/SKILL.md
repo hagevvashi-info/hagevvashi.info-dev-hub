@@ -63,20 +63,26 @@ STEP 4 のコマンド内テンプレートを正本として使用する。各�
 
 ## STEP 4: PR作成
 
-`--base` には STEP 1 で特定した `base` を指定する。
-fork workflow（`base_remote=upstream`）の場合は `gh` がリポジトリを自動検出するが、
-検出できない場合は `--repo <upstream_owner>/<repo>` を追加する。
+heredoc を Bash tool 内で使うと PreToolUse hook と干渉するため、
+**必ず Write ツール + `--body-file` の2ステップで実行すること**。
+
+### 4-1: 一時ファイルパスの生成
 
 ```bash
-gh pr create \
-  --base "$base" \
-  --title "<title>" \
-  --body "$(cat <<'EOF'
-## Goal
+tmpfile=$(mktemp /tmp/pr-body-XXXXXX.md)
+echo "$tmpfile"
+```
 
+### 4-2: Write ツールで本文を書き出す
+
+Bash tool は使わず **Write ツール**で `$tmpfile` のパスに以下を書き出す。
+
+```markdown
+## Goal
+<課題が解決された状態>
 
 ## Strategy
-
+<解決のアプローチ・仮説>
 
 ## Why
 
@@ -96,8 +102,16 @@ gh pr create \
   - [ ]
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
-EOF
-)"
+```
+
+### 4-3: PR 作成と一時ファイルの削除
+
+`--base` には STEP 1 で特定した `base` を指定する。
+fork workflow（`base_remote=upstream`）の場合は `gh` がリポジトリを自動検出するが、
+検出できない場合は `--repo <upstream_owner>/<repo>` を追加する。
+
+```bash
+gh pr create --base "$base" --title "<title>" --body-file "$tmpfile" && rm -f "$tmpfile"
 ```
 
 ## STEP 5: PR URL をユーザーに提示

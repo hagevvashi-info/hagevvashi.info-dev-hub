@@ -2,7 +2,14 @@
 # Blocks deprecated git commands per .claude/rules/002_git_guidelines.md
 # Runs as a PreToolUse hook on Bash tool calls.
 
-cmd=$(cat | jq -r '.tool_input.command // ""' 2>/dev/null)
+cmd=$(cat | python3 -c "
+import sys, json
+try:
+    data = json.load(sys.stdin)
+    print(data.get('tool_input', {}).get('command', ''))
+except Exception:
+    pass
+" 2>/dev/null)
 
 if echo "$cmd" | grep -qE '\bgit checkout\b'; then
   # Allow exceptions: temporary navigation to a commit hash or remote branch ref
@@ -31,3 +38,5 @@ if echo "$cmd" | grep -qE '\bgit reset HEAD\b'; then
   echo "代わりに 'git restore --staged <file>' を使用してください。"
   exit 2
 fi
+
+exit 0
