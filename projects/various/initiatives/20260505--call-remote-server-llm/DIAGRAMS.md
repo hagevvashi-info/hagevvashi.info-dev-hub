@@ -1,109 +1,119 @@
 # Architecture Diagrams: Call Remote Server LLM Bridge
 
 ## 1. システム全体構成図 (System Overview & Deployment)
-ネットワーク隔離を越えて、複数の「個性あるサーバー」を指名操作する全体像。
+GitHub（マスター設定）と Slack（指示・制御）の責務分離による全体構成。
 
 ```mermaid
 graph TD
+    User((User / Admin))
+    
     subgraph "Local Devices (Mac / Smartphone)"
-        Portal[Bridge Portal]
+        Portal[Bridge Portal<br/>Slack App]
     end
 
-    subgraph "Internet (Public Relay)"
-        Hub[Relay Hub / Shared Registry & Queues]
+    subgraph "Internet - Configuration Layer"
+        GitHubRepo["GitHub Repository<br/>(.github/servers.json)<br/>Master Config<br/>+ git history"]
     end
 
-    subgraph "Remote Server A (Role: GPU Machine)"
-        ConfigA[Local Config: ID='gpu-srv']
+    subgraph "Internet - Control Layer"
+        SlackHub["Slack Channels<br/>Command Inbox<br/>+ Thread-based Dialog"]
+    end
+
+    subgraph "Remote Server A"
         SAMA[SAM]
         AgentA[Claude Code]
     end
 
-    subgraph "Remote Server B (Role: Storage Server)"
-        ConfigB[Local Config: ID='file-srv']
+    subgraph "Remote Server B"
         SAMB[SAM]
         AgentB[Claude Code]
     end
 
-    Portal -- "1. Discovery (Who is online?)" --> Hub
-    Portal -- "2. Dispatch (To 'gpu-srv')" --> Hub
-
-    SAMA -- "A. Heartbeat (I am 'gpu-srv')" --> Hub
-    SAMA -- "B. Fetch Commands for 'gpu-srv'" --> Hub
-
-    SAMB -- "A. Heartbeat (I am 'file-srv')" --> Hub
-    SAMB -- "B. Fetch Commands for 'file-srv'" --> Hub
-
-    SAMA <--> AgentA
-    SAMB <--> AgentB
+    User -- "1. Update Master Config" --> GitHubRepo
+    Portal -- "2. Pull Server Definitions" --> GitHubRepo
+    
+    SAMA -- "A. Pull My HWID & Identity" --> GitHubRepo
+    SAMA -- "B. Poll Command Threads" --> SlackHub
+    
+    SAMB -- "A. Pull My HWID & Identity" --> GitHubRepo
+    SAMB -- "B. Poll Command Threads" --> SlackHub
+    
+    Portal -- "3. Post Commands & Reply to Results" --> SlackHub
 ```
 
 ## 2. コンポーネント詳細図 (Component Diagram)
-ソフトウェア内部の責務と、論理サーバー名（Logical ID）によるフィルタリングの仕組み。
+GitHub（Master Config）と Slack（Command Inbox）による責務分離構成。
 
 ```mermaid
 graph TD
-    subgraph "Bridge Portal"
-        UI[UI: Server Selector]
-        Client[Hub Client]
+    subgraph "Bridge Portal (Slack App)"
+        UI["UI: Server List<br/>+ Command Interface"]
+        SlackClient[Slack Bot Client]
     end
 
-    subgraph "Relay Hub (Single Source of Truth)"
-        Registry{{Shared Server Registry}}
-        Queues[(Command Queues per ID)]
-        Logs[(Execution Logs)]
+    subgraph "GitHub Repository (Configuration)"
+        Master["Master Config<br/>servers.json"]
+        GitHistory["Git History<br/>(Audit Log)"]
+    end
+
+    subgraph "Slack Channels (Command Hub)"
+        CommandInbox["Command Inbox<br/>(Multiple Channels)"]
+        Threads["Thread-based Dialog<br/>(Commands & Results)"]
     end
 
     subgraph "Any Remote Server (Generic SAM)"
-        Config[Local Config: LOGICAL_SERVER_NAME]
+        LocalID["HWID<br/>(Hardware Auth ID)"]
         SAM[Server Agent Manager]
-        AA[Agent Adapter / PTY]
+        AA[Agent Adapter]
         Agent[LLM Agent]
     end
 
-    UI -- "1. Get Active Roles" --> Registry
-    UI -- "2. Select 'GPU-Box'" --> Client
-    Client -- "3. Push Command" --> Queues
+    UI -- "1. Load Server Definitions" --> Master
+    SlackClient -- "2. Post Commands in Threads" --> Threads
 
-    SAM -- "A. Register as LOGICAL_SERVER_NAME" --> Registry
-    SAM -- "B. Fetch for LOGICAL_SERVER_NAME" --> Queues
-
+    SAM -- "A. Fetch Identity by HWID" --> Master
+    SAM -- "B. Poll Command Threads" --> Threads
+    SAM -- "C. Cache Locally" --> LocalID
+    
     SAM <--> AA <--> Agent
-    AA -- "C. Stream Logs" --> Logs
-    Logs -. Read .- UI
+    AA -- "D. Stream Results to Thread" --> Threads
+    Threads -. "Monitor Results" .- UI
+    
+    Master -- "Git Track" --> GitHistory
 ```
 
 ## 3. シーケンス図 (Sequence Diagram)
-...（以下、前回のシーケンス図を維持）
-
+GitHub で Master Config を管理し、Slack でコマンド実行・対話するフロー。
 
 ```mermaid
 sequenceDiagram
-    participant U as Bridge Portal (Local)
-    participant R as Shared Registry (Hub)
-    participant I as Server Inbox (Hub)
-    participant S as SAM (Remote Server)
-    participant A as LLM Agent
+    actor U as User (Admin)
+    participant G as GitHub Repo<br/>Master Config
+    participant P as Bridge Portal<br/>(Slack App)
+    participant Slack as Slack Channels
+    participant S as SAM<br/>(Remote Server)
 
-    Note over S,R: 1. サーバーの存在証明 (Heartbeat)
-    S->>R: Update My Status (ID: 'gpu-server', Status: 'Ready')
+    Note over U,G: 1. Master Config 管理
+    U->>G: Update servers.json (add/modify server)
+    Note right of G: git history に記録
+
+    Note over S,G: 2. SAM のアイデンティティ確認
+    S->>G: Fetch Master Config
+    Note right of S: HWID で自分のスレッドチャンネルを特定
     
-    Note over U,R: 2. サーバー発見 (Discovery)
-    U->>R: Fetch Active Server Roles
-    R-->>U: List: ['gpu-server', 'storage-box']
+    Note over P,G: 3. Portal のサーバー一覧表示
+    P->>G: Pull Master Config
+    Note left of P: UI に available servers を表示
+
+    Note over P,Slack: 4. コマンド依頼・実行フロー
+    P->>Slack: Post command in thread (target: gpu-srv-1)
+    S->>Slack: Poll thread messages
+    S->>S: Run LLM Agent in new session
+    S->>Slack: Reply in thread with result
     
-    Note over U,I: 3. 指示の投函 (Command Submission)
-    U->>I: Post Command (Target: 'gpu-server', Action: 'Fix Bug')
-    
-    Note over S,I: 4. 指示の取得 (Polling)
-    S->>I: Fetch My Inbox (Target: 'gpu-server')
-    I-->>S: Found: 'Fix Bug'
-    
-    Note over S,A: 5. 実行とフィードバック (Execution)
-    S->>A: Start Agent
-    loop Processing
-        A->>S: Logs/Thoughts
-        S->>I: Update Thread Logs
-        I-->>U: Sync View
-    end
+    Note over P,Slack: 5. 対話的な継続実行
+    P->>Slack: Reply to result with additional command
+    S->>Slack: Fetch reply (same thread)
+    S->>S: Continue agent session
+    S->>Slack: Reply with next result
 ```
