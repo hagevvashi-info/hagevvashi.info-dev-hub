@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Compose Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+        .header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header p {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .dashboard-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #2d3748;
+        }
+        .card-description {
+            font-size: 15px;
+            color: #718096;
+            line-height: 1.6;
+        }
+        .card-meta {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #48bb78;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .card-arrow {
+            color: #cbd5e0;
+            font-size: 20px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            color: white;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+        .api-info {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 40px;
+            color: white;
+        }
+        .api-info h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .api-info ul {
+            list-style: none;
+            font-size: 14px;
+            line-height: 2;
+        }
+        .api-info a {
+            color: #fbbf24;
+            text-decoration: none;
+        }
+        .api-info a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Process Compose Dashboard</h1>
+            <p>Monolithic Dev Container Process Management</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <a href="/logs.html" class="dashboard-card">
+                <div class="card-icon">📋</div>
+                <div class="card-title">ログビューア</div>
+                <div class="card-description">
+                    各プロセスのログをリアルタイムでストリーミング表示。WebSocket接続により、テキスト選択とコピーが可能です。
+                </div>
+                <div class="card-meta">
+                    <div class="card-status">
+                        <span class="status-dot"></span>
+                        <span>WebSocket</span>
+                    </div>
+                    <div class="card-arrow">→</div>
+                </div>
+            </a>
+
+            <a href="/processes.html" class="dashboard-card">
+                <div class="card-icon">⚙️</div>
+                <div class="card-title">プロセス管理</div>
+                <div class="card-description">
+                    実行中のプロセス一覧を表示し、状態確認、起動、停止、再起動などの操作を行えます。
+                </div>
+                <div class="card-meta">
+                    <div class="card-status">
+                        <span class="status-dot"></span>
+                        <span>REST API</span>
+                    </div>
+                    <div class="card-arrow">→</div>
+                </div>
+            </a>
+
+            <a href="/difit.html" class="dashboard-card">
+                <div class="card-icon">🔍</div>
+                <div class="card-title">difit</div>
+                <div class="card-description">
+                    GitHub風のGit diffビューア。commit・branch・HEAD~nを指定してWebブラウザで差分を確認。パラメータ付きで起動できます。
+                </div>
+                <div class="card-meta">
+                    <div class="card-status">
+                        <span class="status-dot"></span>
+                        <span>Git Diff Viewer</span>
+                    </div>
+                    <div class="card-arrow">→</div>
+                </div>
+            </a>
+
+            <a href="/swagger/index.html" class="dashboard-card" target="_blank">
+                <div class="card-icon">📖</div>
+                <div class="card-title">API ドキュメント</div>
+                <div class="card-description">
+                    Process Compose REST APIの完全なドキュメント。Swagger UIで全エンドポイントを確認できます。
+                </div>
+                <div class="card-meta">
+                    <div class="card-status">
+                        <span class="status-dot"></span>
+                        <span>Swagger UI</span>
+                    </div>
+                    <div class="card-arrow">↗</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="api-info">
+            <h3>📡 API エンドポイント</h3>
+            <ul>
+                <li><strong>Base URL:</strong> <a href="/api/" target="_blank">http://localhost:4802/api/</a></li>
+                <li><strong>WebSocket:</strong> ws://localhost:4802/ws/process/logs/ws?name={process_name}&offset={offset}</li>
+                <li><strong>Process Compose:</strong> <a href="http://localhost:4040" target="_blank">http://localhost:4040</a> (Direct)</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>Powered by Process Compose + Nginx</p>
+            <p>MDC Infrastructure Dashboard</p>
+        </div>
+    </div>
+
+    <script>
+        // 簡単なヘルスチェック
+        async function checkHealth() {
+            try {
+                const response = await fetch('/api/processes');
+                if (response.ok) {
+                    console.log('✅ API is healthy');
+                }
+            } catch (error) {
+                console.error('❌ API health check failed:', error);
+            }
+        }
+        
+        checkHealth();
+    </script>
+</body>
+</html>

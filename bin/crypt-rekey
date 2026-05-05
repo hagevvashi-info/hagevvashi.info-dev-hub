@@ -1,0 +1,193 @@
+#!/bin/bash
+set -euo pipefail
+
+# =============================================================================
+# crypt-rekey
+# マスターキー再暗号化スクリプト
+#
+# 役割:
+#   *.users ファイルが更新された際に、マスターキーを新しいユーザーリストで
+#   再暗号化する。メンバー追加・削除時に実行。
+#
+# 注意:
+#   - 既存のマスターキーを復号するため、実行者自身がアクセス権を持つ必要がある
+#   - gocryptfs のマスターキー自体は変更されない（暗号化の「封筒」のみ更新）
+#
+# 依存:
+#   - age (https://github.com/FiloSottile/age)
+#   - yq (https://github.com/mikefarah/yq)
+# =============================================================================
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+GROUPS_FILE="$REPO_ROOT/.secret-config/groups.yml"
+
+usage() {
+  cat <<EOF
+Usage: $0 <directory-name>
+
+Example:
+  $0 initiatives/20251215--greptile-security
+
+Workflow:
+  1. Edit <directory-name>.users (add/remove groups or users)
+  2. Run this script to re-encrypt the master key
+  3. git commit and push
+
+This does NOT change the encryption key itself.
+Only the list of people who can decrypt it changes.
+
+Required tools: age, yq
+EOF
+  exit 1
+}
+
+# ============================================
+# ユーザーリスト展開関数（setup と共通ロジック）
+# ============================================
+expand_users() {
+  local users_file="$1"
+  local -a github_users=()
+
+  if [ ! -f "$users_file" ]; then
+    echo "ERROR: Users file not found: $users_file" >&2
+    exit 1
+  fi
+
+  if [ ! -f "$GROUPS_FILE" ]; then
+    echo "ERROR: Groups file not found: $GROUPS_FILE" >&2
+    exit 1
+  fi
+
+  echo "Reading access control from: $users_file" >&2
+
+  while IFS= read -r line; do
+    line=$(echo "$line" | sed 's/#.*//g' | xargs)
+    [ -z "$line" ] && continue
+
+    local group_check
+    group_check=$(yq eval ".groups.\"$line\" // \"\"" "$GROUPS_FILE")
+
+    if [ -n "$group_check" ] && [ "$group_check" != "null" ]; then
+      echo "  - Expanding group: $line" >&2
+      local members
+      members=$(yq eval ".groups.\"$line\"[]" "$GROUPS_FILE")
+      for member in $members; do
+        echo "    + $member" >&2
+        github_users+=("$member")
+      done
+    else
+      echo "  - Adding user: $line" >&2
+      github_users+=("$line")
+    fi
+  done < "$users_file"
+
+  printf '%s\n' "${github_users[@]}" | sort -u | tr '\n' ' '
+}
+
+# =============================================================================
+# メイン処理
+# =============================================================================
+
+if [ $# -ne 1 ]; then
+  usage
+fi
+
+BASE_NAME="$1"
+MASTERKEY_FILE="${BASE_NAME}.masterkey.age"
+USERS_FILE="${BASE_NAME}.users"
+
+# 依存チェック
+for cmd in age yq; do
+  if ! command -v "$cmd" &> /dev/null; then
+    echo "ERROR: $cmd is not installed" >&2
+    exit 1
+  fi
+done
+
+# ファイル存在チェック
+if [ ! -f "$MASTERKEY_FILE" ]; then
+  echo "ERROR: Master key file not found: $MASTERKEY_FILE" >&2
+  echo "Run crypt-setup first." >&2
+  exit 1
+fi
+
+# 1. 現在のマスターキーを復号
+echo "=== Step 1: Decrypt current master key ==="
+MASTERKEY=""
+for key_file in ~/.ssh/id_ed25519 ~/.ssh/id_rsa ~/.ssh/id_ecdsa; do
+  if [ -f "$key_file" ]; then
+    if MASTERKEY=$(age --decrypt -i "$key_file" "$MASTERKEY_FILE" 2>/dev/null); then
+      echo "  Decrypted with: $(basename "$key_file")"
+      break
+    fi
+  fi
+done
+
+if [ -z "$MASTERKEY" ]; then
+  echo "ERROR: Failed to decrypt master key" >&2
+  echo "You must have access to this encrypted directory to re-encrypt it." >&2
+  exit 1
+fi
+
+# 2. 新しいユーザーリストを展開
+echo ""
+echo "=== Step 2: Expand updated user list ==="
+read -ra github_users <<< "$(expand_users "$USERS_FILE")"
+
+if [ ${#github_users[@]} -eq 0 ]; then
+  echo "ERROR: No users found in $USERS_FILE" >&2
+  exit 1
+fi
+
+echo ""
+echo "New access list (${#github_users[@]} user(s)): ${github_users[*]}"
+
+# 3. 新しい受信者で再暗号化
+echo ""
+echo "=== Step 3: Re-encrypt master key ==="
+TMP_KEYS_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_KEYS_DIR"' EXIT
+
+AGE_ARGS=()
+for user in "${github_users[@]}"; do
+  echo "  - Adding recipient: $user"
+  local_keyfile="$TMP_KEYS_DIR/${user}.keys"
+  key_url="https://github.com/${user}.keys"
+  echo "    Public key source: $key_url"
+  if ! curl -fsSL -o "$local_keyfile" "$key_url"; then
+    echo "ERROR: Failed to fetch public keys for $user from $key_url" >&2
+    exit 1
+  fi
+  if [ ! -s "$local_keyfile" ]; then
+    echo "ERROR: No public keys found for GitHub user: $user" >&2
+    exit 1
+  fi
+  AGE_ARGS+=("-R" "$local_keyfile")
+done
+
+# バックアップ
+cp "$MASTERKEY_FILE" "${MASTERKEY_FILE}.bak"
+
+echo ""
+echo "Re-encrypting..."
+if echo "$MASTERKEY" | age "${AGE_ARGS[@]}" -o "$MASTERKEY_FILE"; then
+  echo "  Master key re-encrypted: $MASTERKEY_FILE"
+  rm -f "${MASTERKEY_FILE}.bak"
+else
+  echo "ERROR: Re-encryption failed" >&2
+  echo "Restoring backup..." >&2
+  mv "${MASTERKEY_FILE}.bak" "$MASTERKEY_FILE"
+  exit 1
+fi
+
+# クリーンアップ
+unset MASTERKEY
+
+echo ""
+echo "=== Re-encryption complete! ==="
+echo ""
+echo "Next steps:"
+echo "  git add $MASTERKEY_FILE"
+echo "  git commit -m 'chore: update encrypted directory access'"
+echo "  git push"

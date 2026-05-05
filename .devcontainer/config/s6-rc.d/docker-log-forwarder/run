@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "docker-log-forwarder started"
+exec tail -n0 -F /var/log/supervisor/*.log /var/log/supervisor/*-error.log /var/log/nginx/*.log 2>&1

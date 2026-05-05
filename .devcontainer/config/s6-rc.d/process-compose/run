@@ -1,0 +1,12 @@
+#!/command/with-contenv bash
+# s6-overlay の with-contenv で環境変数を読み込む
+set -euo pipefail
+
+# 重要: HOMEを一般ユーザーのホームディレクトリに設定
+# s6-setuidgid は UID/GID のみ変更し、HOME は変更しない
+# そのため、明示的に HOME を設定する必要がある
+# これにより、子プロセス（npm, Python等）が ${HOME} を正しく参照できる
+export HOME=/home/${UNAME}
+
+# 重要: s6-setuidgid は絶対パスで指定（mise PATH が優先されて /command が見つからないため）
+exec /command/s6-setuidgid ${UNAME} /usr/local/bin/process-compose -t=false -p ${PROCESS_COMPOSE_PORT} -f /etc/process-compose/process-compose.yaml

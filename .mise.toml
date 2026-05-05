@@ -1,0 +1,48 @@
+# .mise.toml - Declarative tool version management for MDC
+# このファイルはプロジェクトルートに配置され、ワークスペース全体がbind mountされることで
+# コンテナ内の /home/${UNAME}/<repo-name>/.mise.toml として自動的にマウントされる
+
+[settings]
+auto_install = true
+
+[tools]
+# Node.js - LTS version with npm and corepack
+# Phase B で検証済み: インストール時間 6.896秒
+node = ["24.13.0", "20.14.0", "22.17.0"]
+
+# Terraform - Latest version (security patches applied)
+# Phase C で検証済み: インストール時間 3.835秒
+# 注記: tfenv の v1.13.0 から v1.14.3 へアップグレード（4年分）
+terraform = "latest"
+
+# Google Cloud SDK - Explicit version
+# Phase D で検証済み: インストール時間 12.896秒
+# 警告: @latest は使用不可（バージョンソート問題）
+gcloud = "552.0.0"
+
+# Python - Latest 3.12.x version
+# Phase E で検証済み: インストール時間 5.843秒
+python = "3.12"
+
+# uv - Fast Python package manager (Rust-based)
+# Python環境改善 Phase 1: pandoc/pandas環境整備
+# 用途: pandas等のライブラリ管理、webssh等のCLIツール管理
+# 注記: pipx: プレフィックスを使用してGitHub APIレート制限を回避
+#       pipx経由でPyPIからインストールするため、GitHub APIを使用しない
+"pipx:uv" = "latest"
+
+# Rust toolchain - for building Rust-based CLI tools
+# 用途: miniserve等のRust製ツールのビルド環境
+rust = "latest"
+
+# miniserve - Modern file server with beautiful web UI
+# 用途: ディレクトリブラウジング用のWebサーバー（Nginxのバックエンド）
+"cargo:miniserve" = "latest"
+
+[env]
+# GitHub API レート制限回避のため、Python アーティファクト署名検証を無効化
+MISE_PYTHON_GITHUB_ATTESTATIONS = "false"
+# Project-specific environment variables
+# MISE_PYTHON_COMPILE = "0"  # Use prebuilt binaries (faster)
+
+# 注記: NODE_ENV などのプロジェクト固有の環境変数はここに追加可能

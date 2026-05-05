@@ -1,0 +1,66 @@
+#!/bin/bash
+set -euo pipefail
+
+# =============================================================================
+# crypt-umount
+# 暗号化ディレクトリをアンマウントするスクリプト
+#
+# 役割:
+#   1. gocryptfs FUSE マウントを解除
+#   2. *.plain/ ディレクトリを空にする
+#
+# 依存:
+#   - fusermount (FUSE utilities)
+# =============================================================================
+
+usage() {
+  cat <<EOF
+Usage: $0 <directory-name>
+
+Example:
+  $0 initiatives/20251215--greptile-security
+
+This will unmount <directory-name>.plain/ and ensure
+the encrypted files in <directory-name>.encrypted/ are committed.
+EOF
+  exit 1
+}
+
+if [ $# -ne 1 ]; then
+  usage
+fi
+
+BASE_NAME="$1"
+ENCRYPTED_DIR="${BASE_NAME}.encrypted"
+PLAIN_DIR="${BASE_NAME}.plain"
+
+# マウント確認
+if ! mountpoint -q "$PLAIN_DIR" 2>/dev/null; then
+  echo "Not mounted: $PLAIN_DIR"
+  echo "(Already unmounted or was never mounted)"
+  exit 0
+fi
+
+# アンマウント
+echo "Unmounting: $PLAIN_DIR"
+
+if fusermount -u "$PLAIN_DIR"; then
+  echo "Unmounted successfully!"
+  echo ""
+  echo "Encrypted files are in: $ENCRYPTED_DIR/"
+  echo ""
+  echo "To commit changes:"
+  echo "  git add $ENCRYPTED_DIR/"
+  echo "  git commit -m 'docs: update documents'"
+  echo "  git push"
+else
+  echo "ERROR: Failed to unmount $PLAIN_DIR" >&2
+  echo "" >&2
+  echo "Possible causes:" >&2
+  echo "  - Files are still open in $PLAIN_DIR/" >&2
+  echo "  - A process is using files in $PLAIN_DIR/" >&2
+  echo "" >&2
+  echo "Force unmount (may lose data):" >&2
+  echo "  fusermount -uz $PLAIN_DIR" >&2
+  exit 1
+fi

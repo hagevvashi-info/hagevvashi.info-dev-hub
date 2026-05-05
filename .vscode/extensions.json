@@ -5,11 +5,13 @@
     "EditorConfig.EditorConfig",
     "4ops.terraform",
     "GitHub.vscode-pull-request-github",
-    "GitHub.copilot",
-    "GitHub.copilot-chat",
     "Anthropic.claude-code",
-    "RooVeterinaryInc.roo-cline",
     "google.gemini-cli-vscode-ide-companion",
-    "Google.geminicodeassist"
+    "Google.geminicodeassist",
+    "bierner.markdown-mermaid",
+    "ms-python.python",
+    "antfu.browse-lite",
+    "ms-vscode-remote.remote-containers",
+    "openai.chatgpt"
   ]
 }

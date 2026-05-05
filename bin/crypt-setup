@@ -1,0 +1,203 @@
+#!/bin/bash
+set -euo pipefail
+
+# =============================================================================
+# crypt-setup
+# 暗号化ディレクトリの初期化スクリプト
+#
+# 役割:
+#   1. *.users ファイルからアクセス権を読み込み
+#   2. .secret-config/groups.yml からグループを展開
+#   3. gocryptfs で暗号化ディレクトリを初期化
+#   4. マスターキーを age で暗号化（GitHub SSH公開鍵）
+#
+# 依存:
+#   - age (https://github.com/FiloSottile/age)
+#   - gocryptfs (https://github.com/rfjakob/gocryptfs)
+#   - yq (https://github.com/mikefarah/yq)
+#   - openssl (マスターキー生成用)
+# =============================================================================
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+GROUPS_FILE="$REPO_ROOT/.secret-config/groups.yml"
+
+usage() {
+  cat <<EOF
+Usage: $0 <directory-name>
+
+Example:
+  $0 initiatives/20251215--greptile-security
+
+Prerequisites:
+  1. Create <directory-name>.users file with group names or GitHub usernames
+  2. Ensure .secret-config/groups.yml exists with group definitions
+
+This will create:
+  - <directory-name>.encrypted/   (gocryptfs encrypted directory, commit to Git)
+  - <directory-name>.masterkey.age (age encrypted master key, commit to Git)
+  - <directory-name>.plain/        (mount point, excluded by .gitignore)
+
+Required tools: age, gocryptfs, yq, openssl
+EOF
+  exit 1
+}
+
+# ============================================
+# ユーザーリスト展開関数
+# .secret-config/groups.yml と *.users を統合
+# ============================================
+expand_users() {
+  local users_file="$1"
+  local -a github_users=()
+
+  if [ ! -f "$users_file" ]; then
+    echo "ERROR: Users file not found: $users_file" >&2
+    echo "Create it with group names or GitHub usernames (one per line)" >&2
+    exit 1
+  fi
+
+  if [ ! -f "$GROUPS_FILE" ]; then
+    echo "ERROR: Groups file not found: $GROUPS_FILE" >&2
+    exit 1
+  fi
+
+  echo "Reading access control from: $users_file" >&2
+
+  while IFS= read -r line; do
+    # コメントと空行をスキップ
+    line=$(echo "$line" | sed 's/#.*//g' | xargs)
+    [ -z "$line" ] && continue
+
+    # グループ名かユーザー名か判定
+    local group_check
+    group_check=$(yq eval ".groups.\"$line\" // \"\"" "$GROUPS_FILE")
+
+    if [ -n "$group_check" ] && [ "$group_check" != "null" ]; then
+      # グループ名の場合、メンバーを展開
+      echo "  - Expanding group: $line" >&2
+      local members
+      members=$(yq eval ".groups.\"$line\"[]" "$GROUPS_FILE")
+      for member in $members; do
+        echo "    + $member" >&2
+        github_users+=("$member")
+      done
+    else
+      # ユーザー名の場合、そのまま追加
+      echo "  - Adding user: $line" >&2
+      github_users+=("$line")
+    fi
+  done < "$users_file"
+
+  # 重複を削除して出力
+  printf '%s\n' "${github_users[@]}" | sort -u | tr '\n' ' '
+}
+
+# =============================================================================
+# メイン処理
+# =============================================================================
+
+if [ $# -ne 1 ]; then
+  usage
+fi
+
+BASE_NAME="$1"
+ENCRYPTED_DIR="${BASE_NAME}.encrypted"
+MASTERKEY_FILE="${BASE_NAME}.masterkey.age"
+USERS_FILE="${BASE_NAME}.users"
+PLAIN_DIR="${BASE_NAME}.plain"
+
+# 依存チェック
+for cmd in age gocryptfs yq openssl; do
+  if ! command -v "$cmd" &> /dev/null; then
+    echo "ERROR: $cmd is not installed" >&2
+    echo "" >&2
+    echo "Install commands:" >&2
+    echo "  macOS:  brew install age gocryptfs yq openssl" >&2
+    echo "  Linux:  See README for installation instructions" >&2
+    exit 1
+  fi
+done
+
+# 既存チェック
+if [ -d "$ENCRYPTED_DIR" ]; then
+  echo "ERROR: Encrypted directory already exists: $ENCRYPTED_DIR" >&2
+  echo "Remove it first if you want to reinitialize." >&2
+  exit 1
+fi
+
+# 1. ユーザーリストの展開
+echo "=== Step 1: Expand user list ==="
+read -ra github_users <<< "$(expand_users "$USERS_FILE")"
+
+if [ ${#github_users[@]} -eq 0 ]; then
+  echo "ERROR: No users found" >&2
+  exit 1
+fi
+
+echo ""
+echo "Access will be granted to ${#github_users[@]} user(s): ${github_users[*]}"
+echo ""
+
+# 2. マスターキー生成 + gocryptfs 初期化
+echo "=== Step 2: Generate master key and initialize gocryptfs ==="
+
+# 独自マスターキーを生成（32バイト = 256ビット）
+MASTERKEY=$(openssl rand -hex 32 | sed 's/\(..\)/\1-/g' | sed 's/-$//')
+
+# gocryptfs を初期化（独自マスターキーで）
+# -masterkey フラグ使用時、パスワードは stdin から読み取られる（使用しないダミー値）
+mkdir -p "$ENCRYPTED_DIR"
+echo "gocryptfs-managed-by-age" | gocryptfs -init -q -masterkey "$MASTERKEY" "$ENCRYPTED_DIR"
+echo "  Master key generated and gocryptfs initialized"
+
+# 4. age でマスターキーを暗号化（GitHubユーザーごと）
+echo ""
+echo "=== Step 4: Encrypt master key with age ==="
+TMP_KEYS_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_KEYS_DIR"' EXIT
+
+AGE_ARGS=()
+for user in "${github_users[@]}"; do
+  echo "  - Adding recipient: $user"
+  local_keyfile="$TMP_KEYS_DIR/${user}.keys"
+  key_url="https://github.com/${user}.keys"
+  echo "    Public key source: $key_url"
+  if ! curl -fsSL -o "$local_keyfile" "$key_url"; then
+    echo "ERROR: Failed to fetch public keys for $user from $key_url" >&2
+    exit 1
+  fi
+  if [ ! -s "$local_keyfile" ]; then
+    echo "ERROR: No public keys found for GitHub user: $user" >&2
+    exit 1
+  fi
+  AGE_ARGS+=("-R" "$local_keyfile")
+done
+
+echo ""
+echo "Encrypting master key..."
+echo "$MASTERKEY" | age "${AGE_ARGS[@]}" -o "$MASTERKEY_FILE"
+echo "  Master key encrypted: $MASTERKEY_FILE"
+
+# 5. マウントポイント作成
+mkdir -p "$PLAIN_DIR"
+
+# 6. クリーンアップ（メモリ上のマスターキーを消去）
+unset MASTERKEY
+
+echo ""
+echo "=== Setup complete! ==="
+echo ""
+echo "Created files:"
+echo "  - $ENCRYPTED_DIR/       (gocryptfs encrypted, commit to Git)"
+echo "  - $MASTERKEY_FILE  (age encrypted master key, commit to Git)"
+echo "  - $USERS_FILE       (access control, commit to Git)"
+echo "  - $PLAIN_DIR/          (mount point, excluded by .gitignore)"
+echo ""
+echo "Next steps:"
+echo "  1. git add $ENCRYPTED_DIR/ $MASTERKEY_FILE $USERS_FILE"
+echo "  2. git commit -m 'feat: add encrypted directory'"
+echo "  3. git push"
+echo ""
+echo "To use:"
+echo "  bin/crypt-mount $BASE_NAME"

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>difit - Git Diff Viewer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        h1 { color: #569cd6; font-size: 28px; display: flex; align-items: center; gap: 10px; }
+        .back-btn {
+            padding: 8px 16px;
+            background: #3e3e42;
+            color: #d4d4d4;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .back-btn:hover { background: #4e4e52; }
+
+        /* ステータスバー */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #252526;
+            border-radius: 8px;
+            padding: 14px 20px;
+            margin-bottom: 24px;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .status-running  { background: #1a3a34; color: #4ec9b0; }
+        .status-stopped  { background: #3a3a1a; color: #dcdcaa; }
+        .status-error    { background: #3a1a1a; color: #f48771; }
+        .status-loading  { background: #1a2a3a; color: #9cdcfe; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+        .status-label { color: #858585; font-size: 14px; }
+
+        /* フォームカード */
+        .card {
+            background: #252526;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #9cdcfe;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #3e3e42;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        label { font-size: 13px; color: #9cdcfe; font-weight: 500; }
+        .label-hint { font-size: 11px; color: #858585; font-weight: 400; margin-left: 6px; }
+        input[type="text"], select {
+            background: #3c3c3c;
+            border: 1px solid #555;
+            color: #d4d4d4;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #569cd6;
+        }
+        input[type="text"]::placeholder { color: #555; }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+        }
+        .checkbox-group input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+        .checkbox-group label { font-size: 14px; color: #d4d4d4; cursor: pointer; }
+
+        /* ボタン */
+        .actions { display: flex; gap: 12px; margin-top: 20px; align-items: center; }
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-start { background: #4ec9b0; color: #1e1e1e; }
+        .btn-start:hover:not(:disabled) { background: #3db99f; }
+        .btn-stop  { background: #f48771; color: #1e1e1e; }
+        .btn-stop:hover:not(:disabled)  { background: #e07760; }
+        .btn-open  { background: #569cd6; color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-open:hover { background: #4a8bc4; }
+
+        /* 起動後リンク */
+        .difit-link-box {
+            display: none;
+            background: #1a3a34;
+            border: 1px solid #4ec9b0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            align-items: center;
+            gap: 16px;
+        }
+        .difit-link-box.visible { display: flex; }
+        .difit-link-box .link-text { flex: 1; }
+        .difit-link-box .link-label { font-size: 12px; color: #4ec9b0; font-weight: 600; margin-bottom: 4px; }
+        .difit-link-box .link-url { font-size: 13px; color: #9cdcfe; font-family: monospace; }
+
+        /* エラー */
+        .error-box {
+            background: #3a1a1a;
+            color: #f48771;
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .error-box.visible { display: block; }
+
+        /* コマンドプレビュー */
+        .command-preview {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 10px 14px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            color: #ce9178;
+            margin-top: 14px;
+            word-break: break-all;
+        }
+        .command-preview-label { font-size: 11px; color: #858585; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header">
+        <h1>🔍 difit</h1>
+        <a href="/" class="back-btn">← ダッシュボード</a>
+    </div>
+
+    <!-- ステータスバー -->
+    <div class="status-bar">
+        <span class="status-label">ステータス:</span>
+        <span class="status-badge status-loading" id="statusBadge">
+            <span class="status-dot"></span>
+            <span id="statusText">確認中...</span>
+        </span>
+        <span style="flex:1"></span>
+        <span style="color:#858585; font-size:13px;" id="statusDetail"></span>
+    </div>
+
+    <!-- エラー表示 -->
+    <div class="error-box" id="errorBox"></div>
+
+    <!-- 起動後リンク -->
+    <div class="difit-link-box" id="difitLinkBox">
+        <div class="link-text">
+            <div class="link-label">✅ difit が起動しました</div>
+            <div class="link-url" id="difitLinkUrl"></div>
+        </div>
+        <a href="#" class="btn btn-open" id="difitLinkBtn" target="_blank">↗ 開く</a>
+    </div>
+
+    <!-- パラメータフォーム -->
+    <div class="card">
+        <div class="card-title">起動パラメータ</div>
+
+        <div class="form-grid">
+            <!-- Working Directory -->
+            <div class="form-group full-width">
+                <label for="workingDir">
+                    Working Directory
+                    <span class="label-hint">— difit を実行する git リポジトリのパス</span>
+                </label>
+                <input type="text" id="workingDir"
+                    placeholder="/home/username/repos/my-repo"
+                    value="">
+            </div>
+
+            <!-- Commit-ish -->
+            <div class="form-group">
+                <label for="commitIsh">
+                    commit-ish
+                    <span class="label-hint">— コミット / ブランチ / タグ / HEAD~n</span>
+                </label>
+                <input type="text" id="commitIsh"
+                    placeholder="."
+                    value=".">
+            </div>
+
+            <!-- Compare with -->
+            <div class="form-group">
+                <label for="compareWith">
+                    compare-with
+                    <span class="label-hint">— 省略可。2点間の差分を表示</span>
+                </label>
+                <input type="text" id="compareWith"
+                    placeholder="main (省略可)">
+            </div>
+
+            <!-- Mode -->
+            <div class="form-group">
+                <label for="mode">表示モード</label>
+                <select id="mode">
+                    <option value="split">split（左右分割）</option>
+                    <option value="unified">unified（統合）</option>
+                </select>
+            </div>
+
+            <!-- Include untracked -->
+            <div class="form-group" style="justify-content: flex-end;">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="includeUntracked">
+                    <label for="includeUntracked">--include-untracked（未追跡ファイルも含める）</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- コマンドプレビュー -->
+        <div class="command-preview-label">実行コマンド（プレビュー）:</div>
+        <div class="command-preview" id="commandPreview">difit HEAD --no-open --host 0.0.0.0 --port 4025</div>
+
+        <!-- アクションボタン -->
+        <div class="actions">
+            <button class="btn btn-start" id="startBtn" onclick="startDifit()">▶ 起動</button>
+            <button class="btn btn-stop"  id="stopBtn"  onclick="stopDifit()" disabled>⏹ 停止</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const API_BASE   = '/api';
+    const DIFIT_PORT = 4025;
+
+    // アクセス方法に応じて difit URL を自動計算
+    //   Remote Linux:    http://${remote_host}:4025/
+    //   Mac localhost: http://localhost:4025/
+    function getDifitUrl() {
+        // VSCode proxy 経由（URL に /proxy/{port}/ が含まれる場合）
+        const m = window.location.href.match(/^(https?:\/\/[^/]+)\/proxy\/\d+\//);
+        if (m) return `${m[1]}/proxy/${DIFIT_PORT}/`;
+        // 直接アクセス（ホスト名をそのまま使いポートだけ変える）
+        return `${window.location.protocol}//${window.location.hostname}:${DIFIT_PORT}/`;
+    }
+
+    // ---- コマンドプレビュー ----
+    function buildCommand() {
+        const commitIsh       = document.getElementById('commitIsh').value.trim()   || '.';
+        const compareWith     = document.getElementById('compareWith').value.trim();
+        const mode            = document.getElementById('mode').value;
+        const includeUntracked = document.getElementById('includeUntracked').checked;
+
+        let cmd = `difit ${commitIsh}`;
+        if (compareWith) cmd += ` ${compareWith}`;
+        cmd += ` --no-open --host 0.0.0.0 --port ${DIFIT_PORT}`;
+        cmd += ` --mode ${mode}`;
+        if (includeUntracked) cmd += ' --include-untracked';
+        return cmd;
+    }
+
+    function updatePreview() {
+        document.getElementById('commandPreview').textContent = buildCommand();
+    }
+
+    ['commitIsh', 'compareWith', 'mode', 'includeUntracked'].forEach(id => {
+        document.getElementById(id).addEventListener('input', updatePreview);
+        document.getElementById(id).addEventListener('change', updatePreview);
+    });
+
+    // ---- ステータス取得 ----
+    async function fetchStatus() {
+        try {
+            const res  = await fetch(`${API_BASE}/process/difit`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json();
+        } catch {
+            return null;
+        }
+    }
+
+    function applyStatus(proc) {
+        const badge  = document.getElementById('statusBadge');
+        const text   = document.getElementById('statusText');
+        const detail = document.getElementById('statusDetail');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn  = document.getElementById('stopBtn');
+
+        badge.className = 'status-badge';
+
+        if (!proc) {
+            badge.classList.add('status-error');
+            text.textContent = 'エラー';
+            detail.textContent = 'プロセス情報を取得できません';
+            return;
+        }
+
+        const running = proc.is_running;
+        if (running) {
+            badge.classList.add('status-running');
+            text.textContent  = 'Running';
+            detail.textContent = `PID: ${proc.pid} / 起動時間: ${proc.system_time}`;
+            showDifitLink();
+        } else if (proc.status === 'Disabled') {
+            badge.classList.add('status-stopped');
+            text.textContent  = 'Stopped';
+            detail.textContent = '';
+            hideDifitLink();
+        } else {
+            badge.classList.add('status-error');
+            text.textContent  = proc.status;
+            detail.textContent = proc.exit_code ? `終了コード: ${proc.exit_code}` : '';
+            hideDifitLink();
+        }
+
+        startBtn.disabled = running;
+        stopBtn.disabled  = !running;
+    }
+
+    async function refreshStatus() {
+        const proc = await fetchStatus();
+        applyStatus(proc);
+    }
+
+    // ---- 起動 ----
+    async function startDifit() {
+        clearError();
+        const cmd        = buildCommand();
+        const workingDir = document.getElementById('workingDir').value.trim();
+
+        setLoading(true);
+        try {
+            // Step 1: コマンドと作業ディレクトリを更新
+            const updateRes = await fetch(`${API_BASE}/process`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name:        'difit',
+                    replicaName: 'difit',
+                    replicas:    1,
+                    command:     cmd,
+                    workingDir:  workingDir,
+                    disabled:    false,
+                    // restartPolicy を毎回明示しないと POST /process がゼロ値で上書きする
+                    // restart: 0=no, 1=always, 2=on_failure
+                    restartPolicy: { restart: 1, backoffSeconds: 3 },
+                }),
+            });
+            if (!updateRes.ok) {
+                const err = await updateRes.json().catch(() => ({}));
+                throw new Error(err.error || `設定更新失敗 (HTTP ${updateRes.status})`);
+            }
+
+            // Step 2: 起動
+            const startRes = await fetch(`${API_BASE}/process/start/difit`, { method: 'POST' });
+            if (!startRes.ok) {
+                const err = await startRes.json().catch(() => ({}));
+                throw new Error(err.error || `起動失敗 (HTTP ${startRes.status})`);
+            }
+
+            // ステータス反映（少し待つ）
+            await sleep(600);
+            await refreshStatus();
+        } catch (e) {
+            showError(e.message);
+            setLoading(false);
+        }
+    }
+
+    // ---- 停止 ----
+    async function stopDifit() {
+        clearError();
+        setLoading(true);
+        try {
+            const res = await fetch(`${API_BASE}/process/stop/difit`, { method: 'PATCH' });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error || `停止失敗 (HTTP ${res.status})`);
+            }
+            await sleep(600);
+            await refreshStatus();
+        } catch (e) {
+            showError(e.message);
+            setLoading(false);
+        }
+    }
+
+    // ---- リンク表示 ----
+    function showDifitLink() {
+        const url = getDifitUrl();
+        document.getElementById('difitLinkUrl').textContent = url;
+        document.getElementById('difitLinkBtn').href = url;
+        document.getElementById('difitLinkBox').classList.add('visible');
+    }
+
+    function hideDifitLink() {
+        document.getElementById('difitLinkBox').classList.remove('visible');
+    }
+
+    // ---- UI helpers ----
+    function setLoading(on) {
+        document.getElementById('startBtn').disabled = on;
+        document.getElementById('stopBtn').disabled  = on;
+        if (on) {
+            const badge = document.getElementById('statusBadge');
+            badge.className = 'status-badge status-loading';
+            document.getElementById('statusText').textContent = '処理中...';
+        }
+    }
+
+    function showError(msg) {
+        const box = document.getElementById('errorBox');
+        box.textContent = `❌ ${msg}`;
+        box.classList.add('visible');
+        setLoading(false);
+    }
+
+    function clearError() {
+        const box = document.getElementById('errorBox');
+        box.textContent = '';
+        box.classList.remove('visible');
+    }
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    // ---- Working Directory の初期値を API から取得 ----
+    async function initWorkingDir() {
+        try {
+            const res = await fetch(`${API_BASE}/process/info/env-validator`);
+            if (!res.ok) return;
+            const info = await res.json();
+            // WorkingDir は展開済みの実パス (例: /home/<user>/<mdc_repo>)
+            const workingDir = info.WorkingDir || '';
+            const homeMatch = workingDir.match(/^(\/home\/[^/]+)/);
+            if (homeMatch) {
+                const home = homeMatch[1];
+                document.getElementById('workingDir').value = home;
+                document.getElementById('workingDir').placeholder = `${home}/repos/my-repo`;
+                updatePreview();
+            }
+        } catch { /* 取得失敗時は空欄のまま */ }
+    }
+
+    // ---- 初期化 & 自動更新 ----
+    updatePreview();
+    initWorkingDir();
+    refreshStatus();
+    setInterval(refreshStatus, 5000);
+</script>
+</body>
+</html>

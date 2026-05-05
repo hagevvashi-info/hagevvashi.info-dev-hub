@@ -1,0 +1,8 @@
+[projects."/home/hagevvashi/hagevvashi.info-dev-hub"]
+trust_level = "trusted"
+
+[mcp_servers.atlassian]
+url = "https://mcp.atlassian.com/v1/mcp"
+
+[mcp_servers.playwright]
+url = "http://localhost:9001/mcp"

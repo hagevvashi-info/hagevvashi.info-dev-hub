@@ -34,15 +34,13 @@
     "editor.rulers": [80, 120],
     "editor.semanticHighlighting.enabled": true,
     "terminal.integrated.minimumContrastRatio": 1,
-    "workbench.colorTheme": "Quiet Light",
-    "workbench.preferredLightColorTheme": "Quiet Light",
-    "workbench.preferredDarkColorTheme": "Cursor Dark",
     "files.autoSave": "afterDelay",
     "editor.tabSize": 2,
     "specstory.autoSave.enabled": true,
     "specstory.helpUsImprove": false,
     "specstory.coordinatedUniversalTimezone": false,
-    "search.followSymlinks": false
+    "search.followSymlinks": false,
+    "specstory.cloudSync.enabled": "never"
   },
   "extensions": {
     "recommendations": [
@@ -51,12 +49,14 @@
       "EditorConfig.EditorConfig",
       "4ops.terraform",
       "GitHub.vscode-pull-request-github",
-      "GitHub.copilot",
-      "GitHub.copilot-chat",
       "Anthropic.claude-code",
-      "RooVeterinaryInc.roo-cline",
       "google.gemini-cli-vscode-ide-companion",
-      "Google.geminicodeassist"
+      "Google.geminicodeassist",
+      "bierner.markdown-mermaid",
+      "ms-python.python",
+      "antfu.browse-lite",
+      "ms-vscode-remote.remote-containers",
+      "openai.chatgpt"
     ]
   }
 }

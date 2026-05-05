@@ -39,15 +39,121 @@ processes:
 
 ---
 
-## 2. 設定変更後の反映方法
+## 1.5. 重要: 環境変数の罠 (`${HOME}`問題)
 
-`project.yaml`を編集しただけでは、Process-Composeに設定が反映されません。以下のコマンドでProcess-Composeサービスを再起動する必要があります。
+### 問題: ${HOME}が/rootになる（解決済み）
+
+process-composeは`s6-setuidgid`で一般ユーザー（`${UNAME}`）として起動されますが、
+`s6-setuidgid`は**UID/GIDのみ変更**し、**HOMEは変更しません**。
+
+そのため、明示的な設定なしでは`${HOME}=/root`のままになります。
+
+**検証結果（2026-01-21）**:
+- process-composeプロセス内: `HOME=/root`
+- 子プロセス（npm等）内: `HOME=/root`（親の環境変数を継承）
+
+### 影響範囲
+
+以下のようなツールが影響を受けます：
+- **npm**: `~/.npm`、`~/.npmrc`など
+- **Python**: `~/.cache/`、`~/.local/`など
+- **Git**: `~/.gitconfig`など
+- あらゆる`${HOME}`や`~`を使うツール
+
+### 解決策（実装済み）
+
+**根本的解決（2026-01-21実装）**:
+
+process-compose起動スクリプト([.devcontainer/s6-rc.d/process-compose/run](../../.devcontainer/s6-rc.d/process-compose/run))で、
+明示的に`export HOME=/home/${UNAME}`を設定しています。
+
+これにより、process-composeおよび**全ての子プロセス**で`${HOME}`が正しく使えます。
 
 ```bash
-# Process-Composeサービスを再起動します
-# s6-overlayがPID 1を保護しているため、コンテナは停止しません。
+# .devcontainer/s6-rc.d/process-compose/run 内
+export HOME=/home/${UNAME}
+exec s6-setuidgid ${UNAME} /usr/local/bin/process-compose ...
+```
+
+**結果**: `${HOME}`や`~`をそのまま使えます：
+
+```yaml
+# 良い例（どちらでもOK）
+working_dir: "/home/${UNAME}/repos/..."  # ✅ 明示的
+working_dir: "${HOME}/repos/..."         # ✅ export HOME のおかげで動作
+working_dir: "~/repos/..."               # ✅ export HOME のおかげで動作
+```
+
+### 検証方法
+
+`env-validator`プロセスで常時監視しています:
+
+```bash
+process-compose -p 4040 process logs env-validator
+```
+
+**期待される出力**:
+```
+=== Environment Variables Validation ===
+HOME: /home/<user>
+...
+✅ HOME is correct
+```
+
+**警告が出た場合**:
+```
+⚠️ WARNING: HOME=/root (expected /home/<user>)
+```
+
+この警告が出た場合、起動スクリプトの`export HOME=/home/${UNAME}`が削除されている可能性があります。
+即座に[.devcontainer/s6-rc.d/process-compose/run](../../.devcontainer/s6-rc.d/process-compose/run)を確認してください。
+
+### 重要な注意事項
+
+**絶対に削除しないこと**:
+
+起動スクリプトの`export HOME=/home/${UNAME}`を削除すると、以下の問題が発生します：
+- npm: `~/.npm`が`/root/.npm`を参照
+- Python: `~/.cache`が`/root/.cache`を参照
+- Git: `~/.gitconfig`が`/root/.gitconfig`を参照
+
+env-validatorの警告メッセージで即座に検出できますが、**削除しないことが最善です**。
+
+---
+
+## 2. 設定変更後の反映方法
+
+`project.yaml`を編集した後、以下のいずれかの方法で設定を反映できます。
+
+### 方法1: ホットリロード（推奨）
+
+Process-Composeの`project update`コマンドを使用すると、サービスを再起動せずに設定を反映できます:
+
+```bash
+process-compose -p ${PROCESS_COMPOSE_PORT} project update -f workloads/process-compose/project.yaml
+```
+
+**動作**:
+- 実行中のprocess-composeインスタンスに新しい設定を送信
+- HTTPサーバー経由で通信するため、プロセスの再起動は不要
+- 既に起動中のプロセスは影響を受けません（設定が変更されたプロセスを反映するには個別に再起動が必要な場合があります）
+
+**確認方法**:
+```bash
+# 設定更新後に状態を確認
+process-compose -p ${PROCESS_COMPOSE_PORT} project state
+```
+
+### 方法2: サービス再起動
+
+完全な再起動が必要な場合や、ホットリロードで問題が発生した場合は、以下のコマンドでProcess-Composeサービスを再起動できます:
+
+```bash
+# Process-Composeサービスを再起動
+# s6-overlayがPID 1を保護しているため、コンテナは停止しません
 s6-svc -t /run/service/process-compose
 ```
+
 このコマンドはProcess-Composeサービスを停止・開始しますが、コンテナ自体は停止しませんので、安心して実行できます。
 
 ---
