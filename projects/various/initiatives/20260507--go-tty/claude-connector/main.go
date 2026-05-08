@@ -1,113 +1,70 @@
 package main
 
 import (
-	"bufio"
+	"encoding/json"
 	"fmt"
-	"log"
 	"os"
-	"regexp"
-	"strings"
+	"sync"
 	"time"
 )
 
+type State struct {
+	LastCheckTime time.Time `json:"last_check_time"`
+}
+
+const stateFile = "state.json"
+
+func loadState() State {
+	data, err := os.ReadFile(stateFile)
+	if err != nil {
+		return State{LastCheckTime: time.Now().Add(-1 * time.Hour)} // 初回は1時間前から
+	}
+	var s State
+	json.Unmarshal(data, &s)
+	return s
+}
+
+func saveState(s State) {
+	data, _ := json.Marshal(s)
+	os.WriteFile(stateFile, data, 0644)
+}
+
 func main() {
 	env := os.Getenv("APP_ENV")
-	var notifier Notifier = &LocalNotifier{}
-	var inputSource InputSource = &LocalInput{}
+	var platform Platform = &LocalPlatform{}
 
 	if env == "production" {
-		notifier = &SlackNotifier{Token: os.Getenv("SLACK_TOKEN")}
-		inputSource = &SlackInput{}
+		platform = &SlackPlatform{Token: os.Getenv("SLACK_TOKEN")}
 	}
 
-	fmt.Println("🚀 System Online. Usage: 'claude <cmd>' or 'gemini <cmd>'")
+	// 1. 状態の読み込み (前回いつチェックしたか)
+	state := loadState()
+	now := time.Now()
 
-	var agent Agent
-	var actualCommand string
-
-	// 1. エージェントの選択（入力があるまでループ）
-	for {
-		firstInput, err := inputSource.GetCommand()
-		if err != nil {
-			log.Fatal(err)
-		}
-		if firstInput == "" {
-			continue
-		}
-
-		switch {
-		case strings.HasPrefix(firstInput, "gemini "):
-			agent = &GeminiAgent{}
-			actualCommand = strings.TrimPrefix(firstInput, "gemini ")
-		case strings.HasPrefix(firstInput, "claude "):
-			agent = &ClaudeAgent{}
-			actualCommand = strings.TrimPrefix(firstInput, "claude ")
-		default:
-			fmt.Printf("❌ Invalid agent prefix. Use 'claude ' or 'gemini '\n")
-			continue
-		}
-		break
-	}
-
-	// 2. エージェントの起動（ここでコマンドを渡す）
-	f, cmd, err := agent.Start(actualCommand)
+	// 2. 新着メッセージの取得 (B-i, ii)
+	messages, err := platform.FetchNewMessages(state.LastCheckTime)
 	if err != nil {
-		log.Fatalf("Fatal: Failed to start agent: %v", err)
+		fmt.Printf("Error fetching messages: %v\n", err)
+		return
 	}
-	defer f.Close()
 
-	outputChan := make(chan string)
-	re := regexp.MustCompile(`Session ID: (sess_[a-z0-9]+)`)
+	// 3. 並列実行 (B-iii, iv)
+	bridge := &Bridge{Platform: platform}
+	var wg sync.WaitGroup
 
-	// --- パイプライン ---
-
-	// A. 追加入力ループ（一撃で終わるモードでも、一応 Stdin を維持）
-	go func() {
-		for {
-			text, err := inputSource.GetCommand()
-			if err != nil {
-				return
-			}
-			fmt.Fprintln(f, text)
-		}
-	}()
-
-	// B. 読み取りループ
-	go func() {
-		scanner := bufio.NewScanner(f)
-		for scanner.Scan() {
-			line := scanner.Text()
-			outputChan <- line
-
-			// JSONの中から Session ID を探す
-			if match := re.FindStringSubmatch(line); match != nil {
-				notifier.SaveSession(match[1])
-			}
-		}
-	}()
-
-	// C. 通知ループ
-	go func() {
-		var buffer string
-		ticker := time.NewTicker(2 * time.Second) // 少し早めに 2秒に
-		for {
-			select {
-			case line := <-outputChan:
-				buffer += line + "\n"
-			case <-ticker.C:
-				if buffer != "" {
-					notifier.Notify(buffer)
-					buffer = ""
-				}
-			}
-		}
-	}()
-
-	// 子プロセスの終了待機
-	if err := cmd.Wait(); err != nil {
-		log.Printf("Process finished: %v", err)
+	for _, msg := range messages {
+		wg.Add(1)
+		go func(m Message) {
+			defer wg.Done()
+			bridge.Execute(m) // (C) に仕事を渡す
+		}(msg)
 	}
-	// 最後のバッファを出し切るための猶予
-	time.Sleep(2 * time.Second)
-	fmt.Println("--- Shutdown ---")
+
+	wg.Wait() // すべてのジョブが終わるまで待機 (バッチとしての責任)
+
+	// 4. 状態の更新
+	state.LastCheckTime = now
+	saveState(state)
+
+	fmt.Println("✅ All jobs finished.")
 }
