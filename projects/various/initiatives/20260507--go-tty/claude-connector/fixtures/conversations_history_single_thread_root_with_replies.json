@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "messages": [
+    {
+      "type": "message",
+      "user": "U22222222",
+      "text": "この件、調査して",
+      "ts": "1778249810.000100",
+      "thread_ts": "1778249810.000100",
+      "reply_count": 2,
+      "reply_users_count": 1,
+      "latest_reply": "1778249820.000200"
+    }
+  ]
+}
+

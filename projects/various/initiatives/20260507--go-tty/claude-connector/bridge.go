@@ -17,8 +17,11 @@ func (b *Bridge) Execute(msg Message) {
 	switch strings.ToLower(msg.AgentType) {
 	case "gemini":
 		agent = &GeminiAgent{}
-	default:
+	case "claude":
 		agent = &ClaudeAgent{}
+	default:
+		b.Platform.PostResponse(msg, fmt.Sprintf("❌ 未対応の AgentType です: %q", msg.AgentType))
+		return
 	}
 
 	// エージェント実行
