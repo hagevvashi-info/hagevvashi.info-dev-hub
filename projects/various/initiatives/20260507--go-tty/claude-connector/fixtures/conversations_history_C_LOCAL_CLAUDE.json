@@ -1,0 +1,25 @@
+{
+  "ok": true,
+  "messages": [
+    {
+      "type": "message",
+      "user": "U10101010",
+      "text": "スレッドAのトップ: 現在のディレクトリのファイル一覧を教えて",
+      "ts": "1778250000.000100",
+      "thread_ts": "1778250000.000100",
+      "reply_count": 1,
+      "reply_users_count": 1,
+      "latest_reply": "1778250010.000200"
+    },
+    {
+      "type": "message",
+      "user": "U20202020",
+      "text": "スレッドBのトップ: go.mod の中身を教えて",
+      "ts": "1778250020.000100",
+      "thread_ts": "1778250020.000100",
+      "reply_count": 2,
+      "reply_users_count": 1,
+      "latest_reply": "1778250040.000300"
+    }
+  ]
+}

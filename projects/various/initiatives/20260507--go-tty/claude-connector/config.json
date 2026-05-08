@@ -1,0 +1,9 @@
+{
+  "channels": [
+    {
+      "id": "C_LOCAL_CLAUDE",
+      "agent_type": "claude"
+    }
+  ]
+}
+
