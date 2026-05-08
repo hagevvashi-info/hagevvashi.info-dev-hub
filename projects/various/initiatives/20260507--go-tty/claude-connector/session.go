@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -10,6 +9,7 @@ import (
 type SessionManager struct {
 	mu       sync.Mutex
 	sessions map[string]*AgentSession
+	store    *SessionStore
 }
 
 type AgentSession struct {
@@ -24,37 +24,19 @@ type AgentSession struct {
 	ClaudeSessionID string
 }
 
-func NewSessionManager() *SessionManager {
-	return &SessionManager{
+func NewSessionManager(store *SessionStore) *SessionManager {
+	sm := &SessionManager{
 		sessions: map[string]*AgentSession{},
+		store:    store,
 	}
-}
-
-func threadKeyFromMessage(m Message) (string, error) {
-	if strings.TrimSpace(m.ChannelID) == "" {
-		return "", fmt.Errorf("ChannelID is empty")
+	if store != nil {
+		_ = sm.loadFromStore()
 	}
-	threadTS := strings.TrimSpace(m.ThreadTS)
-	if threadTS == "" {
-		// 非スレッドメッセージは「そのメッセージを親にしたスレッド」として扱う
-		threadTS = strings.TrimSpace(m.ID)
-	}
-	if threadTS == "" {
-		return "", fmt.Errorf("message id is empty")
-	}
-	return m.ChannelID + ":" + threadTS, nil
-}
-
-func isThreadRoot(m Message) bool {
-	// Slack: スレッドトップは thread_ts == ts になりがち。history の通常メッセージは thread_ts が空。
-	if m.ThreadTS == "" {
-		return true
-	}
-	return m.ThreadTS == m.ID
+	return sm
 }
 
 func (sm *SessionManager) GetOrCreate(m Message) (*AgentSession, bool, error) {
-	key, err := threadKeyFromMessage(m)
+	key, err := m.ThreadKey()
 	if err != nil {
 		return nil, false, err
 	}
@@ -65,7 +47,7 @@ func (sm *SessionManager) GetOrCreate(m Message) (*AgentSession, bool, error) {
 	now := time.Now()
 
 	// スレッドトップなら問答無用で新規セッション（既存があれば置き換え）
-	if isThreadRoot(m) {
+	if m.IsThreadRoot() {
 		s := &AgentSession{
 			ThreadKey:  key,
 			AgentType:  strings.ToLower(m.AgentType),
@@ -73,6 +55,7 @@ func (sm *SessionManager) GetOrCreate(m Message) (*AgentSession, bool, error) {
 			LastUsedAt: now,
 		}
 		sm.sessions[key] = s
+		sm.persistLocked()
 		return s, true, nil
 	}
 
@@ -88,9 +71,63 @@ func (sm *SessionManager) GetOrCreate(m Message) (*AgentSession, bool, error) {
 		LastUsedAt: now,
 	}
 	sm.sessions[key] = s
+	sm.persistLocked()
 	return s, true, nil
 }
 
 func (s *AgentSession) Touch() {
 	s.LastUsedAt = time.Now()
+}
+
+func (sm *SessionManager) UpdateClaudeSessionID(threadKey string, sessionID string) {
+	if strings.TrimSpace(threadKey) == "" || strings.TrimSpace(sessionID) == "" {
+		return
+	}
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+	s, ok := sm.sessions[threadKey]
+	if !ok {
+		return
+	}
+	s.ClaudeSessionID = sessionID
+	s.LastUsedAt = time.Now()
+	sm.persistLocked()
+}
+
+func (sm *SessionManager) loadFromStore() error {
+	sm.mu.Lock()
+	defer sm.mu.Unlock()
+	if sm.store == nil {
+		return nil
+	}
+	records, err := sm.store.Load()
+	if err != nil {
+		return err
+	}
+	for k, r := range records {
+		sm.sessions[k] = &AgentSession{
+			ThreadKey:        k,
+			AgentType:        r.AgentType,
+			CreatedAt:        r.CreatedAt,
+			LastUsedAt:       r.LastUsedAt,
+			ClaudeSessionID:  r.ClaudeSessionID,
+		}
+	}
+	return nil
+}
+
+func (sm *SessionManager) persistLocked() {
+	if sm.store == nil {
+		return
+	}
+	records := map[string]SessionRecord{}
+	for k, s := range sm.sessions {
+		records[k] = SessionRecord{
+			AgentType:       s.AgentType,
+			CreatedAt:       s.CreatedAt,
+			LastUsedAt:      s.LastUsedAt,
+			ClaudeSessionID: s.ClaudeSessionID,
+		}
+	}
+	_ = sm.store.Save(records)
 }

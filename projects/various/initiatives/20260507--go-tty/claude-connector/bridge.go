@@ -15,14 +15,14 @@ func (b *Bridge) Execute(msg Message) {
 	fmt.Printf("👷 [Bridge] 開始: %s (Agent: %s)\n", msg.ID, msg.AgentType)
 
 	if b.Sessions == nil {
-		b.Sessions = NewSessionManager()
+		b.Sessions = NewSessionManager(NewSessionStore(""))
 	}
 	session, created, err := b.Sessions.GetOrCreate(msg)
 	if err != nil {
 		b.Platform.PostResponse(msg, "❌ セッション初期化に失敗しました: "+err.Error())
 		return
 	}
-	if created && msg.ThreadTS != "" && msg.ThreadTS != msg.ID {
+	if created && !msg.IsThreadRoot() {
 		// 返信なのにセッションが無かった（喪失）ケース
 		fmt.Printf("⚠️ [Bridge] セッション喪失のため新規作成: thread=%s\n", msg.ThreadTS)
 	}
@@ -48,7 +48,7 @@ func (b *Bridge) Execute(msg Message) {
 		// 新規セッション開始
 		resume = ""
 	}
-	if resume != "" && msg.ThreadTS != "" && msg.ThreadTS != msg.ID {
+	if resume != "" && !msg.IsThreadRoot() {
 		fmt.Printf("🔁 [Bridge] 既存セッションへ投げます: session_id=%s thread=%s\n", resume, msg.ThreadTS)
 	}
 	result, sessionID, err := agent.Run(msg.Content, resume)
@@ -58,6 +58,9 @@ func (b *Bridge) Execute(msg Message) {
 	}
 	if sessionID != "" {
 		session.ClaudeSessionID = sessionID
+		if threadKey, err := msg.ThreadKey(); err == nil {
+			b.Sessions.UpdateClaudeSessionID(threadKey, sessionID)
+		}
 	}
 	session.Touch()
 
