@@ -1,0 +1,14 @@
+{
+  "C_LOCAL_CLAUDE:1778257105.000100": {
+    "agent_type": "claude",
+    "created_at": "2026-05-09T01:20:36.600030013+09:00",
+    "last_used_at": "2026-05-09T01:20:58.937667551+09:00",
+    "claude_session_id": "62b92ff3-a12e-4df7-8bd3-a32ea634ca60"
+  },
+  "C_LOCAL_CLAUDE:1778257125.000100": {
+    "agent_type": "claude",
+    "created_at": "2026-05-09T01:20:36.598012846+09:00",
+    "last_used_at": "2026-05-09T01:21:19.698176046+09:00",
+    "claude_session_id": "eaf947a5-268c-46eb-af19-335cf427a6d9"
+  }
+}

@@ -30,13 +30,19 @@ func ConvertSlackConversationsHistoryToMessages(channelID string, agentType stri
 			return nil, fmt.Errorf("invalid slack ts %q: %w", sm.TS, err)
 		}
 
+		// 正規化: thread_ts が空なら ts を入れて「このメッセージを root とするスレッド」として扱う
+		threadTS := sm.ThreadTS
+		if strings.TrimSpace(threadTS) == "" {
+			threadTS = sm.TS
+		}
+
 		out = append(out, Message{
 			ID:        sm.TS, // Slack では ts が一意 ID 的に使われる
 			AgentType: strings.ToLower(agentType),
 			Content:   sm.Text,
 			Timestamp: t,
 			ChannelID: channelID,
-			ThreadTS:  sm.ThreadTS,
+			ThreadTS:  threadTS,
 			ReplyCount: sm.ReplyCount,
 		})
 	}
@@ -67,9 +73,9 @@ func ConvertSlackConversationsRepliesToMessages(channelID string, agentType stri
 			return nil, fmt.Errorf("invalid slack ts %q: %w", sm.TS, err)
 		}
 
-		// replies の root は thread_ts が無いこともあるので補完する
+		// 正規化: replies の root は thread_ts が無いこともあるので補完する
 		thread := sm.ThreadTS
-		if thread == "" && sm.TS == threadTS {
+		if strings.TrimSpace(thread) == "" {
 			thread = threadTS
 		}
 

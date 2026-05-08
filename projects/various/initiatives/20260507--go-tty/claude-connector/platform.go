@@ -23,6 +23,21 @@ type Message struct {
 	ReplyCount int
 }
 
+func (m Message) ThreadKey() (string, error) {
+	if strings.TrimSpace(m.ChannelID) == "" {
+		return "", fmt.Errorf("ChannelID is empty")
+	}
+	if strings.TrimSpace(m.ThreadTS) == "" {
+		return "", fmt.Errorf("ThreadTS is empty")
+	}
+	return m.ChannelID + ":" + m.ThreadTS, nil
+}
+
+func (m Message) IsThreadRoot() bool {
+	// 正規化後は ThreadTS が必ず入る想定
+	return m.ThreadTS == m.ID
+}
+
 // Platform は Slack や Local とのやり取りを抽象化する
 type Platform interface {
 	FetchNewMessages(lastCheck time.Time) ([]Message, error)
@@ -56,8 +71,8 @@ func (p *LocalPlatform) FetchNewMessages(lastCheck time.Time) ([]Message, error)
 			for _, m := range msgs {
 				all = append(all, m)
 
-				// thread_ts が ts と同じで reply_count > 0 のものはスレッドトップと見なす
-				if m.ThreadTS != "" && m.ThreadTS == m.ID && m.ReplyCount > 0 {
+				// スレッドトップで reply_count > 0 のものはスレッドがあるので replies を拾いに行く
+				if m.IsThreadRoot() && m.ReplyCount > 0 {
 					repliesFixture := fmt.Sprintf("fixtures/conversations_replies_%s_%s.json", ch.ID, m.ThreadTS)
 					repliesData, err := os.ReadFile(repliesFixture)
 					if err != nil {

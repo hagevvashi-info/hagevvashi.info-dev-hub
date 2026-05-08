@@ -51,14 +51,14 @@ func main() {
 	}
 
 	// 3. 並列実行 (B-iii, iv)
-	bridge := &Bridge{Platform: platform, Sessions: NewSessionManager()}
+	bridge := &Bridge{Platform: platform, Sessions: NewSessionManager(NewSessionStore(""))}
 	var wg sync.WaitGroup
 
 	// スレッド単位でまとめて、スレッド内は順序を守って逐次実行する。
 	// （メッセージ単位で並列化すると、返信が親より先に処理されてセッションが崩れる）
 	byThread := map[string][]Message{}
 	for _, msg := range messages {
-		key, err := threadKeyFromMessage(msg)
+		key, err := msg.ThreadKey()
 		if err != nil {
 			fmt.Printf("Error building thread key: %v\n", err)
 			continue
@@ -77,7 +77,7 @@ func main() {
 		sort.Slice(msgs, func(i, j int) bool { return msgs[i].Timestamp.Before(msgs[j].Timestamp) })
 
 		wg.Add(1)
-		go func(threadMsgs []Message) {
+		go func(threadKey string, threadMsgs []Message) {
 			defer wg.Done()
 			// 同一スレッド内に複数メッセージが溜まっていた場合は、結合して 1 回で投げる。
 			// （前回チェック〜今回チェックの間に「返信が連続で来た」ケースを想定）
@@ -86,10 +86,12 @@ func main() {
 				return
 			}
 
-			channelID, threadTS := splitThreadKey(key)
+			channelID, threadTS := splitThreadKey(threadKey)
 			last := threadMsgs[len(threadMsgs)-1]
 			combined := Message{
-				ID:        last.ID,
+				// スレッド内バッチを 1 回で投げるときは、セッション開始点としてスレッドトップ扱いに寄せる
+				// （thread_ts と同じ ID にして IsThreadRoot() を満たす）
+				ID:        threadTS,
 				AgentType: last.AgentType,
 				Content:   joinThreadContents(threadMsgs),
 				Timestamp: last.Timestamp,
@@ -97,7 +99,7 @@ func main() {
 				ThreadTS:  threadTS,
 			}
 			bridge.Execute(combined)
-		}(msgs)
+		}(key, msgs)
 	}
 
 	wg.Wait() // すべてのジョブが終わるまで待機 (バッチとしての責任)
