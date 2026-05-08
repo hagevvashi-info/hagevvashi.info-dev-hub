@@ -8,28 +8,29 @@ import (
 )
 
 type Agent interface {
-	// 起動時に最初の命令を渡せるように変更
-	Start(input string) (*os.File, *exec.Cmd, error)
+	Run(input string) (string, error)
 }
 
 type ClaudeAgent struct{}
 
-func (a *ClaudeAgent) Start(input string) (*os.File, *exec.Cmd, error) {
-	// -p: プレーンモード, --output-format json: JSON出力
-	// 最後に input を引数として渡すことで、一撃で実行させる
+func (a *ClaudeAgent) Run(input string) (string, error) {
 	cmd := exec.Command("claude", "-p", "--output-format", "json", input)
-
 	cmd.Stderr = os.Stderr
 	f, err := pty.Start(cmd)
-	return f, cmd, err
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	// 結果をすべて読み取る (簡易版)
+	buf := make([]byte, 1024*10)
+	n, _ := f.Read(buf)
+	return string(buf[:n]), nil
 }
 
 type GeminiAgent struct{}
 
-func (a *GeminiAgent) Start(input string) (*os.File, *exec.Cmd, error) {
-	// Gemini CLI の仕様に合わせて調整が必要（ここでは仮）
-	cmd := exec.Command("gemini", "chat", input)
-	cmd.Stderr = os.Stderr
-	f, err := pty.Start(cmd)
-	return f, cmd, err
+func (a *GeminiAgent) Run(input string) (string, error) {
+	// 現状は Claude と同様の構造にする想定
+	return "Gemini response for: " + input, nil
 }
