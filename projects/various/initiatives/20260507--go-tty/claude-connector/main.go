@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 )
@@ -78,9 +79,24 @@ func main() {
 		wg.Add(1)
 		go func(threadMsgs []Message) {
 			defer wg.Done()
-			for _, m := range threadMsgs {
-				bridge.Execute(m) // (C) に仕事を渡す
+			// 同一スレッド内に複数メッセージが溜まっていた場合は、結合して 1 回で投げる。
+			// （前回チェック〜今回チェックの間に「返信が連続で来た」ケースを想定）
+			if len(threadMsgs) == 1 {
+				bridge.Execute(threadMsgs[0]) // (C) に仕事を渡す
+				return
 			}
+
+			channelID, threadTS := splitThreadKey(key)
+			last := threadMsgs[len(threadMsgs)-1]
+			combined := Message{
+				ID:        last.ID,
+				AgentType: last.AgentType,
+				Content:   joinThreadContents(threadMsgs),
+				Timestamp: last.Timestamp,
+				ChannelID: channelID,
+				ThreadTS:  threadTS,
+			}
+			bridge.Execute(combined)
 		}(msgs)
 	}
 
@@ -91,4 +107,23 @@ func main() {
 	saveState(state)
 
 	fmt.Println("✅ All jobs finished.")
+}
+
+func splitThreadKey(key string) (channelID string, threadTS string) {
+	parts := strings.SplitN(key, ":", 2)
+	if len(parts) != 2 {
+		return "", ""
+	}
+	return parts[0], parts[1]
+}
+
+func joinThreadContents(msgs []Message) string {
+	// まずは安全側に倒して、区切りは Markdown 的にも見やすい水平線にする。
+	// Slack の引用っぽくしたい場合は ">" 形式にする等もあり。
+	sep := "\n\n---\n\n"
+	out := make([]string, 0, len(msgs))
+	for _, m := range msgs {
+		out = append(out, m.Content)
+	}
+	return strings.Join(out, sep)
 }
