@@ -81,15 +81,9 @@ EOF
 )"
 ```
 
-## STEP 6: プッシュ前確認
+## STEP 6: プッシュ実行
 
-プッシュはリモートに影響するため、**必ずユーザーに確認してから**実行する。
-
-現在のブランチとリモートの状態を確認:
-```bash
-git status
-git log --oneline -5
-```
+ユーザー確認なしで自動的にプッシュする。
 
 ### リモート名の決定
 
@@ -114,11 +108,9 @@ fork workflow では origin に push し、upstream へは PR 経由で変更を
 
 ### プッシュ実行
 
-ユーザーの承認後:
-
 ```bash
 # 初回プッシュ（リモート追跡ブランチが未設定の場合）
-git push -u <remote> <branch-name>
+git push -u <remote> <current-branch-name>
 
 # 2回目以降
 git push
