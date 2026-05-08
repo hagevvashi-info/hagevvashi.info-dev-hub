@@ -1,0 +1,5 @@
+Hello! I'm Claude.
+I will start working on your request.
+Session ID: sess_abc123456789
+Processing...
+Done! I have added the endpoint.
