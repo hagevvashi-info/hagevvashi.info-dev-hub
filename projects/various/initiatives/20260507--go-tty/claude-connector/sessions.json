@@ -10,5 +10,17 @@
     "created_at": "2026-05-09T01:20:36.598012846+09:00",
     "last_used_at": "2026-05-09T01:21:19.698176046+09:00",
     "claude_session_id": "eaf947a5-268c-46eb-af19-335cf427a6d9"
+  },
+  "C_LOCAL_CLAUDE:1778292720.000100": {
+    "agent_type": "claude",
+    "created_at": "2026-05-09T21:31:22.057183298+09:00",
+    "last_used_at": "2026-05-09T21:31:40.760262709+09:00",
+    "claude_session_id": "395df290-6f69-4ca0-9240-5763150c649c"
+  },
+  "C_LOCAL_CLAUDE:1778292740.000100": {
+    "agent_type": "claude",
+    "created_at": "2026-05-09T21:31:22.055705798+09:00",
+    "last_used_at": "2026-05-09T21:31:38.838376459+09:00",
+    "claude_session_id": "ac7e07b9-83aa-434c-ad89-0488db97c6b0"
   }
 }
