@@ -19,7 +19,8 @@ const stateFile = "state.json"
 func loadState() State {
 	data, err := os.ReadFile(stateFile)
 	if err != nil {
-		return State{LastCheckTime: time.Now().Add(-1 * time.Hour)} // 初回は1時間前から
+		// 初回は過去30日分を拾う（ローカルfixtureのtsが古くても動作確認できるように）
+		return State{LastCheckTime: time.Now().Add(-30 * 24 * time.Hour)}
 	}
 	var s State
 	json.Unmarshal(data, &s)
