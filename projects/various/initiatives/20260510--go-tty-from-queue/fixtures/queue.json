@@ -1,0 +1,29 @@
+[
+  {
+    "channel": "C_LOCAL_CLAUDE",
+    "thread_ts": "1715161200.000100",
+    "message_ts": "1715161200.000100",
+    "text": "現在のディレクトリのファイル一覧を教えて",
+    "time": "2026-05-08T10:00:00Z",
+    "status": "completed",
+    "agent_type": "claude"
+  },
+  {
+    "channel": "C_LOCAL_CLAUDE",
+    "thread_ts": "1715161200.000100",
+    "message_ts": "1715161300.000100",
+    "text": "それぞれのファイルサイズも教えて",
+    "time": "2026-05-08T10:01:00Z",
+    "status": "pending",
+    "agent_type": "claude"
+  },
+  {
+    "channel": "C_LOCAL_CLAUDE",
+    "thread_ts": "1715161400.000100",
+    "message_ts": "1715161400.000100",
+    "text": "go.mod の中身を教えて",
+    "time": "2026-05-08T10:02:00Z",
+    "status": "completed",
+    "agent_type": "claude"
+  }
+]
