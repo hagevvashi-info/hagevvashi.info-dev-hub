@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
 	"strings"
 	"time"
 )
@@ -14,8 +12,8 @@ type Message struct {
 	Content   string
 	Timestamp time.Time
 
-	ChannelID string
-	ThreadTS  string
+	ChannelID  string
+	ThreadTS   string
 	ReplyCount int
 }
 
@@ -34,24 +32,26 @@ func (m Message) IsThreadRoot() bool {
 }
 
 type Platform interface {
-	FetchNewMessages(lastCheck time.Time) ([]Message, error)
+	FetchNewMessages() ([]Message, error)
 	PostResponse(original Message, response string) error
 	MarkProcessed(messageID string) error
 }
 
-type LocalPlatform struct{}
+// QueuePlatform は QueueSource から Queue を読み書きする
+type QueuePlatform struct {
+	source QueueSource
+}
 
-func (p *LocalPlatform) FetchNewMessages(lastCheck time.Time) ([]Message, error) {
-	fmt.Println("🔍 [Local] Queue から pending メッセージを取得します...")
+func NewQueuePlatform(source QueueSource) *QueuePlatform {
+	return &QueuePlatform{source: source}
+}
 
-	data, err := os.ReadFile("fixtures/queue.json")
+func (p *QueuePlatform) FetchNewMessages() ([]Message, error) {
+	fmt.Println("🔍 [Queue] pending メッセージを取得します...")
+
+	entries, err := p.source.Read()
 	if err != nil {
-		return nil, fmt.Errorf("failed to read queue.json: %w", err)
-	}
-
-	var entries []QueueEntry
-	if err := json.Unmarshal(data, &entries); err != nil {
-		return nil, fmt.Errorf("failed to parse queue.json: %w", err)
+		return nil, err
 	}
 
 	var messages []Message
@@ -81,21 +81,16 @@ func (p *LocalPlatform) FetchNewMessages(lastCheck time.Time) ([]Message, error)
 	return messages, nil
 }
 
-func (p *LocalPlatform) PostResponse(original Message, response string) error {
-	fmt.Printf("📢 [Local Post] channel: %s ID: %s (thread_ts: %s) への返信:\n%s\n\n",
+func (p *QueuePlatform) PostResponse(original Message, response string) error {
+	fmt.Printf("📢 [Queue Post] channel: %s ID: %s (thread_ts: %s) への返信:\n%s\n\n",
 		original.ChannelID, original.ID, original.ThreadTS, response)
 	return nil
 }
 
-func (p *LocalPlatform) MarkProcessed(messageID string) error {
-	data, err := os.ReadFile("fixtures/queue.json")
+func (p *QueuePlatform) MarkProcessed(messageID string) error {
+	entries, err := p.source.Read()
 	if err != nil {
-		return fmt.Errorf("failed to read queue.json: %w", err)
-	}
-
-	var entries []QueueEntry
-	if err := json.Unmarshal(data, &entries); err != nil {
-		return fmt.Errorf("failed to parse queue.json: %w", err)
+		return err
 	}
 
 	for i := range entries {
@@ -105,30 +100,5 @@ func (p *LocalPlatform) MarkProcessed(messageID string) error {
 		}
 	}
 
-	updated, err := json.MarshalIndent(entries, "", "  ")
-	if err != nil {
-		return fmt.Errorf("failed to marshal queue.json: %w", err)
-	}
-
-	if err := os.WriteFile("fixtures/queue.json", updated, 0644); err != nil {
-		return fmt.Errorf("failed to write queue.json: %w", err)
-	}
-
-	return nil
-}
-
-type SheetsPlatform struct {
-	SpreadsheetID string
-}
-
-func (p *SheetsPlatform) FetchNewMessages(lastCheck time.Time) ([]Message, error) {
-	return nil, fmt.Errorf("SheetsPlatform is not implemented yet")
-}
-
-func (p *SheetsPlatform) PostResponse(original Message, response string) error {
-	return fmt.Errorf("SheetsPlatform is not implemented yet")
-}
-
-func (p *SheetsPlatform) MarkProcessed(messageID string) error {
-	return fmt.Errorf("SheetsPlatform is not implemented yet")
+	return p.source.Write(entries)
 }

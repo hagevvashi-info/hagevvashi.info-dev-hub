@@ -1,49 +1,26 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"sort"
 	"strings"
 	"sync"
-	"time"
 )
 
-type State struct {
-	LastCheckTime time.Time `json:"last_check_time"`
-}
-
-const stateFile = "state.json"
-
-func loadState() State {
-	data, err := os.ReadFile(stateFile)
-	if err != nil {
-		return State{LastCheckTime: time.Now().Add(-30 * 24 * time.Hour)}
-	}
-	var s State
-	json.Unmarshal(data, &s)
-	return s
-}
-
-func saveState(s State) {
-	data, _ := json.Marshal(s)
-	os.WriteFile(stateFile, data, 0644)
-}
-
 func main() {
-	env := os.Getenv("APP_ENV")
-	var platform Platform = &LocalPlatform{}
-
-	if env == "production" {
+	var source QueueSource
+	switch os.Getenv("APP_ENV") {
+	case "production":
 		spreadsheetID := os.Getenv("SPREADSHEET_ID")
-		platform = &SheetsPlatform{SpreadsheetID: spreadsheetID}
+		source = NewSheetQueueSource(spreadsheetID)
+	default:
+		source = NewLocalQueueSource("")
 	}
 
-	state := loadState()
-	now := time.Now()
+	platform := NewQueuePlatform(source)
 
-	messages, err := platform.FetchNewMessages(state.LastCheckTime)
+	messages, err := platform.FetchNewMessages()
 	if err != nil {
 		fmt.Printf("Error fetching messages: %v\n", err)
 		return
@@ -103,9 +80,6 @@ func main() {
 	}
 
 	wg.Wait()
-
-	state.LastCheckTime = now
-	saveState(state)
 
 	fmt.Println("✅ All jobs finished.")
 }
