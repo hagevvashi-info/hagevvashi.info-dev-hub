@@ -13,9 +13,18 @@ func main() {
 	switch os.Getenv("APP_ENV") {
 	case "production":
 		spreadsheetID := os.Getenv("SPREADSHEET_ID")
+		if spreadsheetID == "" {
+			fmt.Fprintf(os.Stderr, "Error: SPREADSHEET_ID environment variable is required in production mode\n")
+			os.Exit(1)
+		}
 		source = NewSheetQueueSource(spreadsheetID)
 	default:
-		source = NewLocalQueueSource("")
+		queueFile := os.Getenv("QUEUE_FILE")
+		if queueFile == "" {
+			fmt.Fprintf(os.Stderr, "Error: QUEUE_FILE environment variable is required\n")
+			os.Exit(1)
+		}
+		source = NewLocalQueueSource(queueFile)
 	}
 
 	platform := NewQueuePlatform(source)

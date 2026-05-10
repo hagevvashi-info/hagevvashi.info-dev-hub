@@ -72,21 +72,30 @@ GAS (doPost) → Sheets (Queue) → go-tty-from-queue
 
 ### ステップ 1: テストデータを生成
 
-テストデータを `/tmp/queue.json` に生成します。
+`-output` フラグで出力先を指定してテストデータを生成します（必須）。
 
 ```bash
-go run ./cmd/generate-test-queue > /tmp/queue.json
+go run ./cmd/generate-test-queue -output /tmp/queue.json
+```
+
+出力例:
+```
+✅ Queue data generated: /tmp/queue.json
 ```
 
 生成されるテストデータ（pending メッセージ 3 件）:
 - メッセージ 1・2: 同一スレッド（結合されて 1 回の Agent 実行）
 - メッセージ 3: 別スレッド（独立した Agent 実行）
 
+**注**: `-output` フラグなしで実行するとエラーになります（出力先を明示的に指定するため）
+
 ### ステップ 2: メインプログラムを実行
 
 ```bash
-go run .
+QUEUE_FILE=/tmp/queue.json go run .
 ```
+
+**注**: `QUEUE_FILE` 環境変数の指定は必須です。指定しないとエラーで終了します。
 
 期待動作:
 1. `/tmp/queue.json` から pending メッセージを読み込む（3 件）
@@ -154,6 +163,7 @@ cat /tmp/queue.json | jq '.[] | {message_ts, status}'
 ```bash
 export APP_ENV=production
 export SPREADSHEET_ID=your-sheet-id
+export QUEUE_FILE=/path/to/queue.json
 go run .
 ```
 

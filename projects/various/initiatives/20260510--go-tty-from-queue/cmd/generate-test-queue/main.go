@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 )
@@ -17,6 +18,15 @@ type QueueEntry struct {
 }
 
 func main() {
+	output := flag.String("output", "", "Output file path (required)")
+	flag.Parse()
+
+	if *output == "" {
+		fmt.Fprintf(os.Stderr, "Error: -output flag is required\n")
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+
 	entries := []QueueEntry{
 		{
 			Channel:   "C_LOCAL_CLAUDE",
@@ -53,5 +63,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Print(string(data))
+	if err := os.WriteFile(*output, data, 0644); err != nil {
+		fmt.Fprintf(os.Stderr, "Error writing file: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("✅ Queue data generated: %s\n", *output)
 }
