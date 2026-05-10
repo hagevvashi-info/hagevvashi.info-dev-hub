@@ -50,48 +50,103 @@ GAS (doPost) → Sheets (Queue) → go-tty-from-queue
 ```
 .
 ├── main.go              # エントリポイント（Queue読み込み・スレッド並列化・状態管理）
-├── platform.go          # Platform I/F（LocalPlatform + SheetsPlatform）
+├── platform.go          # Platform I/F（QueuePlatform）
 ├── bridge.go            # Message → Agent 実行（セッション管理・返信投稿・MarkProcessed）
 ├── agent.go             # Agent I/F（ClaudeAgent + GeminiAgent）
+├── queue_entry.go       # QueueEntry 型（GAS → Sheets のスキーマ）
+├── queue_source.go      # QueueSource I/F（LocalQueueSource + SheetQueueSource）
 ├── session.go           # SessionManager + AgentSession
 ├── session_store.go     # SessionStore（sessions.json への永続化）
-├── queue_entry.go       # QueueEntry 型（GAS → Sheets のスキーマ）
 ├── go.mod
 ├── go.sum
 ├── .gitignore
+├── README.md
+├── cmd/
+│   └── generate-test-queue/
+│       └── main.go      # テストデータ生成スクリプト
 └── fixtures/
-    └── queue.json       # ローカルテスト用 Queue（ただし実行後は completed で上書き）
+    └── queue.json       # git管理外（.gitignoreに追加）
 ```
 
-## ローカル実行
+## ローカルテスト実行
+
+### ステップ 1: テストデータを生成
+
+テストデータを `/tmp/queue.json` に生成します。
 
 ```bash
-cd /home/hagevvashi/hagevvashi.info-dev-hub/projects/various/initiatives/20260510--go-tty-from-queue
+go run ./cmd/generate-test-queue > /tmp/queue.json
+```
 
-# ローカルモード（デフォルト）
+生成されるテストデータ（pending メッセージ 3 件）:
+- メッセージ 1・2: 同一スレッド（結合されて 1 回の Agent 実行）
+- メッセージ 3: 別スレッド（独立した Agent 実行）
+
+### ステップ 2: メインプログラムを実行
+
+```bash
 go run .
-
-# または
-APP_ENV=local go run .
 ```
 
 期待動作:
-1. `fixtures/queue.json` から pending を読み込む
-2. スレッド単位でグループ化
-3. 各スレッドを TTY で Claude に投げる
+1. `/tmp/queue.json` から pending メッセージを読み込む（3 件）
+2. スレッド単位でグループ化（2 スレッド）
+3. 各スレッドを TTY で Claude に投げる（並列実行）
 4. 返答を stdout に出力
-5. `queue.json` の status を "completed" に更新
-6. `sessions.json` にセッションID紐付けを保存
+5. `queue.json` の status を "completed" に自動更新
+6. `sessions.json` にセッション ID 紐付けを保存
 
 実行結果例:
 ```
-🔍 [Local] Queue から pending メッセージを取得します...
+🔍 [Queue] pending メッセージを取得します...
 📨 取得したメッセージ数: 3
-👷 [Bridge] 開始: 1715161200.000100 (Agent: claude)
 👷 [Bridge] 開始: 1715161400.000100 (Agent: claude)
-📢 [Local Post] channel: C_LOCAL_CLAUDE ID: ... への返信:
-(Claude の返答)
+👷 [Bridge] 開始: 1715161200.000100 (Agent: claude)
+🔁 [Bridge] 既存セッションへ投げます: session_id=... thread=1715161200.000100
+📢 [Queue Post] channel: C_LOCAL_CLAUDE ID: ... への返信:
+(Claude の返答 1)
+📢 [Queue Post] channel: C_LOCAL_CLAUDE ID: ... への返信:
+(Claude の返答 2)
 ✅ All jobs finished.
+```
+
+### ステップ 3: セッション確認
+
+実行後、セッション紐付けが保存されます:
+
+```bash
+cat sessions.json
+```
+
+出力例:
+```json
+{
+  "C_LOCAL_CLAUDE:1715161200.000100": {
+    "agent_type": "claude",
+    "created_at": "2026-05-10T00:12:16Z",
+    "last_used_at": "2026-05-10T00:12:26Z",
+    "claude_session_id": "e7f6d54b-7eb3-4156-b20e-f0322ca165ef"
+  },
+  "C_LOCAL_CLAUDE:1715161400.000100": {
+    ...
+  }
+}
+```
+
+### ステップ 4: キューの状態確認
+
+実行後、キューは updated に変わります:
+
+```bash
+cat /tmp/queue.json | jq '.[] | {message_ts, status}'
+```
+
+出力例:
+```json
+{
+  "message_ts": "1715161200.000100",
+  "status": "completed"
+}
 ```
 
 ## 本番実行（未実装）

@@ -20,7 +20,7 @@ type LocalQueueSource struct {
 
 func NewLocalQueueSource(filePath string) *LocalQueueSource {
 	if filePath == "" {
-		filePath = "fixtures/queue.json"
+		filePath = "/tmp/queue.json"
 	}
 	return &LocalQueueSource{FilePath: filePath}
 }
