@@ -9,13 +9,18 @@ import (
 )
 
 func main() {
+	queueFile := os.Getenv("QUEUE_FILE")
+	if queueFile == "" {
+		queueFile = "/tmp/queue.json"
+	}
+
 	var source QueueSource
 	switch os.Getenv("APP_ENV") {
 	case "production":
 		spreadsheetID := os.Getenv("SPREADSHEET_ID")
 		source = NewSheetQueueSource(spreadsheetID)
 	default:
-		source = NewLocalQueueSource("")
+		source = NewLocalQueueSource(queueFile)
 	}
 
 	platform := NewQueuePlatform(source)
