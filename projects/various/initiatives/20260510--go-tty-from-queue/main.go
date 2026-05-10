@@ -11,7 +11,8 @@ import (
 func main() {
 	queueFile := os.Getenv("QUEUE_FILE")
 	if queueFile == "" {
-		queueFile = "/tmp/queue.json"
+		fmt.Fprintf(os.Stderr, "Error: QUEUE_FILE environment variable is required\n")
+		os.Exit(1)
 	}
 
 	var source QueueSource

@@ -92,8 +92,10 @@ go run ./cmd/generate-test-queue -output /tmp/queue.json
 ### ステップ 2: メインプログラムを実行
 
 ```bash
-go run .
+QUEUE_FILE=/tmp/queue.json go run .
 ```
+
+**注**: `QUEUE_FILE` 環境変数の指定は必須です。指定しないとエラーで終了します。
 
 期待動作:
 1. `/tmp/queue.json` から pending メッセージを読み込む（3 件）
@@ -161,6 +163,7 @@ cat /tmp/queue.json | jq '.[] | {message_ts, status}'
 ```bash
 export APP_ENV=production
 export SPREADSHEET_ID=your-sheet-id
+export QUEUE_FILE=/path/to/queue.json
 go run .
 ```
 
