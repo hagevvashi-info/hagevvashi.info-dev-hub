@@ -25,6 +25,16 @@ type AgentSession struct {
 
 func NewSessionManager(store *SessionStore) *SessionManager {
 	sm := &SessionManager{
+		// map[スレッドキー]*AgentSession
+		// 例: {
+		//   "C_LOCAL_CLAUDE:1715161200.000100": &AgentSession{
+		//     ThreadKey: "C_LOCAL_CLAUDE:1715161200.000100",
+		//     AgentType: "claude",
+		//     ClaudeSessionID: "e7f6d54b-7eb3-4156-b20e-f0322ca165ef",
+		//     CreatedAt: 2026-05-10T21:07:41Z,
+		//     LastUsedAt: 2026-05-10T21:17:15Z
+		//   }
+		// }
 		sessions: map[string]*AgentSession{},
 		store:    store,
 	}
