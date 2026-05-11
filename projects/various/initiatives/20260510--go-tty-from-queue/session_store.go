@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -25,9 +26,11 @@ type SessionRecord struct {
 	ClaudeSessionID string    `json:"claude_session_id"`
 }
 
-func NewSessionStore(addr string) *SessionStore {
+func NewSessionStore() *SessionStore {
+	addr := os.Getenv("REDIS_ADDR")
 	if addr == "" {
-		addr = "localhost:6379"
+		fmt.Fprintf(os.Stderr, "Error: REDIS_ADDR environment variable is required\n")
+		os.Exit(1)
 	}
 	client := redis.NewClient(&redis.Options{
 		Addr: addr,

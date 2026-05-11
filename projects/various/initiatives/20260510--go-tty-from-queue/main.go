@@ -42,7 +42,7 @@ func main() {
 
 	fmt.Printf("📨 取得したメッセージ数: %d\n", len(messages))
 
-	bridge := &Bridge{Platform: platform, Sessions: NewSessionManager(NewSessionStore(""))}
+	bridge := &Bridge{Platform: platform, Sessions: NewSessionManager(NewSessionStore())}
 	var wg sync.WaitGroup
 
 	byThread := map[string][]Message{}
