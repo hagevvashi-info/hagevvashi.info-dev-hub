@@ -9,6 +9,7 @@ import (
 
 // QueueSource は Queue の入出力を抽象化する
 type QueueSource interface {
+	// Read メモリ全体に乗る想定（定期削除で数は制限されるため）
 	Read() ([]QueueEntry, error)
 	Write(entries []QueueEntry) error
 }

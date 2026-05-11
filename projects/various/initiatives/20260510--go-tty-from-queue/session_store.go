@@ -1,17 +1,21 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
-const sessionsFile = "sessions.json"
+const (
+	sessionKeyPrefix = "session:"
+	sessionTTL       = 24 * time.Hour
+)
 
 type SessionStore struct {
-	Path string
+	client *redis.Client
 }
 
 type SessionRecord struct {
@@ -21,48 +25,67 @@ type SessionRecord struct {
 	ClaudeSessionID string    `json:"claude_session_id"`
 }
 
-func NewSessionStore(path string) *SessionStore {
-	if path == "" {
-		path = sessionsFile
+func NewSessionStore(addr string) *SessionStore {
+	if addr == "" {
+		addr = "localhost:6379"
 	}
-	return &SessionStore{Path: path}
+	client := redis.NewClient(&redis.Options{
+		Addr: addr,
+	})
+	return &SessionStore{client: client}
 }
 
 func (s *SessionStore) Load() (map[string]SessionRecord, error) {
-	data, err := os.ReadFile(s.Path)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// session: で始まる全キーを取得
+	keys, err := s.client.Keys(ctx, sessionKeyPrefix+"*").Result()
 	if err != nil {
-		if os.IsNotExist(err) {
-			return map[string]SessionRecord{}, nil
+		return nil, fmt.Errorf("failed to fetch session keys: %w", err)
+	}
+
+	records := make(map[string]SessionRecord)
+	for _, key := range keys {
+		// キーから threadKey を復元（"session:C_LOCAL_CLAUDE:xxx" → "C_LOCAL_CLAUDE:xxx"）
+		threadKey := key[len(sessionKeyPrefix):]
+
+		data, err := s.client.Get(ctx, key).Result()
+		if err != nil {
+			return nil, fmt.Errorf("failed to load session %s: %w", threadKey, err)
 		}
-		return nil, fmt.Errorf("failed to read %s: %w", s.Path, err)
+
+		var record SessionRecord
+		if err := json.Unmarshal([]byte(data), &record); err != nil {
+			return nil, fmt.Errorf("failed to parse session %s: %w", threadKey, err)
+		}
+
+		records[threadKey] = record
 	}
-	var out map[string]SessionRecord
-	if err := json.Unmarshal(data, &out); err != nil {
-		return nil, fmt.Errorf("failed to parse %s: %w", s.Path, err)
-	}
-	if out == nil {
-		out = map[string]SessionRecord{}
-	}
-	return out, nil
+
+	return records, nil
 }
 
 func (s *SessionStore) Save(records map[string]SessionRecord) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	if records == nil {
 		records = map[string]SessionRecord{}
 	}
-	data, err := json.MarshalIndent(records, "", "  ")
-	if err != nil {
-		return err
+
+	// 全レコードを保存（TTL付き）
+	for threadKey, record := range records {
+		key := sessionKeyPrefix + threadKey
+		data, err := json.Marshal(record)
+		if err != nil {
+			return fmt.Errorf("failed to marshal session %s: %w", threadKey, err)
+		}
+
+		if err := s.client.Set(ctx, key, data, sessionTTL).Err(); err != nil {
+			return fmt.Errorf("failed to save session %s: %w", threadKey, err)
+		}
 	}
-	tmp := s.Path + ".tmp"
-	if err := os.WriteFile(tmp, data, 0644); err != nil {
-		return fmt.Errorf("failed to write %s: %w", tmp, err)
-	}
-	if err := os.MkdirAll(filepath.Dir(s.Path), 0755); err != nil && filepath.Dir(s.Path) != "." {
-		return err
-	}
-	if err := os.Rename(tmp, s.Path); err != nil {
-		return fmt.Errorf("failed to replace %s: %w", s.Path, err)
-	}
+
 	return nil
 }
