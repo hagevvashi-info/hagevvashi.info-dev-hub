@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -26,11 +24,6 @@ type AgentSession struct {
 }
 
 func NewSessionManager(store *SessionStore) *SessionManager {
-	if store == nil {
-		fmt.Fprintf(os.Stderr, "Error: SessionStore is required for NewSessionManager\n")
-		os.Exit(1)
-	}
-
 	sm := &SessionManager{
 		// map[スレッドキー]*AgentSession
 		// 例: {
