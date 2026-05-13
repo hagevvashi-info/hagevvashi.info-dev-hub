@@ -74,15 +74,14 @@ func main() {
 				return
 			}
 
-			channelID, threadTS := splitThreadKey(threadKey)
 			last := threadMsgs[len(threadMsgs)-1]
 			combined := Message{
-				ID:        threadTS,
+				ID:        last.ThreadTS,
 				AgentType: last.AgentType,
 				Content:   joinThreadContents(threadMsgs),
 				Timestamp: last.Timestamp,
-				ChannelID: channelID,
-				ThreadTS:  threadTS,
+				ChannelID: last.ChannelID,
+				ThreadTS:  last.ThreadTS,
 			}
 			bridge.Execute(combined)
 		}(key, msgs)
@@ -91,14 +90,6 @@ func main() {
 	wg.Wait()
 
 	fmt.Println("✅ All jobs finished.")
-}
-
-func splitThreadKey(key string) (channelID string, threadTS string) {
-	parts := strings.SplitN(key, ":", 2)
-	if len(parts) != 2 {
-		return "", ""
-	}
-	return parts[0], parts[1]
 }
 
 func joinThreadContents(msgs []Message) string {
