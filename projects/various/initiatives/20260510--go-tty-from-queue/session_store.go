@@ -20,10 +20,10 @@ type SessionStore struct {
 }
 
 type SessionRecord struct {
-	AgentType       string    `json:"agent_type"`
-	CreatedAt       time.Time `json:"created_at"`
-	LastUsedAt      time.Time `json:"last_used_at"`
-	ClaudeSessionID string    `json:"claude_session_id"`
+	AgentType  string    `json:"agent_type"`
+	CreatedAt  time.Time `json:"created_at"`
+	LastUsedAt time.Time `json:"last_used_at"`
+	SessionID  string    `json:"session_id"`
 }
 
 func NewSessionStore() *SessionStore {

@@ -20,7 +20,7 @@ type AgentSession struct {
 	CreatedAt  time.Time
 	LastUsedAt time.Time
 
-	ClaudeSessionID string
+	SessionID string
 }
 
 func NewSessionManager(store *SessionStore) *SessionManager {
@@ -30,7 +30,7 @@ func NewSessionManager(store *SessionStore) *SessionManager {
 		//   "C_LOCAL_CLAUDE:1715161200.000100": &AgentSession{
 		//     ThreadKey: "C_LOCAL_CLAUDE:1715161200.000100",
 		//     AgentType: "claude",
-		//     ClaudeSessionID: "e7f6d54b-7eb3-4156-b20e-f0322ca165ef",
+		//     SessionID: "e7f6d54b-7eb3-4156-b20e-f0322ca165ef",
 		//     CreatedAt: 2026-05-10T21:07:41Z,
 		//     LastUsedAt: 2026-05-10T21:17:15Z
 		//   }
@@ -84,7 +84,7 @@ func (s *AgentSession) Touch() {
 	s.LastUsedAt = time.Now()
 }
 
-func (sm *SessionManager) UpdateClaudeSessionID(threadKey string, sessionID string) {
+func (sm *SessionManager) UpdateSessionID(threadKey string, sessionID string) {
 	if strings.TrimSpace(threadKey) == "" || strings.TrimSpace(sessionID) == "" {
 		return
 	}
@@ -94,7 +94,7 @@ func (sm *SessionManager) UpdateClaudeSessionID(threadKey string, sessionID stri
 	if !ok {
 		return
 	}
-	s.ClaudeSessionID = sessionID
+	s.SessionID = sessionID
 	s.LastUsedAt = time.Now()
 	sm.persistLocked()
 }
@@ -111,11 +111,11 @@ func (sm *SessionManager) loadFromStore() error {
 	}
 	for k, r := range records {
 		sm.sessions[k] = &AgentSession{
-			ThreadKey:       k,
-			AgentType:       r.AgentType,
-			CreatedAt:       r.CreatedAt,
-			LastUsedAt:      r.LastUsedAt,
-			ClaudeSessionID: r.ClaudeSessionID,
+			ThreadKey:  k,
+			AgentType:  r.AgentType,
+			CreatedAt:  r.CreatedAt,
+			LastUsedAt: r.LastUsedAt,
+			SessionID:  r.SessionID,
 		}
 	}
 	return nil
@@ -128,10 +128,10 @@ func (sm *SessionManager) persistLocked() {
 	records := map[string]SessionRecord{}
 	for k, s := range sm.sessions {
 		records[k] = SessionRecord{
-			AgentType:       s.AgentType,
-			CreatedAt:       s.CreatedAt,
-			LastUsedAt:      s.LastUsedAt,
-			ClaudeSessionID: s.ClaudeSessionID,
+			AgentType:  s.AgentType,
+			CreatedAt:  s.CreatedAt,
+			LastUsedAt: s.LastUsedAt,
+			SessionID:  s.SessionID,
 		}
 	}
 	_ = sm.store.Save(records)
