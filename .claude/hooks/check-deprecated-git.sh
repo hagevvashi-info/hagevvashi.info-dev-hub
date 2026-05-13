@@ -39,4 +39,24 @@ if echo "$cmd" | grep -qE '\bgit reset HEAD\b'; then
   exit 2
 fi
 
+# Prevent accidental push to upstream/main
+if echo "$cmd" | grep -qE '^\s*git push\s*$'; then
+  current_branch=$(cd /home/hagevvashi/hagevvashi.info-dev-hub 2>/dev/null && git rev-parse --abbrev-ref HEAD 2>/dev/null)
+  if [ "$current_branch" = "main" ]; then
+    cat <<'EOF'
+❌ エラー: upstream/main への誤送信を防止しています
+
+git push 単発での main ブランチからの push は禁止されています。
+upstream/main への push を避けるため、以下のいずれかを使用してください:
+
+  origin に push:      git push origin main
+  upstream に push:    git push upstream main (明示的に指定)
+  別ブランチに push:   git push origin <branch-name>
+
+リモート/ブランチを明示的に指定したコマンドを使用してください。
+EOF
+    exit 2
+  fi
+fi
+
 exit 0
