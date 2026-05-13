@@ -44,16 +44,22 @@ if echo "$cmd" | grep -qE '^\s*git push\s*$'; then
   current_branch=$(cd /home/hagevvashi/hagevvashi.info-dev-hub 2>/dev/null && git rev-parse --abbrev-ref HEAD 2>/dev/null)
   if [ "$current_branch" = "main" ]; then
     cat <<'EOF'
-❌ エラー: upstream/main への誤送信を防止しています
+❌ エラー: main ブランチからの push は禁止されています
 
-git push 単発での main ブランチからの push は禁止されています。
-upstream/main への push を避けるため、以下のいずれかを使用してください:
+main ブランチで作業をしないでください。必ず新しいブランチを作成して作業してください。
 
-  origin に push:      git push origin main
-  upstream に push:    git push upstream main (明示的に指定)
-  別ブランチに push:   git push origin <branch-name>
+以下の手順を実行してください:
 
-リモート/ブランチを明示的に指定したコマンドを使用してください。
+1. 新しいブランチを作成:
+   git switch -c <branch-name>
+
+2. コミットを移動（既にコミット済みの場合）:
+   git reset HEAD~1                  # 最後のコミットを取り消す
+   git switch -c <branch-name>        # 新しいブランチを作成
+   git commit -m "..."               # 改めてコミット
+
+3. push を実行:
+   git push origin <branch-name>
 EOF
     exit 2
   fi
