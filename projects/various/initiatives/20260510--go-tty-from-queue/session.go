@@ -54,8 +54,9 @@ func (sm *SessionManager) getOrCreateUnsafe(m Message) (*AgentSession, bool, err
 	// セッション取得パターン：
 	// | IsThreadRoot | セッション存在 | 動作       | 戻り値     |
 	// |--------------|----------------|-----------|----------|
+	// | true         | あり/なし      | 新規作成   | (s, true)  |
 	// | false        | あり           | 既存再利用 | (s, false) |
-	// | true / false | なし / true    | 新規作成   | (s, true)  |
+	// | false        | なし           | 新規作成   | (s, true)  |
 	if s, ok := sm.sessions[key]; ok && !isThreadRoot {
 		s.LastUsedAt = now
 		return s, false, nil
