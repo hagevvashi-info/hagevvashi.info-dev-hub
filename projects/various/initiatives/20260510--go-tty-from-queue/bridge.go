@@ -39,7 +39,7 @@ func (b *Bridge) Execute(msg Message) {
 	session.mu.Lock()
 	defer session.mu.Unlock()
 
-	resume := session.ClaudeSessionID
+	resume := session.SessionID
 	if created {
 		resume = ""
 	}
@@ -52,9 +52,9 @@ func (b *Bridge) Execute(msg Message) {
 		return
 	}
 	if sessionID != "" {
-		session.ClaudeSessionID = sessionID
+		session.SessionID = sessionID
 		if threadKey, err := msg.ThreadKey(); err == nil {
-			b.Sessions.UpdateClaudeSessionID(threadKey, sessionID)
+			b.Sessions.UpdateSessionID(threadKey, sessionID)
 		}
 	}
 	session.Touch()
