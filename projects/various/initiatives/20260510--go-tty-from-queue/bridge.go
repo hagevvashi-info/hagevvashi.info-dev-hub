@@ -53,15 +53,3 @@ func (b *Bridge) ExecuteUnsafe(msg Message, session *AgentSession, created bool)
 	return nil
 }
 
-func (b *Bridge) ExecuteSafe(msg Message) {
-	b.Sessions.Mu.Lock()
-	session, created, err := b.Sessions.getOrCreateUnsafe(msg)
-	b.Sessions.Mu.Unlock()
-
-	if err != nil {
-		b.Platform.PostResponse(msg, "❌ セッション初期化に失敗しました: "+err.Error())
-		return
-	}
-
-	b.ExecuteUnsafe(msg, session, created)
-}
