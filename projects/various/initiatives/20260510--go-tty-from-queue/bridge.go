@@ -13,9 +13,6 @@ type Bridge struct {
 func (b *Bridge) Execute(msg Message) {
 	fmt.Printf("👷 [Bridge] 開始: %s (Agent: %s)\n", msg.ID, msg.AgentType)
 
-	if b.Sessions == nil {
-		b.Sessions = NewSessionManager(NewSessionStore())
-	}
 	session, created, err := b.Sessions.GetOrCreate(msg)
 	if err != nil {
 		b.Platform.PostResponse(msg, "❌ セッション初期化に失敗しました: "+err.Error())
