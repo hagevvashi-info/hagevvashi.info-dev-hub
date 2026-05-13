@@ -49,25 +49,19 @@ func (sm *SessionManager) getOrCreateUnsafe(m Message) (*AgentSession, bool, err
 	}
 
 	now := time.Now()
+	isThreadRoot := m.IsThreadRoot()
 
-	if m.IsThreadRoot() {
-		s := &AgentSession{
-			ThreadKey:  key,
-			AgentType:  strings.ToLower(m.AgentType),
-			CreatedAt:  now,
-			LastUsedAt: now,
-		}
-		sm.sessions[key] = s
-		if err := sm.persistLocked(); err != nil {
-			fmt.Fprintf(os.Stderr, "Warning: failed to persist session %s: %v\n", key, err)
-		}
-		return s, true, nil
-	}
-
-	if s, ok := sm.sessions[key]; ok {
+	// セッション取得パターン：
+	// | IsThreadRoot | セッション存在 | 動作       | 戻り値     |
+	// |--------------|----------------|-----------|----------|
+	// | true         | あり/なし      | 新規作成   | (s, true)  |
+	// | false        | あり           | 既存再利用 | (s, false) |
+	// | false        | なし           | 新規作成   | (s, true)  |
+	if s, ok := sm.sessions[key]; ok && !isThreadRoot {
 		s.LastUsedAt = now
 		return s, false, nil
 	}
+
 	s := &AgentSession{
 		ThreadKey:  key,
 		AgentType:  strings.ToLower(m.AgentType),
@@ -79,12 +73,6 @@ func (sm *SessionManager) getOrCreateUnsafe(m Message) (*AgentSession, bool, err
 		fmt.Fprintf(os.Stderr, "Warning: failed to persist session %s: %v\n", key, err)
 	}
 	return s, true, nil
-}
-
-func (sm *SessionManager) GetOrCreate(m Message) (*AgentSession, bool, error) {
-	sm.Mu.Lock()
-	defer sm.Mu.Unlock()
-	return sm.getOrCreateUnsafe(m)
 }
 
 func (s *AgentSession) Touch() {
@@ -104,12 +92,6 @@ func (sm *SessionManager) updateSessionIDUnsafe(threadKey string, sessionID stri
 	if err := sm.persistLocked(); err != nil {
 		fmt.Fprintf(os.Stderr, "Warning: failed to persist session %s: %v\n", threadKey, err)
 	}
-}
-
-func (sm *SessionManager) UpdateSessionID(threadKey string, sessionID string) {
-	sm.Mu.Lock()
-	defer sm.Mu.Unlock()
-	sm.updateSessionIDUnsafe(threadKey, sessionID)
 }
 
 func (sm *SessionManager) loadFromStore() error {
