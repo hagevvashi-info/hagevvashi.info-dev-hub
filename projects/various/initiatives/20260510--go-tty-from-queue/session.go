@@ -49,25 +49,13 @@ func (sm *SessionManager) getOrCreateUnsafe(m Message) (*AgentSession, bool, err
 	}
 
 	now := time.Now()
+	isThreadRoot := m.IsThreadRoot()
 
-	if m.IsThreadRoot() {
-		s := &AgentSession{
-			ThreadKey:  key,
-			AgentType:  strings.ToLower(m.AgentType),
-			CreatedAt:  now,
-			LastUsedAt: now,
-		}
-		sm.sessions[key] = s
-		if err := sm.persistLocked(); err != nil {
-			fmt.Fprintf(os.Stderr, "Warning: failed to persist session %s: %v\n", key, err)
-		}
-		return s, true, nil
-	}
-
-	if s, ok := sm.sessions[key]; ok {
+	if s, ok := sm.sessions[key]; ok && !isThreadRoot {
 		s.LastUsedAt = now
 		return s, false, nil
 	}
+
 	s := &AgentSession{
 		ThreadKey:  key,
 		AgentType:  strings.ToLower(m.AgentType),
