@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -56,7 +58,9 @@ func (sm *SessionManager) getOrCreateUnsafe(m Message) (*AgentSession, bool, err
 			LastUsedAt: now,
 		}
 		sm.sessions[key] = s
-		sm.persistLocked()
+		if err := sm.persistLocked(); err != nil {
+			fmt.Fprintf(os.Stderr, "Warning: failed to persist session %s: %v\n", key, err)
+		}
 		return s, true, nil
 	}
 
@@ -71,7 +75,9 @@ func (sm *SessionManager) getOrCreateUnsafe(m Message) (*AgentSession, bool, err
 		LastUsedAt: now,
 	}
 	sm.sessions[key] = s
-	sm.persistLocked()
+	if err := sm.persistLocked(); err != nil {
+		fmt.Fprintf(os.Stderr, "Warning: failed to persist session %s: %v\n", key, err)
+	}
 	return s, true, nil
 }
 
@@ -95,7 +101,9 @@ func (sm *SessionManager) updateSessionIDUnsafe(threadKey string, sessionID stri
 	}
 	s.SessionID = sessionID
 	s.LastUsedAt = time.Now()
-	sm.persistLocked()
+	if err := sm.persistLocked(); err != nil {
+		fmt.Fprintf(os.Stderr, "Warning: failed to persist session %s: %v\n", threadKey, err)
+	}
 }
 
 func (sm *SessionManager) UpdateSessionID(threadKey string, sessionID string) {
@@ -124,9 +132,9 @@ func (sm *SessionManager) loadFromStore() error {
 	return nil
 }
 
-func (sm *SessionManager) persistLocked() {
+func (sm *SessionManager) persistLocked() error {
 	if sm.store == nil {
-		return
+		return nil
 	}
 	records := map[string]SessionRecord{}
 	for k, s := range sm.sessions {
@@ -137,5 +145,5 @@ func (sm *SessionManager) persistLocked() {
 			SessionID:  s.SessionID,
 		}
 	}
-	_ = sm.store.Save(records)
+	return sm.store.Save(records)
 }
