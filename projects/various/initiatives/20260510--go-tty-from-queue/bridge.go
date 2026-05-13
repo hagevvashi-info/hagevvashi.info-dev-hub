@@ -36,9 +36,6 @@ func (b *Bridge) Execute(msg Message) {
 		return
 	}
 
-	session.mu.Lock()
-	defer session.mu.Unlock()
-
 	resume := session.SessionID
 	if created {
 		resume = ""

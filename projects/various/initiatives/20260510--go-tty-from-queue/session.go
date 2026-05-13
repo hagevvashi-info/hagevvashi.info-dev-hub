@@ -13,8 +13,6 @@ type SessionManager struct {
 }
 
 type AgentSession struct {
-	mu sync.Mutex
-
 	ThreadKey  string
 	AgentType  string
 	CreatedAt  time.Time
@@ -100,8 +98,6 @@ func (sm *SessionManager) UpdateSessionID(threadKey string, sessionID string) {
 }
 
 func (sm *SessionManager) loadFromStore() error {
-	sm.mu.Lock()
-	defer sm.mu.Unlock()
 	if sm.store == nil {
 		return nil
 	}
