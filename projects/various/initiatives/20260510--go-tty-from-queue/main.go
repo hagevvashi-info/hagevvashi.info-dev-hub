@@ -69,24 +69,32 @@ func main() {
 		go func(threadKey string, threadMsgs []Message) {
 			defer wg.Done()
 
-			if len(threadMsgs) == 1 {
-				bridge.Execute(threadMsgs[0])
+			msg := threadMsgs[0]
+			if len(threadMsgs) > 1 {
+				last := threadMsgs[len(threadMsgs)-1]
+				msg = Message{
+					ID:        last.ThreadTS,
+					AgentType: last.AgentType,
+					Content:   joinThreadContents(threadMsgs),
+					Timestamp: last.Timestamp,
+					ChannelID: last.ChannelID,
+					ThreadTS:  last.ThreadTS,
+				}
+			}
+
+			bridge.Sessions.Mu.Lock()
+			session, created, err := bridge.Sessions.getOrCreateUnsafe(msg)
+			bridge.Sessions.Mu.Unlock()
+
+			if err != nil {
+				bridge.Platform.PostResponse(msg, "❌ セッション初期化に失敗しました: "+err.Error())
 				return
 			}
 
-			last := threadMsgs[len(threadMsgs)-1]
-			combined := Message{
-				ID:        last.ThreadTS,
-				AgentType: last.AgentType,
-				Content:   joinThreadContents(threadMsgs),
-				Timestamp: last.Timestamp,
-				ChannelID: last.ChannelID,
-				ThreadTS:  last.ThreadTS,
-			}
-			bridge.Execute(combined)
+			bridge.ExecuteUnsafe(msg, session, created)
 
-			for _, msg := range threadMsgs {
-				bridge.Platform.MarkProcessed(msg.ID)
+			for _, origMsg := range threadMsgs {
+				bridge.Platform.MarkProcessed(origMsg.ID)
 			}
 		}(key, msgs)
 	}

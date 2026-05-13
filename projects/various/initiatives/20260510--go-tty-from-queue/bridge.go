@@ -10,17 +10,9 @@ type Bridge struct {
 	Sessions *SessionManager
 }
 
-func (b *Bridge) Execute(msg Message) {
+func (b *Bridge) ExecuteUnsafe(msg Message, session *AgentSession, created bool) error {
 	fmt.Printf("👷 [Bridge] 開始: %s (Agent: %s)\n", msg.ID, msg.AgentType)
 
-	b.Sessions.Mu.Lock()
-	session, created, err := b.Sessions.getOrCreateUnsafe(msg)
-	b.Sessions.Mu.Unlock()
-
-	if err != nil {
-		b.Platform.PostResponse(msg, "❌ セッション初期化に失敗しました: "+err.Error())
-		return
-	}
 	if created && !msg.IsThreadRoot() {
 		fmt.Printf("⚠️ [Bridge] セッション喪失のため新規作成: thread=%s\n", msg.ThreadTS)
 	}
@@ -33,13 +25,10 @@ func (b *Bridge) Execute(msg Message) {
 		agent = &ClaudeAgent{}
 	default:
 		b.Platform.PostResponse(msg, fmt.Sprintf("❌ 未対応の AgentType です: %q", msg.AgentType))
-		return
+		return nil
 	}
 
-	b.Sessions.Mu.Lock()
 	resume := session.SessionID
-	b.Sessions.Mu.Unlock()
-
 	if created {
 		resume = ""
 	}
@@ -49,18 +38,30 @@ func (b *Bridge) Execute(msg Message) {
 	result, sessionID, err := agent.Run(msg.Content, resume)
 	if err != nil {
 		b.Platform.PostResponse(msg, "❌ エラーが発生しました: "+err.Error())
-		return
+		return nil
 	}
 	if sessionID != "" {
-		b.Sessions.Mu.Lock()
 		session.SessionID = sessionID
 		if threadKey, err := msg.ThreadKey(); err == nil {
 			b.Sessions.updateSessionIDUnsafe(threadKey, sessionID)
 		}
-		b.Sessions.Mu.Unlock()
 	}
 	session.Touch()
 
 	b.Platform.PostResponse(msg, result)
 	b.Platform.MarkProcessed(msg.ID)
+	return nil
+}
+
+func (b *Bridge) Execute(msg Message) {
+	b.Sessions.Mu.Lock()
+	session, created, err := b.Sessions.getOrCreateUnsafe(msg)
+	b.Sessions.Mu.Unlock()
+
+	if err != nil {
+		b.Platform.PostResponse(msg, "❌ セッション初期化に失敗しました: "+err.Error())
+		return
+	}
+
+	b.ExecuteUnsafe(msg, session, created)
 }
