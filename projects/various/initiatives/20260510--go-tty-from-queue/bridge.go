@@ -13,7 +13,10 @@ type Bridge struct {
 func (b *Bridge) Execute(msg Message) {
 	fmt.Printf("👷 [Bridge] 開始: %s (Agent: %s)\n", msg.ID, msg.AgentType)
 
-	session, created, err := b.Sessions.GetOrCreate(msg)
+	b.Sessions.Mu.Lock()
+	session, created, err := b.Sessions.getOrCreateUnsafe(msg)
+	b.Sessions.Mu.Unlock()
+
 	if err != nil {
 		b.Platform.PostResponse(msg, "❌ セッション初期化に失敗しました: "+err.Error())
 		return
@@ -33,7 +36,10 @@ func (b *Bridge) Execute(msg Message) {
 		return
 	}
 
+	b.Sessions.Mu.Lock()
 	resume := session.SessionID
+	b.Sessions.Mu.Unlock()
+
 	if created {
 		resume = ""
 	}
@@ -46,10 +52,12 @@ func (b *Bridge) Execute(msg Message) {
 		return
 	}
 	if sessionID != "" {
+		b.Sessions.Mu.Lock()
 		session.SessionID = sessionID
 		if threadKey, err := msg.ThreadKey(); err == nil {
-			b.Sessions.UpdateSessionID(threadKey, sessionID)
+			b.Sessions.updateSessionIDUnsafe(threadKey, sessionID)
 		}
+		b.Sessions.Mu.Unlock()
 	}
 	session.Touch()
 
