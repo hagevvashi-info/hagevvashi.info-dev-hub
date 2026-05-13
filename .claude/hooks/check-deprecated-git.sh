@@ -39,4 +39,30 @@ if echo "$cmd" | grep -qE '\bgit reset HEAD\b'; then
   exit 2
 fi
 
+# Prevent accidental push to upstream/main
+if echo "$cmd" | grep -qE '^\s*git push\s*$'; then
+  current_branch=$(cd /home/hagevvashi/hagevvashi.info-dev-hub 2>/dev/null && git rev-parse --abbrev-ref HEAD 2>/dev/null)
+  if [ "$current_branch" = "main" ]; then
+    cat <<'EOF'
+❌ エラー: main ブランチからの push は禁止されています
+
+main ブランチで作業をしないでください。必ず新しいブランチを作成して作業してください。
+
+以下の手順を実行してください:
+
+1. 新しいブランチを作成:
+   git switch -c <branch-name>
+
+2. コミットを移動（既にコミット済みの場合）:
+   git reset HEAD~1                  # 最後のコミットを取り消す
+   git switch -c <branch-name>        # 新しいブランチを作成
+   git commit -m "..."               # 改めてコミット
+
+3. push を実行:
+   git push origin <branch-name>
+EOF
+    exit 2
+  fi
+fi
+
 exit 0
