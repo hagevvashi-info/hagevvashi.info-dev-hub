@@ -7,7 +7,7 @@ import (
 )
 
 type SessionManager struct {
-	mu       sync.Mutex
+	Mu       sync.Mutex
 	sessions map[string]*AgentSession
 	store    *SessionStore
 }
@@ -40,14 +40,11 @@ func NewSessionManager(store *SessionStore) *SessionManager {
 	return sm
 }
 
-func (sm *SessionManager) GetOrCreate(m Message) (*AgentSession, bool, error) {
+func (sm *SessionManager) getOrCreateUnsafe(m Message) (*AgentSession, bool, error) {
 	key, err := m.ThreadKey()
 	if err != nil {
 		return nil, false, err
 	}
-
-	sm.mu.Lock()
-	defer sm.mu.Unlock()
 
 	now := time.Now()
 
@@ -78,16 +75,20 @@ func (sm *SessionManager) GetOrCreate(m Message) (*AgentSession, bool, error) {
 	return s, true, nil
 }
 
+func (sm *SessionManager) GetOrCreate(m Message) (*AgentSession, bool, error) {
+	sm.Mu.Lock()
+	defer sm.Mu.Unlock()
+	return sm.getOrCreateUnsafe(m)
+}
+
 func (s *AgentSession) Touch() {
 	s.LastUsedAt = time.Now()
 }
 
-func (sm *SessionManager) UpdateSessionID(threadKey string, sessionID string) {
+func (sm *SessionManager) updateSessionIDUnsafe(threadKey string, sessionID string) {
 	if strings.TrimSpace(threadKey) == "" || strings.TrimSpace(sessionID) == "" {
 		return
 	}
-	sm.mu.Lock()
-	defer sm.mu.Unlock()
 	s, ok := sm.sessions[threadKey]
 	if !ok {
 		return
@@ -95,6 +96,12 @@ func (sm *SessionManager) UpdateSessionID(threadKey string, sessionID string) {
 	s.SessionID = sessionID
 	s.LastUsedAt = time.Now()
 	sm.persistLocked()
+}
+
+func (sm *SessionManager) UpdateSessionID(threadKey string, sessionID string) {
+	sm.Mu.Lock()
+	defer sm.Mu.Unlock()
+	sm.updateSessionIDUnsafe(threadKey, sessionID)
 }
 
 func (sm *SessionManager) loadFromStore() error {
