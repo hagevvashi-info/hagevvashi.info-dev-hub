@@ -53,7 +53,7 @@ func (b *Bridge) ExecuteUnsafe(msg Message, session *AgentSession, created bool)
 	return nil
 }
 
-func (b *Bridge) Execute(msg Message) {
+func (b *Bridge) ExecuteSafe(msg Message) {
 	b.Sessions.Mu.Lock()
 	session, created, err := b.Sessions.getOrCreateUnsafe(msg)
 	b.Sessions.Mu.Unlock()
