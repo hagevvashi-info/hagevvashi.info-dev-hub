@@ -84,6 +84,10 @@ func main() {
 				ThreadTS:  last.ThreadTS,
 			}
 			bridge.Execute(combined)
+
+			for _, msg := range threadMsgs {
+				bridge.Platform.MarkProcessed(msg.ID)
+			}
 		}(key, msgs)
 	}
 
