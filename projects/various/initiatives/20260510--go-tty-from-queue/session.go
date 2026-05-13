@@ -67,6 +67,7 @@ func (sm *SessionManager) getOrCreateUnsafe(m Message) (*AgentSession, bool, err
 		AgentType:  strings.ToLower(m.AgentType),
 		CreatedAt:  now,
 		LastUsedAt: now,
+		// SessionID は Agent 実行時に返される ID で後から更新される
 	}
 	sm.sessions[key] = s
 	if err := sm.persistLocked(); err != nil {
