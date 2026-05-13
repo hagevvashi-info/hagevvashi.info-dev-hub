@@ -69,12 +69,6 @@ func (sm *SessionManager) getOrCreateUnsafe(m Message) (*AgentSession, bool, err
 	return s, true, nil
 }
 
-func (sm *SessionManager) GetOrCreate(m Message) (*AgentSession, bool, error) {
-	sm.Mu.Lock()
-	defer sm.Mu.Unlock()
-	return sm.getOrCreateUnsafe(m)
-}
-
 func (s *AgentSession) Touch() {
 	s.LastUsedAt = time.Now()
 }
@@ -92,12 +86,6 @@ func (sm *SessionManager) updateSessionIDUnsafe(threadKey string, sessionID stri
 	if err := sm.persistLocked(); err != nil {
 		fmt.Fprintf(os.Stderr, "Warning: failed to persist session %s: %v\n", threadKey, err)
 	}
-}
-
-func (sm *SessionManager) UpdateSessionID(threadKey string, sessionID string) {
-	sm.Mu.Lock()
-	defer sm.Mu.Unlock()
-	sm.updateSessionIDUnsafe(threadKey, sessionID)
 }
 
 func (sm *SessionManager) loadFromStore() error {
