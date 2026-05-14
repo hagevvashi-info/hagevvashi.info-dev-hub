@@ -7,8 +7,8 @@ import sys, json
 try:
     data = json.load(sys.stdin)
     print(data.get('tool_input', {}).get('command', ''))
-except Exception:
-    pass
+except Exception as e:
+    print('', file=sys.stderr)
 " 2>/dev/null)
 
 if echo "$cmd" | grep -qE '\bgit checkout\b'; then
@@ -39,9 +39,36 @@ if echo "$cmd" | grep -qE '\bgit reset HEAD\b'; then
   exit 2
 fi
 
+# Prevent direct commit and push to main branch
+current_branch=$(cd /home/hagevvashi/hagevvashi.info-dev-hub 2>/dev/null && git rev-parse --abbrev-ref HEAD 2>/dev/null)
+
+# Prevent accidental commit to main
+if echo "$cmd" | grep -qE '^\s*git commit\b'; then
+  if [ "$current_branch" = "main" ]; then
+    cat <<'EOF'
+❌ エラー: main ブランチへの直接コミットは禁止されています
+
+main ブランチで作業をしないでください。必ず新しいブランチを作成して作業してください。
+
+以下の手順を実行してください:
+
+1. 新しいブランチを作成:
+   git switch -c <branch-name>
+
+2. 既にコミット済みの場合、コミットを移動:
+   git reset HEAD~1                  # 最後のコミットを取り消す
+   git switch -c <branch-name>        # 新しいブランチを作成
+   git commit -m "..."               # 改めてコミット
+
+3. push を実行:
+   git push origin <branch-name>
+EOF
+    exit 2
+  fi
+fi
+
 # Prevent accidental push to upstream/main
 if echo "$cmd" | grep -qE '^\s*git push\s*$'; then
-  current_branch=$(cd /home/hagevvashi/hagevvashi.info-dev-hub 2>/dev/null && git rev-parse --abbrev-ref HEAD 2>/dev/null)
   if [ "$current_branch" = "main" ]; then
     cat <<'EOF'
 ❌ エラー: main ブランチからの push は禁止されています
