@@ -1,2 +1,4 @@
 fixtures/queue.json
 *.tmp
+/bin
+*.exe
