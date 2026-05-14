@@ -15,7 +15,7 @@ type Bridge struct {
 	Sessions session.Manager
 }
 
-func (b *Bridge) Execute(msg message.Message, sess *session.AgentSession, created bool) error {
+func (b *Bridge) Execute(msg message.Message, sess *session.AgentSession, created bool) (string, string, error) {
 	fmt.Printf("👷 [Bridge] 開始: %s (Agent: %s)\n", msg.ID, msg.AgentType)
 
 	if created && !msg.IsThreadRoot() {
@@ -29,8 +29,8 @@ func (b *Bridge) Execute(msg message.Message, sess *session.AgentSession, create
 	case "claude":
 		agt = &agent.Claude{}
 	default:
-		b.Platform.PostResponse(msg, fmt.Sprintf("❌ 未対応の AgentType です: %q", msg.AgentType))
-		return nil
+		msg := fmt.Sprintf("❌ 未対応の AgentType です: %q", msg.AgentType)
+		return msg, "", nil
 	}
 
 	resume := sess.SessionID
@@ -42,19 +42,9 @@ func (b *Bridge) Execute(msg message.Message, sess *session.AgentSession, create
 	}
 	result, sessionID, err := agt.Run(msg.Content, resume)
 	if err != nil {
-		b.Platform.PostResponse(msg, "❌ エラーが発生しました: "+err.Error())
-		return nil
-	}
-	if sessionID != "" {
-		sess.SessionID = sessionID
-		if threadKey, err := msg.ThreadKey(); err == nil {
-			b.Sessions.Lock()
-			b.Sessions.UpdateSessionIDUnsafe(threadKey, sessionID)
-			b.Sessions.Unlock()
-		}
+		msg := "❌ エラーが発生しました: " + err.Error()
+		return msg, "", nil
 	}
 
-	b.Platform.PostResponse(msg, result)
-	b.Platform.MarkProcessed(msg.ID)
-	return nil
+	return result, sessionID, nil
 }

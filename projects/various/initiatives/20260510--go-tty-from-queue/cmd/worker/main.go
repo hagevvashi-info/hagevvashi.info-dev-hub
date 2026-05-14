@@ -109,7 +109,15 @@ func main() {
 				return
 			}
 
-			brg.Execute(msg, sess, created)
+			result, sessionID, _ := brg.Execute(msg, sess, created)
+
+			brg.Sessions.Lock()
+			if sessionID != "" {
+				brg.Sessions.UpdateSessionIDUnsafe(threadKey, sessionID)
+			}
+			brg.Sessions.Unlock()
+
+			brg.Platform.PostResponse(msg, result)
 
 			for _, origMsg := range threadMsgs {
 				brg.Platform.MarkProcessed(origMsg.ID)
