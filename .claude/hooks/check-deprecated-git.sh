@@ -7,8 +7,8 @@ import sys, json
 try:
     data = json.load(sys.stdin)
     print(data.get('tool_input', {}).get('command', ''))
-except Exception:
-    pass
+except Exception as e:
+    print('', file=sys.stderr)
 " 2>/dev/null)
 
 if echo "$cmd" | grep -qE '\bgit checkout\b'; then
