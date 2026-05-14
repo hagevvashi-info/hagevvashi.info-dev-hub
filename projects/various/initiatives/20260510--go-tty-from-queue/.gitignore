@@ -1,4 +1,4 @@
 fixtures/queue.json
 *.tmp
-go-tty-from-queue
+/bin
 *.exe

@@ -68,6 +68,24 @@ GAS (doPost) → Sheets (Queue) → go-tty-from-queue
     └── queue.json       # git管理外（.gitignoreに追加）
 ```
 
+## Build
+
+バイナリをビルドします。出力先は `./bin/go-tty-from-queue`。
+
+```bash
+make build
+```
+
+またはシンプルに:
+```bash
+go build -o ./bin/go-tty-from-queue
+```
+
+**クリーンアップ:**
+```bash
+make clean
+```
+
 ## ローカルテスト実行
 
 ### ステップ 1: テストデータを生成
