@@ -48,7 +48,9 @@ func (b *Bridge) Execute(msg message.Message, sess *session.AgentSession, create
 	if sessionID != "" {
 		sess.SessionID = sessionID
 		if threadKey, err := msg.ThreadKey(); err == nil {
-			b.Sessions.UpdateSessionID(threadKey, sessionID)
+			b.Sessions.Lock()
+			b.Sessions.UpdateSessionIDUnsafe(threadKey, sessionID)
+			b.Sessions.Unlock()
 		}
 	}
 

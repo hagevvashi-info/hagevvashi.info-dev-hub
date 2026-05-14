@@ -11,8 +11,10 @@ import (
 )
 
 type Manager interface {
-	GetOrCreate(msg message.Message) (*AgentSession, bool, error)
-	UpdateSessionID(threadKey, sessionID string)
+	Lock()
+	Unlock()
+	GetOrCreateUnsafe(msg message.Message) (*AgentSession, bool, error)
+	UpdateSessionIDUnsafe(threadKey, sessionID string)
 }
 
 type AgentSession struct {
@@ -38,14 +40,15 @@ func NewManager(store Store) *ManagerImpl {
 	return sm
 }
 
-func (sm *ManagerImpl) GetOrCreate(msg message.Message) (*AgentSession, bool, error) {
+func (sm *ManagerImpl) Lock() {
 	sm.Mu.Lock()
-	defer sm.Mu.Unlock()
-
-	return sm.getOrCreateUnsafe(msg)
 }
 
-func (sm *ManagerImpl) getOrCreateUnsafe(msg message.Message) (*AgentSession, bool, error) {
+func (sm *ManagerImpl) Unlock() {
+	sm.Mu.Unlock()
+}
+
+func (sm *ManagerImpl) GetOrCreateUnsafe(msg message.Message) (*AgentSession, bool, error) {
 	key, err := msg.ThreadKey()
 	if err != nil {
 		return nil, false, err
@@ -72,14 +75,7 @@ func (sm *ManagerImpl) getOrCreateUnsafe(msg message.Message) (*AgentSession, bo
 	return s, true, nil
 }
 
-func (sm *ManagerImpl) UpdateSessionID(threadKey, sessionID string) {
-	sm.Mu.Lock()
-	defer sm.Mu.Unlock()
-
-	sm.updateSessionIDUnsafe(threadKey, sessionID)
-}
-
-func (sm *ManagerImpl) updateSessionIDUnsafe(threadKey string, sessionID string) {
+func (sm *ManagerImpl) UpdateSessionIDUnsafe(threadKey string, sessionID string) {
 	if strings.TrimSpace(threadKey) == "" || strings.TrimSpace(sessionID) == "" {
 		return
 	}
