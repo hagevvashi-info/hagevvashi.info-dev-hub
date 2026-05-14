@@ -13,7 +13,7 @@ help:
 
 build:
 	@mkdir -p $(BIN_DIR)
-	go build -o $(BINARY)
+	go build -o $(BINARY) ./cmd/worker/
 	@echo "✅ Binary built: $(BINARY)"
 
 clean:
