@@ -80,33 +80,56 @@ go run ./cmd/generate-test-queue -output /tmp/queue.json
 
 #### テストパターン指定（オプション）
 
-`-pattern` フラグでテストパターンを選択できます（デフォルト: `claude`）。
+`-pattern` フラグでテストパターンを選択できます（デフォルト: `2` = claude-multi-thread）。
+パターンは **ID** または **名前** で指定可能です。
 
-**利用可能なパターン:**
+**利用可能なパターン一覧表示:**
 
-- **claude** - Claude Agent のテスト（3 メッセージ、2 スレッド）
-  ```bash
-  go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern claude
-  ```
-
-- **gemini** - Gemini Agent のテスト（3 メッセージ、2 スレッド）
-  ```bash
-  go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern gemini
-  ```
-
-- **mixed** - Claude + Gemini 混在テスト（6 メッセージ、4 スレッド）
-  ```bash
-  go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern mixed
-  ```
-
-出力例（パターン表示付き）:
-```
-✅ Queue data generated: /tmp/queue.json (pattern: claude)
+```bash
+go run ./cmd/generate-test-queue -list
 ```
 
-生成されるテストデータ（各パターン 3 件ベース）:
-- メッセージ 1・2: 同一スレッド（結合されて 1 回の Agent 実行）
-- メッセージ 3: 別スレッド（独立した Agent 実行）
+出力例:
+```
+Available test patterns:
+
+  ID: 1 | Name: claude-single        | Agent: claude | Single message, single thread
+  ID: 2 | Name: claude-multi-thread  | Agent: claude | Multiple threads, 1 message each
+  ID: 3 | Name: claude-multi-msg     | Agent: claude | Single thread, multiple messages (combined execution)
+  ID: 4 | Name: gemini-single        | Agent: gemini | Gemini single message
+  ID: 5 | Name: gemini-multi-msg     | Agent: gemini | Gemini single thread, multiple messages
+  ID: 6 | Name: mixed-agents         | Agent: mixed  | Claude + Gemini agents
+```
+
+**パターン指定例:**
+
+ID で指定:
+```bash
+go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern 1
+go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern 3
+```
+
+名前で指定:
+```bash
+go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern claude-single
+go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern mixed-agents
+```
+
+**パターンの説明:**
+
+| ID | パターン名 | 説明 | 用途 |
+|----|-----------|------|------|
+| 1 | claude-single | Claude: 単一メッセージ、単一スレッド | 最小限のテスト |
+| 2 | claude-multi-thread | Claude: 複数スレッド（各 1 メッセージ） | 並列実行テスト |
+| 3 | claude-multi-msg | Claude: 1 スレッド内の複数メッセージ | メッセージ結合テスト |
+| 4 | gemini-single | Gemini: 単一メッセージ | Gemini 動作確認 |
+| 5 | gemini-multi-msg | Gemini: 1 スレッド内の複数メッセージ | Gemini 結合テスト |
+| 6 | mixed-agents | Claude + Gemini 混在 | マルチエージェントテスト |
+
+出力例:
+```
+✅ Queue data generated: /tmp/queue.json (pattern: 2 - claude-multi-thread)
+```
 
 **注**: `-output` フラグなしで実行するとエラーになります（出力先を明示的に指定するため）
 
@@ -123,21 +146,27 @@ QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
 
 #### パターン別実行例
 
-**Claude パターン:**
+**単一メッセージテスト:**
 ```bash
-go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern claude
+go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern claude-single
 QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
 ```
 
-**Gemini パターン:**
+**複数スレッド並列実行テスト:**
 ```bash
-go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern gemini
+go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern 2
 QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
 ```
 
-**Mixed パターン:**
+**メッセージ結合テスト:**
 ```bash
-go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern mixed
+go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern claude-multi-msg
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
+```
+
+**マルチエージェントテスト:**
+```bash
+go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern mixed-agents
 QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
 ```
 
