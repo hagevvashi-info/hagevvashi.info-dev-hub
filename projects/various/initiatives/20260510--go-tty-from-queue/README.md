@@ -78,12 +78,33 @@ GAS (doPost) → Sheets (Queue) → go-tty-from-queue
 go run ./cmd/generate-test-queue -output /tmp/queue.json
 ```
 
-出力例:
+#### テストパターン指定（オプション）
+
+`-pattern` フラグでテストパターンを選択できます（デフォルト: `claude`）。
+
+**利用可能なパターン:**
+
+- **claude** - Claude Agent のテスト（3 メッセージ、2 スレッド）
+  ```bash
+  go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern claude
+  ```
+
+- **gemini** - Gemini Agent のテスト（3 メッセージ、2 スレッド）
+  ```bash
+  go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern gemini
+  ```
+
+- **mixed** - Claude + Gemini 混在テスト（6 メッセージ、4 スレッド）
+  ```bash
+  go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern mixed
+  ```
+
+出力例（パターン表示付き）:
 ```
-✅ Queue data generated: /tmp/queue.json
+✅ Queue data generated: /tmp/queue.json (pattern: claude)
 ```
 
-生成されるテストデータ（pending メッセージ 3 件）:
+生成されるテストデータ（各パターン 3 件ベース）:
 - メッセージ 1・2: 同一スレッド（結合されて 1 回の Agent 実行）
 - メッセージ 3: 別スレッド（独立した Agent 実行）
 
@@ -92,18 +113,41 @@ go run ./cmd/generate-test-queue -output /tmp/queue.json
 ### ステップ 2: メインプログラムを実行
 
 ```bash
-QUEUE_FILE=/tmp/queue.json go run .
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
 ```
 
-**注**: `QUEUE_FILE` 環境変数の指定は必須です。指定しないとエラーで終了します。
+**注**: 
+- `QUEUE_FILE` 環境変数の指定は必須です（指定しないとエラーで終了）
+- `REDIS_ADDR` 環境変数の指定も必須です（セッション保存に Redis を使用）
+- デフォルト値: `REDIS_ADDR=localhost:6379`
+
+#### パターン別実行例
+
+**Claude パターン:**
+```bash
+go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern claude
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
+```
+
+**Gemini パターン:**
+```bash
+go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern gemini
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
+```
+
+**Mixed パターン:**
+```bash
+go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern mixed
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
+```
 
 期待動作:
-1. `/tmp/queue.json` から pending メッセージを読み込む（3 件）
-2. スレッド単位でグループ化（2 スレッド）
-3. 各スレッドを TTY で Claude に投げる（並列実行）
+1. `/tmp/queue.json` から pending メッセージを読み込む
+2. スレッド単位でグループ化
+3. 各スレッドを TTY で Agent に投げる（並列実行、Agent は queue.json の agent_type に従う）
 4. 返答を stdout に出力
 5. `queue.json` の status を "completed" に自動更新
-6. `sessions.json` にセッション ID 紐付けを保存
+6. Redis にセッション ID 紐付けを保存
 
 実行結果例:
 ```
@@ -121,24 +165,30 @@ QUEUE_FILE=/tmp/queue.json go run .
 
 ### ステップ 3: セッション確認
 
-実行後、セッション紐付けが保存されます:
+実行後、セッション紐付けが Redis に保存されます:
 
 ```bash
-cat sessions.json
+redis-cli KEYS "session:*"
+```
+
+出力例:
+```
+session:C_LOCAL_CLAUDE:1715161200.000100
+session:C_LOCAL_CLAUDE:1715161400.000100
+```
+
+セッション詳細の確認:
+```bash
+redis-cli GET "session:C_LOCAL_CLAUDE:1715161200.000100" | jq .
 ```
 
 出力例:
 ```json
 {
-  "C_LOCAL_CLAUDE:1715161200.000100": {
-    "agent_type": "claude",
-    "created_at": "2026-05-10T00:12:16Z",
-    "last_used_at": "2026-05-10T00:12:26Z",
-    "claude_session_id": "e7f6d54b-7eb3-4156-b20e-f0322ca165ef"
-  },
-  "C_LOCAL_CLAUDE:1715161400.000100": {
-    ...
-  }
+  "agent_type": "claude",
+  "created_at": "2026-05-10T00:12:16Z",
+  "last_used_at": "2026-05-10T00:12:26Z",
+  "session_id": "e7f6d54b-7eb3-4156-b20e-f0322ca165ef"
 }
 ```
 
