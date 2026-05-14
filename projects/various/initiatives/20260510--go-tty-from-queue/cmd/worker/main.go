@@ -2,14 +2,21 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"sort"
 	"strings"
 	"sync"
+
+	"go-tty-from-queue/internal/bridge"
+	"go-tty-from-queue/internal/message"
+	"go-tty-from-queue/internal/platform"
+	"go-tty-from-queue/internal/queue"
+	"go-tty-from-queue/internal/session"
 )
 
 func main() {
-	var source QueueSource
+	var source queue.Source
 	switch os.Getenv("APP_ENV") {
 	case "production":
 		spreadsheetID := os.Getenv("SPREADSHEET_ID")
@@ -17,19 +24,27 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Error: SPREADSHEET_ID environment variable is required in production mode\n")
 			os.Exit(1)
 		}
-		source = NewSheetQueueSource(spreadsheetID)
+		source = queue.NewSheets(spreadsheetID)
 	default:
 		queueFile := os.Getenv("QUEUE_FILE")
 		if queueFile == "" {
 			fmt.Fprintf(os.Stderr, "Error: QUEUE_FILE environment variable is required\n")
 			os.Exit(1)
 		}
-		source = NewLocalQueueSource(queueFile)
+		source = queue.NewLocal(queueFile)
 	}
 
-	platform := NewQueuePlatform(source)
+	redisAddr := os.Getenv("REDIS_ADDR")
+	if redisAddr == "" {
+		redisAddr = "localhost:6379"
+	}
+	store, err := session.NewRedisStore(redisAddr)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	messages, err := platform.FetchNewMessages()
+	plat := platform.NewQueue(source)
+	messages, err := plat.FetchNewMessages()
 	if err != nil {
 		fmt.Printf("Error fetching messages: %v\n", err)
 		return
@@ -42,10 +57,13 @@ func main() {
 
 	fmt.Printf("📨 取得したメッセージ数: %d\n", len(messages))
 
-	bridge := &Bridge{Platform: platform, Sessions: NewSessionManager(NewSessionStore())}
+	brg := &bridge.Bridge{
+		Platform: plat,
+		Sessions: session.NewManager(store),
+	}
 	var wg sync.WaitGroup
 
-	byThread := map[string][]Message{}
+	byThread := map[string][]message.Message{}
 	for _, msg := range messages {
 		key, err := msg.ThreadKey()
 		if err != nil {
@@ -66,13 +84,13 @@ func main() {
 		sort.Slice(msgs, func(i, j int) bool { return msgs[i].Timestamp.Before(msgs[j].Timestamp) })
 
 		wg.Add(1)
-		go func(threadKey string, threadMsgs []Message) {
+		go func(threadKey string, threadMsgs []message.Message) {
 			defer wg.Done()
 
 			msg := threadMsgs[0]
 			if len(threadMsgs) > 1 {
 				last := threadMsgs[len(threadMsgs)-1]
-				msg = Message{
+				msg = message.Message{
 					ID:        last.ThreadTS,
 					AgentType: last.AgentType,
 					Content:   joinThreadContents(threadMsgs),
@@ -82,19 +100,16 @@ func main() {
 				}
 			}
 
-			bridge.Sessions.Mu.Lock()
-			session, created, err := bridge.Sessions.getOrCreateUnsafe(msg)
-			bridge.Sessions.Mu.Unlock()
-
+			sess, created, err := brg.Sessions.GetOrCreate(msg)
 			if err != nil {
-				bridge.Platform.PostResponse(msg, "❌ セッション初期化に失敗しました: "+err.Error())
+				brg.Platform.PostResponse(msg, "❌ セッション初期化に失敗しました: "+err.Error())
 				return
 			}
 
-			bridge.ExecuteUnsafe(msg, session, created)
+			brg.Execute(msg, sess, created)
 
 			for _, origMsg := range threadMsgs {
-				bridge.Platform.MarkProcessed(origMsg.ID)
+				brg.Platform.MarkProcessed(origMsg.ID)
 			}
 		}(key, msgs)
 	}
@@ -104,7 +119,7 @@ func main() {
 	fmt.Println("✅ All jobs finished.")
 }
 
-func joinThreadContents(msgs []Message) string {
+func joinThreadContents(msgs []message.Message) string {
 	sep := "\n\n---\n\n"
 	out := make([]string, 0, len(msgs))
 	for _, m := range msgs {

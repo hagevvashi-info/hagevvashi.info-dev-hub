@@ -1,4 +1,4 @@
-package main
+package session
 
 import (
 	"fmt"
@@ -6,12 +6,13 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"go-tty-from-queue/internal/message"
 )
 
-type SessionManager struct {
-	Mu       sync.Mutex
-	sessions map[string]*AgentSession
-	store    *SessionStore
+type Manager interface {
+	GetOrCreate(msg message.Message) (*AgentSession, bool, error)
+	UpdateSessionID(threadKey, sessionID string)
 }
 
 type AgentSession struct {
@@ -19,22 +20,17 @@ type AgentSession struct {
 	AgentType  string
 	CreatedAt  time.Time
 	LastUsedAt time.Time
-
-	SessionID string
+	SessionID  string
 }
 
-func NewSessionManager(store *SessionStore) *SessionManager {
-	sm := &SessionManager{
-		// map[スレッドキー]*AgentSession
-		// 例: {
-		//   "C_LOCAL_CLAUDE:1715161200.000100": &AgentSession{
-		//     ThreadKey: "C_LOCAL_CLAUDE:1715161200.000100",
-		//     AgentType: "claude",
-		//     SessionID: "e7f6d54b-7eb3-4156-b20e-f0322ca165ef",
-		//     CreatedAt: 2026-05-10T21:07:41Z,
-		//     LastUsedAt: 2026-05-10T21:17:15Z
-		//   }
-		// }
+type ManagerImpl struct {
+	Mu       sync.Mutex
+	sessions map[string]*AgentSession
+	store    Store
+}
+
+func NewManager(store Store) *ManagerImpl {
+	sm := &ManagerImpl{
 		sessions: map[string]*AgentSession{},
 		store:    store,
 	}
@@ -42,21 +38,22 @@ func NewSessionManager(store *SessionStore) *SessionManager {
 	return sm
 }
 
-func (sm *SessionManager) getOrCreateUnsafe(m Message) (*AgentSession, bool, error) {
-	key, err := m.ThreadKey()
+func (sm *ManagerImpl) GetOrCreate(msg message.Message) (*AgentSession, bool, error) {
+	sm.Mu.Lock()
+	defer sm.Mu.Unlock()
+
+	return sm.getOrCreateUnsafe(msg)
+}
+
+func (sm *ManagerImpl) getOrCreateUnsafe(msg message.Message) (*AgentSession, bool, error) {
+	key, err := msg.ThreadKey()
 	if err != nil {
 		return nil, false, err
 	}
 
 	now := time.Now()
-	isThreadRoot := m.IsThreadRoot()
+	isThreadRoot := msg.IsThreadRoot()
 
-	// セッション取得パターン：
-	// | IsThreadRoot | セッション存在 | 動作       | 戻り値     |
-	// |--------------|----------------|-----------|----------|
-	// | true         | あり/なし      | 新規作成   | (s, true)  |
-	// | false        | あり           | 既存再利用 | (s, false) |
-	// | false        | なし           | 新規作成   | (s, true)  |
 	if s, ok := sm.sessions[key]; ok && !isThreadRoot {
 		s.LastUsedAt = now
 		return s, false, nil
@@ -64,10 +61,9 @@ func (sm *SessionManager) getOrCreateUnsafe(m Message) (*AgentSession, bool, err
 
 	s := &AgentSession{
 		ThreadKey:  key,
-		AgentType:  strings.ToLower(m.AgentType),
+		AgentType:  strings.ToLower(msg.AgentType),
 		CreatedAt:  now,
 		LastUsedAt: now,
-		// SessionID は Agent 実行時に返される ID で後から更新される
 	}
 	sm.sessions[key] = s
 	if err := sm.persistLocked(); err != nil {
@@ -76,11 +72,14 @@ func (sm *SessionManager) getOrCreateUnsafe(m Message) (*AgentSession, bool, err
 	return s, true, nil
 }
 
-func (s *AgentSession) Touch() {
-	s.LastUsedAt = time.Now()
+func (sm *ManagerImpl) UpdateSessionID(threadKey, sessionID string) {
+	sm.Mu.Lock()
+	defer sm.Mu.Unlock()
+
+	sm.updateSessionIDUnsafe(threadKey, sessionID)
 }
 
-func (sm *SessionManager) updateSessionIDUnsafe(threadKey string, sessionID string) {
+func (sm *ManagerImpl) updateSessionIDUnsafe(threadKey string, sessionID string) {
 	if strings.TrimSpace(threadKey) == "" || strings.TrimSpace(sessionID) == "" {
 		return
 	}
@@ -95,7 +94,7 @@ func (sm *SessionManager) updateSessionIDUnsafe(threadKey string, sessionID stri
 	}
 }
 
-func (sm *SessionManager) loadFromStore() error {
+func (sm *ManagerImpl) loadFromStore() error {
 	if sm.store == nil {
 		return nil
 	}
@@ -115,13 +114,13 @@ func (sm *SessionManager) loadFromStore() error {
 	return nil
 }
 
-func (sm *SessionManager) persistLocked() error {
+func (sm *ManagerImpl) persistLocked() error {
 	if sm.store == nil {
 		return nil
 	}
-	records := map[string]SessionRecord{}
+	records := map[string]Record{}
 	for k, s := range sm.sessions {
-		records[k] = SessionRecord{
+		records[k] = Record{
 			AgentType:  s.AgentType,
 			CreatedAt:  s.CreatedAt,
 			LastUsedAt: s.LastUsedAt,

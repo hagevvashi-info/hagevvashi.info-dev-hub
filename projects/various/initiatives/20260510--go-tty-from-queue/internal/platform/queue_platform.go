@@ -1,52 +1,22 @@
-package main
+package platform
 
 import (
 	"fmt"
-	"strings"
 	"time"
+
+	"go-tty-from-queue/internal/message"
+	"go-tty-from-queue/internal/queue"
 )
 
-type Message struct {
-	ID        string
-	AgentType string
-	Content   string
-	Timestamp time.Time
-
-	ChannelID  string
-	ThreadTS   string
-	ReplyCount int
-}
-
-func (m Message) ThreadKey() (string, error) {
-	if strings.TrimSpace(m.ChannelID) == "" {
-		return "", fmt.Errorf("ChannelID is empty")
-	}
-	if strings.TrimSpace(m.ThreadTS) == "" {
-		return "", fmt.Errorf("ThreadTS is empty")
-	}
-	return m.ChannelID + ":" + m.ThreadTS, nil
-}
-
-func (m Message) IsThreadRoot() bool {
-	return m.ThreadTS == m.ID
-}
-
-type Platform interface {
-	FetchNewMessages() ([]Message, error)
-	PostResponse(original Message, response string) error
-	MarkProcessed(messageID string) error
-}
-
-// QueuePlatform は QueueSource から Queue を読み書きする
 type QueuePlatform struct {
-	source QueueSource
+	source queue.Source
 }
 
-func NewQueuePlatform(source QueueSource) *QueuePlatform {
+func NewQueue(source queue.Source) *QueuePlatform {
 	return &QueuePlatform{source: source}
 }
 
-func (p *QueuePlatform) FetchNewMessages() ([]Message, error) {
+func (p *QueuePlatform) FetchNewMessages() ([]message.Message, error) {
 	fmt.Println("🔍 [Queue] pending メッセージを取得します...")
 
 	entries, err := p.source.Read()
@@ -54,7 +24,7 @@ func (p *QueuePlatform) FetchNewMessages() ([]Message, error) {
 		return nil, err
 	}
 
-	var messages []Message
+	var messages []message.Message
 	for _, entry := range entries {
 		if entry.Status != "pending" {
 			continue
@@ -65,7 +35,7 @@ func (p *QueuePlatform) FetchNewMessages() ([]Message, error) {
 			timestamp = time.Now()
 		}
 
-		msg := Message{
+		msg := message.Message{
 			ID:        entry.MessageTS,
 			AgentType: entry.AgentType,
 			Content:   entry.Text,
@@ -81,7 +51,7 @@ func (p *QueuePlatform) FetchNewMessages() ([]Message, error) {
 	return messages, nil
 }
 
-func (p *QueuePlatform) PostResponse(original Message, response string) error {
+func (p *QueuePlatform) PostResponse(original message.Message, response string) error {
 	fmt.Printf("📢 [Queue Post] channel: %s ID: %s (thread_ts: %s) への返信:\n%s\n\n",
 		original.ChannelID, original.ID, original.ThreadTS, response)
 	return nil

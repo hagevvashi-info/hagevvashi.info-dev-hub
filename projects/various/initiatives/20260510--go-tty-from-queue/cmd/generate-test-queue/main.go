@@ -6,24 +6,16 @@ import (
 	"fmt"
 	"os"
 	"time"
-)
 
-type QueueEntry struct {
-	Channel   string `json:"channel"`
-	ThreadTS  string `json:"thread_ts"`
-	MessageTS string `json:"message_ts"`
-	Text      string `json:"text"`
-	Time      string `json:"time"`
-	Status    string `json:"status"`
-	AgentType string `json:"agent_type"`
-}
+	"go-tty-from-queue/internal/queue"
+)
 
 type TestPattern struct {
 	ID          string
 	Name        string
 	Agent       string
 	Description string
-	Generator   func() []QueueEntry
+	Generator   func() []queue.Entry
 }
 
 var patterns = []TestPattern{
@@ -32,8 +24,8 @@ var patterns = []TestPattern{
 		Name:        "claude-single",
 		Agent:       "claude",
 		Description: "Single message, single thread",
-		Generator: func() []QueueEntry {
-			return []QueueEntry{
+		Generator: func() []queue.Entry {
+			return []queue.Entry{
 				{
 					Channel:   "C_LOCAL_CLAUDE",
 					ThreadTS:  "1715161200.000100",
@@ -51,8 +43,8 @@ var patterns = []TestPattern{
 		Name:        "claude-multi-thread",
 		Agent:       "claude",
 		Description: "Multiple threads, 1 message each",
-		Generator: func() []QueueEntry {
-			return []QueueEntry{
+		Generator: func() []queue.Entry {
+			return []queue.Entry{
 				{
 					Channel:   "C_LOCAL_CLAUDE",
 					ThreadTS:  "1715161200.000100",
@@ -88,8 +80,8 @@ var patterns = []TestPattern{
 		Name:        "claude-multi-msg",
 		Agent:       "claude",
 		Description: "Single thread, multiple messages (combined execution)",
-		Generator: func() []QueueEntry {
-			return []QueueEntry{
+		Generator: func() []queue.Entry {
+			return []queue.Entry{
 				{
 					Channel:   "C_LOCAL_CLAUDE",
 					ThreadTS:  "1715161200.000100",
@@ -125,8 +117,8 @@ var patterns = []TestPattern{
 		Name:        "gemini-single",
 		Agent:       "gemini",
 		Description: "Gemini single message",
-		Generator: func() []QueueEntry {
-			return []QueueEntry{
+		Generator: func() []queue.Entry {
+			return []queue.Entry{
 				{
 					Channel:   "C_LOCAL_GEMINI",
 					ThreadTS:  "1715161500.000100",
@@ -144,8 +136,8 @@ var patterns = []TestPattern{
 		Name:        "gemini-multi-msg",
 		Agent:       "gemini",
 		Description: "Gemini single thread, multiple messages",
-		Generator: func() []QueueEntry {
-			return []QueueEntry{
+		Generator: func() []queue.Entry {
+			return []queue.Entry{
 				{
 					Channel:   "C_LOCAL_GEMINI",
 					ThreadTS:  "1715161500.000100",
@@ -172,8 +164,8 @@ var patterns = []TestPattern{
 		Name:        "mixed-agents",
 		Agent:       "mixed",
 		Description: "Claude + Gemini agents",
-		Generator: func() []QueueEntry {
-			return []QueueEntry{
+		Generator: func() []queue.Entry {
+			return []queue.Entry{
 				{
 					Channel:   "C_LOCAL_CLAUDE",
 					ThreadTS:  "1715161200.000100",

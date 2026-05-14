@@ -1,10 +1,9 @@
-package main
+package session
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -15,42 +14,31 @@ const (
 	sessionTTL       = 24 * time.Hour
 )
 
-type SessionStore struct {
+type RedisStore struct {
 	client *redis.Client
 }
 
-type SessionRecord struct {
-	AgentType  string    `json:"agent_type"`
-	CreatedAt  time.Time `json:"created_at"`
-	LastUsedAt time.Time `json:"last_used_at"`
-	SessionID  string    `json:"session_id"`
-}
-
-func NewSessionStore() *SessionStore {
-	addr := os.Getenv("REDIS_ADDR")
+func NewRedisStore(addr string) (*RedisStore, error) {
 	if addr == "" {
-		fmt.Fprintf(os.Stderr, "Error: REDIS_ADDR environment variable is required\n")
-		os.Exit(1)
+		return nil, fmt.Errorf("Redis address is required")
 	}
 	client := redis.NewClient(&redis.Options{
 		Addr: addr,
 	})
-	return &SessionStore{client: client}
+	return &RedisStore{client: client}, nil
 }
 
-func (s *SessionStore) Load() (map[string]SessionRecord, error) {
+func (s *RedisStore) Load() (map[string]Record, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// session: で始まる全キーを取得
 	keys, err := s.client.Keys(ctx, sessionKeyPrefix+"*").Result()
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch session keys: %w", err)
 	}
 
-	records := make(map[string]SessionRecord)
+	records := make(map[string]Record)
 	for _, key := range keys {
-		// キーから threadKey を復元（"session:C_LOCAL_CLAUDE:xxx" → "C_LOCAL_CLAUDE:xxx"）
 		threadKey := key[len(sessionKeyPrefix):]
 
 		data, err := s.client.Get(ctx, key).Result()
@@ -58,7 +46,7 @@ func (s *SessionStore) Load() (map[string]SessionRecord, error) {
 			return nil, fmt.Errorf("failed to load session %s: %w", threadKey, err)
 		}
 
-		var record SessionRecord
+		var record Record
 		if err := json.Unmarshal([]byte(data), &record); err != nil {
 			return nil, fmt.Errorf("failed to parse session %s: %w", threadKey, err)
 		}
@@ -69,15 +57,14 @@ func (s *SessionStore) Load() (map[string]SessionRecord, error) {
 	return records, nil
 }
 
-func (s *SessionStore) Save(records map[string]SessionRecord) error {
+func (s *RedisStore) Save(records map[string]Record) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if records == nil {
-		records = map[string]SessionRecord{}
+		records = map[string]Record{}
 	}
 
-	// 全レコードを保存（TTL付き）
 	for threadKey, record := range records {
 		key := sessionKeyPrefix + threadKey
 		data, err := json.Marshal(record)
