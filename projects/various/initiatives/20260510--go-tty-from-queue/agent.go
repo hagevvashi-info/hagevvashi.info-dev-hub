@@ -2,11 +2,13 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/creack/pty"
 )
@@ -20,12 +22,16 @@ type CLIAgent interface {
 	CLIName() string
 	BuildArgs(input, resumeSessionID string) []string
 	ParseResult(raw []byte) (output, sessionID string, err error)
+	Timeout() time.Duration
 }
 
 // runCLIAgent は CLI エージェント実行の共通ロジック
 func runCLIAgent(agent CLIAgent, input, resumeSessionID string) (string, string, error) {
 	args := agent.BuildArgs(input, resumeSessionID)
-	cmd := exec.Command(agent.CLIName(), args...)
+	ctx, cancel := context.WithTimeout(context.Background(), agent.Timeout())
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, agent.CLIName(), args...)
 	cmd.Stderr = os.Stderr
 	f, err := pty.Start(cmd)
 	if err != nil {
@@ -63,7 +69,25 @@ func (a *ClaudeAgent) BuildArgs(input, resumeSessionID string) []string {
 }
 
 func (a *ClaudeAgent) ParseResult(raw []byte) (string, string, error) {
-	var jr claudeJSONResult
+	return parseJSONResult(raw, func(jsonBytes []byte) (string, string, error) {
+		var jr claudeJSONResult
+		if err := json.Unmarshal(jsonBytes, &jr); err != nil {
+			return "", "", err
+		}
+		return jr.Result, jr.SessionID, nil
+	})
+}
+
+func (a *ClaudeAgent) Timeout() time.Duration {
+	return 30 * time.Second
+}
+
+func (a *ClaudeAgent) Run(input, resumeSessionID string) (string, string, error) {
+	return runCLIAgent(a, input, resumeSessionID)
+}
+
+// parseJSONResult extracts result and sessionID from raw output using a custom unmarshaler
+func parseJSONResult(raw []byte, unmarshal func([]byte) (output, sessionID string, err error)) (string, string, error) {
 	jsonBytes := raw
 	if i := bytes.IndexByte(raw, '{'); i >= 0 {
 		if j := bytes.LastIndexByte(raw, '}'); j > i {
@@ -71,15 +95,12 @@ func (a *ClaudeAgent) ParseResult(raw []byte) (string, string, error) {
 		}
 	}
 
-	if err := json.Unmarshal(jsonBytes, &jr); err == nil && jr.Result != "" {
-		return jr.Result, jr.SessionID, nil
+	output, sessionID, err := unmarshal(jsonBytes)
+	if err == nil && output != "" {
+		return output, sessionID, nil
 	}
 
 	return string(raw), "", nil
-}
-
-func (a *ClaudeAgent) Run(input, resumeSessionID string) (string, string, error) {
-	return runCLIAgent(a, input, resumeSessionID)
 }
 
 type GeminiAgent struct{}
@@ -94,28 +115,25 @@ func (a *GeminiAgent) CLIName() string {
 }
 
 func (a *GeminiAgent) BuildArgs(input, resumeSessionID string) []string {
-	args := []string{"--output-format", "json"}
+	args := []string{"-p", input, "--output-format", "json"}
 	if strings.TrimSpace(resumeSessionID) != "" {
-		args = append(args, "--session", resumeSessionID)
+		args = append(args, "--resume", resumeSessionID)
 	}
-	args = append(args, input)
 	return args
 }
 
 func (a *GeminiAgent) ParseResult(raw []byte) (string, string, error) {
-	var jr geminiJSONResult
-	jsonBytes := raw
-	if i := bytes.IndexByte(raw, '{'); i >= 0 {
-		if j := bytes.LastIndexByte(raw, '}'); j > i {
-			jsonBytes = raw[i : j+1]
+	return parseJSONResult(raw, func(jsonBytes []byte) (string, string, error) {
+		var jr geminiJSONResult
+		if err := json.Unmarshal(jsonBytes, &jr); err != nil {
+			return "", "", err
 		}
-	}
-
-	if err := json.Unmarshal(jsonBytes, &jr); err == nil && jr.Output != "" {
 		return jr.Output, jr.SessionID, nil
-	}
+	})
+}
 
-	return string(raw), "", nil
+func (a *GeminiAgent) Timeout() time.Duration {
+	return 120 * time.Second
 }
 
 func (a *GeminiAgent) Run(input, resumeSessionID string) (string, string, error) {
