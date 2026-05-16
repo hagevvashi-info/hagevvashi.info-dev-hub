@@ -2,6 +2,12 @@
 # Blocks deprecated git commands per .claude/rules/002_git_guidelines.md
 # Runs as a PreToolUse hook on Bash tool calls.
 
+# Calculate project root based on script's own location
+# Script is at: /home/hagevvashi/hagevvashi.info-dev-hub/.claude/hooks/check-deprecated-git.sh
+# Project root is: /home/hagevvashi/hagevvashi.info-dev-hub
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
 cmd=$(cat | python3 -c "
 import sys, json
 try:
@@ -40,7 +46,7 @@ if echo "$cmd" | grep -qE '\bgit reset HEAD\b'; then
 fi
 
 # Prevent direct commit and push to main branch
-current_branch=$(cd /home/hagevvashi/hagevvashi.info-dev-hub 2>/dev/null && git rev-parse --abbrev-ref HEAD 2>/dev/null)
+current_branch=$(cd "$PROJECT_ROOT" 2>/dev/null && git rev-parse --abbrev-ref HEAD 2>/dev/null)
 
 # Prevent accidental commit to main
 if echo "$cmd" | grep -qE '^\s*git commit\b'; then
