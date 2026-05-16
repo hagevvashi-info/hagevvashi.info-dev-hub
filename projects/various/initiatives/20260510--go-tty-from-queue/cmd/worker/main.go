@@ -100,9 +100,7 @@ func main() {
 				}
 			}
 
-			brg.Sessions.Lock()
-			sess, created, err := brg.Sessions.GetOrCreateUnsafe(msg)
-			brg.Sessions.Unlock()
+			sess, created, err := brg.Sessions.GetOrCreate(msg)
 
 			if err != nil {
 				brg.Platform.PostResponse(msg, "❌ セッション初期化に失敗しました: "+err.Error())
@@ -111,11 +109,9 @@ func main() {
 
 			result, sessionID, _ := brg.Execute(msg, sess, created)
 
-			brg.Sessions.Lock()
 			if sessionID != "" {
-				brg.Sessions.UpdateSessionIDUnsafe(threadKey, sessionID)
+				brg.Sessions.UpdateSessionID(threadKey, sessionID)
 			}
-			brg.Sessions.Unlock()
 
 			brg.Platform.PostResponse(msg, result)
 
