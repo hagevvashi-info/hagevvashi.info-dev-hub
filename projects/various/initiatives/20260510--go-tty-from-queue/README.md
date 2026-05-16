@@ -49,23 +49,56 @@ GAS (doPost) → Sheets (Queue) → go-tty-from-queue
 
 ```
 .
-├── main.go              # エントリポイント（Queue読み込み・スレッド並列化・状態管理）
-├── platform.go          # Platform I/F（QueuePlatform）
-├── bridge.go            # Message → Agent 実行（セッション管理・返信投稿・MarkProcessed）
-├── agent.go             # Agent I/F（ClaudeAgent + GeminiAgent）
-├── queue_entry.go       # QueueEntry 型（GAS → Sheets のスキーマ）
-├── queue_source.go      # QueueSource I/F（LocalQueueSource + SheetQueueSource）
-├── session.go           # SessionManager + AgentSession
-├── session_store.go     # SessionStore（sessions.json への永続化）
+├── cmd/
+│   ├── worker/
+│   │   └── main.go                   # メインプログラム（Queue読み込み・スレッド並列化・状態管理）
+│   └── generate-test-queue/
+│       └── main.go                   # テストデータ生成スクリプト
+│
+├── internal/
+│   ├── message/
+│   │   └── message.go                # Message インターフェース（ThreadKey, IsThreadRoot）
+│   │
+│   ├── queue/
+│   │   ├── entry.go                  # QueueEntry 型（GAS → Sheets のスキーマ）
+│   │   ├── source.go                 # QueueSource インターフェース
+│   │   ├── local.go                  # LocalQueueSource 実装
+│   │   └── sheets.go                 # SheetQueueSource（TODO スタブ）
+│   │
+│   ├── platform/
+│   │   ├── platform.go               # Platform インターフェース
+│   │   └── queue_platform.go         # QueuePlatform 実装
+│   │
+│   ├── agent/
+│   │   ├── agent.go                  # Agent・CLIAgent インターフェース
+│   │   ├── claude.go                 # ClaudeAgent 実装
+│   │   └── gemini.go                 # GeminiAgent 実装
+│   │
+│   ├── session/
+│   │   ├── session.go                # Manager インターフェース + ManagerImpl
+│   │   ├── store.go                  # Store インターフェース + Record 型
+│   │   └── redis_store.go            # RedisStore 実装（sessions.json への永続化）
+│   │
+│   └── bridge/
+│       └── bridge.go                 # Bridge 実装（Message → Agent 実行・返信投稿・MarkProcessed）
+│
+├── bin/
+│   └── go-tty-from-queue             # ビルド出力（go build で生成）
+│
+├── docs/
+│   ├── LOCK_RESPONSIBILITY_ANALYSIS.md
+│   ├── COMPLEXITY_AND_LEARNING_COST_ANALYSIS.md
+│   ├── ATOMICITY_AND_LOCK_OWNERSHIP.md
+│   └── API_DESIGN_COMPLEXITY_ANALYSIS.md
+│
+├── fixtures/
+│   └── queue.json                    # git管理外（.gitignoreに追加）
+│
 ├── go.mod
 ├── go.sum
 ├── .gitignore
-├── README.md
-├── cmd/
-│   └── generate-test-queue/
-│       └── main.go      # テストデータ生成スクリプト
-└── fixtures/
-    └── queue.json       # git管理外（.gitignoreに追加）
+├── Makefile
+└── README.md
 ```
 
 ## Build
@@ -78,7 +111,7 @@ make build
 
 またはシンプルに:
 ```bash
-go build -o ./bin/go-tty-from-queue
+go build -o ./bin/go-tty-from-queue ./cmd/worker/
 ```
 
 **クリーンアップ:**
@@ -154,7 +187,12 @@ go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern mixed-agents
 ### ステップ 2: メインプログラムを実行
 
 ```bash
-QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run ./cmd/worker/
+```
+
+またはビルド後のバイナリで実行：
+```bash
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 ./bin/go-tty-from-queue
 ```
 
 **注**: 
@@ -167,25 +205,25 @@ QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
 **単一メッセージテスト:**
 ```bash
 go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern claude-single
-QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run ./cmd/worker/
 ```
 
 **複数スレッド並列実行テスト:**
 ```bash
 go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern 2
-QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run ./cmd/worker/
 ```
 
 **メッセージ結合テスト:**
 ```bash
 go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern claude-multi-msg
-QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run ./cmd/worker/
 ```
 
 **マルチエージェントテスト:**
 ```bash
 go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern mixed-agents
-QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run ./cmd/worker/
 ```
 
 期待動作:
