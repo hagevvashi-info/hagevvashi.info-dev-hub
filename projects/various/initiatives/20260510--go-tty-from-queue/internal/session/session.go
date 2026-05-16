@@ -11,10 +11,8 @@ import (
 )
 
 type Manager interface {
-	Lock()
-	Unlock()
-	GetOrCreateUnsafe(msg message.Message) (*AgentSession, bool, error)
-	UpdateSessionIDUnsafe(threadKey, sessionID string)
+	GetOrCreate(msg message.Message) (*AgentSession, bool, error)
+	UpdateSessionID(threadKey, sessionID string) error
 }
 
 type AgentSession struct {
@@ -40,15 +38,14 @@ func NewManager(store Store) *ManagerImpl {
 	return sm
 }
 
-func (sm *ManagerImpl) Lock() {
+func (sm *ManagerImpl) GetOrCreate(msg message.Message) (*AgentSession, bool, error) {
 	sm.Mu.Lock()
+	defer sm.Mu.Unlock()
+
+	return sm.getOrCreateUnsafe(msg)
 }
 
-func (sm *ManagerImpl) Unlock() {
-	sm.Mu.Unlock()
-}
-
-func (sm *ManagerImpl) GetOrCreateUnsafe(msg message.Message) (*AgentSession, bool, error) {
+func (sm *ManagerImpl) getOrCreateUnsafe(msg message.Message) (*AgentSession, bool, error) {
 	key, err := msg.ThreadKey()
 	if err != nil {
 		return nil, false, err
@@ -75,19 +72,28 @@ func (sm *ManagerImpl) GetOrCreateUnsafe(msg message.Message) (*AgentSession, bo
 	return s, true, nil
 }
 
-func (sm *ManagerImpl) UpdateSessionIDUnsafe(threadKey string, sessionID string) {
+func (sm *ManagerImpl) UpdateSessionID(threadKey, sessionID string) error {
+	sm.Mu.Lock()
+	defer sm.Mu.Unlock()
+
+	return sm.updateSessionIDUnsafe(threadKey, sessionID)
+}
+
+func (sm *ManagerImpl) updateSessionIDUnsafe(threadKey string, sessionID string) error {
 	if strings.TrimSpace(threadKey) == "" || strings.TrimSpace(sessionID) == "" {
-		return
+		return nil
 	}
 	s, ok := sm.sessions[threadKey]
 	if !ok {
-		return
+		return nil
 	}
 	s.SessionID = sessionID
 	s.LastUsedAt = time.Now()
 	if err := sm.persistLocked(); err != nil {
 		fmt.Fprintf(os.Stderr, "Warning: failed to persist session %s: %v\n", threadKey, err)
+		return err
 	}
+	return nil
 }
 
 func (sm *ManagerImpl) loadFromStore() error {
