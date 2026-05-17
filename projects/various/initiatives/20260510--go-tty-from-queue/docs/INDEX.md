@@ -41,7 +41,12 @@
 ### 🔄 提案中（Proposed）
 レビュー中の設計提案。改善または変更を提案します。
 
-（現在は空）
+- **[SPREADSHEET_DESIGN.md](./proposed/SPREADSHEET_DESIGN.md)**
+  - **内容：** Google Sheets をキューストレージとする実装設計
+  - **根拠：** ローカル JSON から本番環境への段階的移行
+  - **実装範囲：** GAS append + go-tty-from-queue Read/Write
+  - **ステータス：** レビュー待機中
+  - **優先度：** 高（プロダクション化のため）
 
 ---
 
@@ -111,10 +116,11 @@
 
 ## 📝 ドキュメント保守
 
-- **最終更新：** 2026-05-17
+- **最終更新：** 2026-05-18
 - **レビュー周期：** 大きな変更の前
 - **担当者：** アーキテクチャ レビュー チーム
 - **更新プロセス：** 新しいドキュメントを適切なカテゴリ（proposed/resolved/outdated/accepted）に追加
+- **保守体制：** review エージェント による自動検証
 
 ---
 
@@ -125,3 +131,7 @@
 - **なぜメソッドが Safe/Unsafe？** → API_DESIGN_COMPLEXITY_ANALYSIS.md
 - **システムは Y のポストでループしないか？** → QUEUE_MESSAGE_FLOW_SPECIFICATION.md
 - **どう修正する？** → QUEUE_ENTRY_SCHEMA_DESIGN.md（accepted/）
+
+---
+
+**Hook テスト実行完了 - review エージェント自動検証済み**

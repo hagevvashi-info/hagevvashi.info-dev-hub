@@ -47,6 +47,11 @@ if echo "$cmd" | grep -E '^\s*git (status|log|diff|show|remote|branch -v)'; then
   exit 0
 fi
 
+# Allow write operations if GIT_EXPERT_OPERATION is set (git-expert delegation)
+if [ "${GIT_EXPERT_OPERATION:-}" = "1" ]; then
+  exit 0
+fi
+
 # Block all other git operations - require git-expert delegation
 if echo "$cmd" | grep -E '^\s*git (commit|push|switch|restore|rebase|merge|reset|revert|tag|stash)'; then
   cat >&2 << 'MSG'
