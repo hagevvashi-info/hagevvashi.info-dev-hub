@@ -6,14 +6,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-# Extract command
-cmd=$(cat 2>/dev/null | python3 -c "
-import sys, json
-try:
-    print(json.load(sys.stdin).get('tool_input', {}).get('command', ''))
-except:
-    pass
-" 2>/dev/null || echo "")
+# Extract command from JSON input using jq
+cmd=$(cat 2>/dev/null | jq -r '.tool_input.command // empty' 2>/dev/null || echo "")
 
 # POSIX-compliant empty check
 [ -z "$cmd" ] && exit 0
