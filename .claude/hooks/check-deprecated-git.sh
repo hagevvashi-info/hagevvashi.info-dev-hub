@@ -41,4 +41,31 @@ MSG
   exit 2
 fi
 
+# RULE 4: Require git-expert for write operations (delegation enforcement)
+# Allow read-only operations
+if echo "$cmd" | grep -E '^\s*git (status|log|diff|show|remote|branch -v)'; then
+  exit 0
+fi
+
+# Block all other git operations - require git-expert delegation
+if echo "$cmd" | grep -E '^\s*git (commit|push|switch|restore|rebase|merge|reset|revert|tag|stash)'; then
+  cat >&2 << 'MSG'
+❌ Direct git operation not allowed - Use git-expert agent instead
+
+This git operation requires:
+  - Commit message crafting
+  - Test execution & validation
+  - Branch/remote state verification
+  - Conflict resolution support
+
+👉 Delegate to git-expert:
+   Invoke the git-expert agent: /git-expert
+   Or: Agent(description: "...", subagent_type: "git-expert", prompt: "...")
+
+Allowed direct operations (read-only):
+  - git status, git log, git diff, git show, git remote -v, git branch -v
+MSG
+  exit 2
+fi
+
 exit 0
