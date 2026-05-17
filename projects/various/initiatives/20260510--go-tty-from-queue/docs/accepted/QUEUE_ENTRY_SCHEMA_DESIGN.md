@@ -1,8 +1,9 @@
 ---
-status: proposed
+status: accepted
 date: 2026-05-17
 author: アーキテクチャレビュー（main ブランチ保護インシデント）
 last_updated: 2026-05-17
+accepted_date: 2026-05-17
 information_sources: ["https://docs.slack.dev/reference/events/message/", "https://api.slack.com/methods/conversations.history", "https://api.slack.com/changelog/2016-08-11-user-id-format-changes"]
 ---
 

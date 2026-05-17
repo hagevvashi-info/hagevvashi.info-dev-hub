@@ -41,12 +41,7 @@
 ### 🔄 提案中（Proposed）
 レビュー中の設計提案。改善または変更を提案します。
 
-- **[QUEUE_ENTRY_SCHEMA_DESIGN.md](./proposed/QUEUE_ENTRY_SCHEMA_DESIGN.md)**
-  - **提案：** Queue Entry 構造体に `user_id` フィールドを追加
-  - **根拠：** go-tty-from-queue 側での Y フィルタリング（多層防御）
-  - **影響：** GAS + go-tty-from-queue の変更が必要
-  - **ステータス：** 承認待機中
-  - **優先度：** 高（無限ループリスク対策）
+（現在は空）
 
 ---
 
@@ -64,7 +59,13 @@
 ### 📌 承認済み（Accepted）
 承認され実装準備完了した決定。
 
-（現在は空—提案の承認待ち）
+- **[QUEUE_ENTRY_SCHEMA_DESIGN.md](./accepted/QUEUE_ENTRY_SCHEMA_DESIGN.md)**
+  - **内容：** Queue Entry 構造体に `user_id` フィールドを追加する詳細設計
+  - **根拠：** go-tty-from-queue 側での Y フィルタリング（多層防御）、完全な監査証跡
+  - **実装範囲：** GAS + go-tty-from-queue の両方の変更が必要
+  - **ステータス：** 承認完了、実装待機中
+  - **承認日：** 2026-05-17
+  - **優先度：** 高（無限ループリスク対策）
 
 ---
 
@@ -79,7 +80,7 @@
 
 **メッセージフローとアーキテクチャ**
 - 最初に読む：[QUEUE_MESSAGE_FLOW_SPECIFICATION.md](./resolved/QUEUE_MESSAGE_FLOW_SPECIFICATION.md)
-- 提案される修正：[QUEUE_ENTRY_SCHEMA_DESIGN.md](./proposed/QUEUE_ENTRY_SCHEMA_DESIGN.md)
+- 承認済み修正設計：[QUEUE_ENTRY_SCHEMA_DESIGN.md](./accepted/QUEUE_ENTRY_SCHEMA_DESIGN.md)
 - 廃棄済み：[CURRENT_ENTRY_SCHEMA.md](./outdated/CURRENT_ENTRY_SCHEMA.md)
 
 **複雑性と保守性**
@@ -123,4 +124,4 @@
 - **ロック機構はどう動く？** → LOCK_RESPONSIBILITY_ANALYSIS.md
 - **なぜメソッドが Safe/Unsafe？** → API_DESIGN_COMPLEXITY_ANALYSIS.md
 - **システムは Y のポストでループしないか？** → QUEUE_MESSAGE_FLOW_SPECIFICATION.md
-- **どう修正する？** → QUEUE_ENTRY_SCHEMA_DESIGN.md
+- **どう修正する？** → QUEUE_ENTRY_SCHEMA_DESIGN.md（accepted/）
