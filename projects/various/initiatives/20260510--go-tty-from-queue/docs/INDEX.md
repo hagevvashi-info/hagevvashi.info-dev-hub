@@ -1,126 +1,126 @@
-# Documentation Index
+# ドキュメント索引
 
-## Overview
+## 概要
 
-This directory contains design documents, architectural analyses, and decision records for the go-tty-from-queue project, organized by status.
+このディレクトリには go-tty-from-queue プロジェクトの設計ドキュメント、アーキテクチャ分析、および決定記録がステータス別に整理されています。
 
 ---
 
-## 📋 Document Categories
+## 📋 ドキュメント カテゴリ
 
-### ✅ Resolved
-Completed analyses and decisions. These define the current system state.
+### ✅ 解決済み（Resolved）
+完了した分析と決定。これらはシステムの現在の状態を定義します。
 
 - **[QUEUE_MESSAGE_FLOW_SPECIFICATION.md](./resolved/QUEUE_MESSAGE_FLOW_SPECIFICATION.md)**
-  - Specification of how messages flow from Slack → agents → back to Slack
-  - Answers: Does Y's posts get processed? (Currently: GAS-only filtering, risky)
-  - Status: Identifies design issue requiring user_id addition
+  - Slack → エージェント → Slack へのメッセージフロー仕様
+  - 内容：Y のポストが処理されるか？（現状：GAS フィルタリングのみ、リスクあり）
+  - ステータス：user_id 追加が必要な設計課題を特定
 
 - **[LOCK_RESPONSIBILITY_ANALYSIS.md](./resolved/LOCK_RESPONSIBILITY_ANALYSIS.md)**
-  - Analysis of lock ownership and responsibility in session management
-  - Confirms: Safe/Unsafe methods correctly implement lock semantics
-  - Status: Design is sound, no changes needed
+  - セッション管理におけるロック所有権と責務の分析
+  - 確認事項：Safe/Unsafe メソッドがロック セマンティクスを正しく実装
+  - ステータス：設計は堅牢、変更不要
 
 - **[ATOMICITY_AND_LOCK_OWNERSHIP.md](./resolved/ATOMICITY_AND_LOCK_OWNERSHIP.md)**
-  - Deep dive into atomicity granularity and design tradeoffs
-  - Explains: Why separate Lock/Unlock calls are intentional (minimize lock duration)
-  - Status: Design rationale documented
+  - アトミシティの粒度と設計トレードオフの深掘り分析
+  - 説明：Lock/Unlock を分離する理由（ロック時間最小化）
+  - ステータス：設計の根拠が文書化済み
 
 - **[API_DESIGN_COMPLEXITY_ANALYSIS.md](./resolved/API_DESIGN_COMPLEXITY_ANALYSIS.md)**
-  - Analysis of Manager interface complexity (Safe/Unsafe methods)
-  - Trade-off: Simplicity vs Performance vs Control
-  - Status: Complexity justified by performance gains
+  - Manager インターフェース複雑性の分析（Safe/Unsafe メソッド）
+  - トレードオフ：シンプル性 vs パフォーマンス vs 制御
+  - ステータス：複雑性はパフォーマンス向上により正当化
 
 - **[COMPLEXITY_AND_LEARNING_COST_ANALYSIS.md](./resolved/COMPLEXITY_AND_LEARNING_COST_ANALYSIS.md)**
-  - Measures complexity increase from hidden locks → explicit locks
-  - Quantifies: 10x learning time cost, but justified by safety
-  - Status: Trade-off accepted
+  - 隠蔽ロック → 明示的ロックによる複雑性増加の測定
+  - 定量化：学習時間 10 倍だが安全性により正当化
+  - ステータス：トレードオフが承認済み
 
 ---
 
-### 🔄 Proposed
-Design proposals under review. These suggest improvements or changes.
+### 🔄 提案中（Proposed）
+レビュー中の設計提案。改善または変更を提案します。
 
 - **[QUEUE_ENTRY_SCHEMA_DESIGN.md](./proposed/QUEUE_ENTRY_SCHEMA_DESIGN.md)**
-  - **Proposal:** Add `user_id` field to Queue Entry struct
-  - **Rationale:** Enable Y-filtering on go-tty-from-queue side (defense in depth)
-  - **Impact:** GAS + go-tty-from-queue changes needed
-  - **Status:** Awaiting acceptance
-  - **Priority:** HIGH (fixes infinite loop risk)
+  - **提案：** Queue Entry 構造体に `user_id` フィールドを追加
+  - **根拠：** go-tty-from-queue 側での Y フィルタリング（多層防御）
+  - **影響：** GAS + go-tty-from-queue の変更が必要
+  - **ステータス：** 承認待機中
+  - **優先度：** 高（無限ループリスク対策）
 
 ---
 
-### ⏳ Outdated
-Documents describing deprecated or problematic designs. Kept for historical context.
+### ⏳ 廃棄済み（Outdated）
+廃棄または問題のある設計を説明するドキュメント。歴史的背景のため保持。
 
 - **[CURRENT_ENTRY_SCHEMA.md](./outdated/CURRENT_ENTRY_SCHEMA.md)**
-  - Documents: Current Entry struct (missing user_id)
-  - Issues: No user identification, single-point-of-failure filtering
-  - Marked Outdated: 2026-05-17 (identified design gaps)
-  - See: QUEUE_ENTRY_SCHEMA_DESIGN.md for improvement
+  - 記述対象：現在の Entry 構造体（user_id なし）
+  - 問題点：ユーザー識別がない、単一障害点フィルタリング
+  - 廃棄日：2026-05-17（設計ギャップを特定）
+  - 参照：QUEUE_ENTRY_SCHEMA_DESIGN.md 参照
 
 ---
 
-### 📌 Accepted
-Decisions that have been approved and are ready for implementation.
+### 📌 承認済み（Accepted）
+承認され実装準備完了した決定。
 
-(Currently empty - awaiting acceptance of proposed changes)
-
----
-
-## 🎯 Quick Navigation
-
-### By Topic
-
-**Session Management & Locks**
-- Start with: [LOCK_RESPONSIBILITY_ANALYSIS.md](./resolved/LOCK_RESPONSIBILITY_ANALYSIS.md)
-- Then: [ATOMICITY_AND_LOCK_OWNERSHIP.md](./resolved/ATOMICITY_AND_LOCK_OWNERSHIP.md)
-- Deep dive: [API_DESIGN_COMPLEXITY_ANALYSIS.md](./resolved/API_DESIGN_COMPLEXITY_ANALYSIS.md)
-
-**Message Flow & Architecture**
-- Start with: [QUEUE_MESSAGE_FLOW_SPECIFICATION.md](./resolved/QUEUE_MESSAGE_FLOW_SPECIFICATION.md)
-- Proposed fix: [QUEUE_ENTRY_SCHEMA_DESIGN.md](./proposed/QUEUE_ENTRY_SCHEMA_DESIGN.md)
-- Outdated: [CURRENT_ENTRY_SCHEMA.md](./outdated/CURRENT_ENTRY_SCHEMA.md)
-
-**Complexity & Maintainability**
-- Overview: [COMPLEXITY_AND_LEARNING_COST_ANALYSIS.md](./resolved/COMPLEXITY_AND_LEARNING_COST_ANALYSIS.md)
-- API details: [API_DESIGN_COMPLEXITY_ANALYSIS.md](./resolved/API_DESIGN_COMPLEXITY_ANALYSIS.md)
+（現在は空—提案の承認待ち）
 
 ---
 
-## 📊 Decision Status Summary
+## 🎯 クイックナビゲーション
 
-| Topic | Status | Action Required |
+### トピック別
+
+**セッション管理とロック**
+- 最初に読む：[LOCK_RESPONSIBILITY_ANALYSIS.md](./resolved/LOCK_RESPONSIBILITY_ANALYSIS.md)
+- 次に：[ATOMICITY_AND_LOCK_OWNERSHIP.md](./resolved/ATOMICITY_AND_LOCK_OWNERSHIP.md)
+- 詳細：[API_DESIGN_COMPLEXITY_ANALYSIS.md](./resolved/API_DESIGN_COMPLEXITY_ANALYSIS.md)
+
+**メッセージフローとアーキテクチャ**
+- 最初に読む：[QUEUE_MESSAGE_FLOW_SPECIFICATION.md](./resolved/QUEUE_MESSAGE_FLOW_SPECIFICATION.md)
+- 提案される修正：[QUEUE_ENTRY_SCHEMA_DESIGN.md](./proposed/QUEUE_ENTRY_SCHEMA_DESIGN.md)
+- 廃棄済み：[CURRENT_ENTRY_SCHEMA.md](./outdated/CURRENT_ENTRY_SCHEMA.md)
+
+**複雑性と保守性**
+- 概要：[COMPLEXITY_AND_LEARNING_COST_ANALYSIS.md](./resolved/COMPLEXITY_AND_LEARNING_COST_ANALYSIS.md)
+- API 詳細：[API_DESIGN_COMPLEXITY_ANALYSIS.md](./resolved/API_DESIGN_COMPLEXITY_ANALYSIS.md)
+
+---
+
+## 📊 決定ステータス サマリー
+
+| トピック | ステータス | 必要な処置 |
 |---|---|---|
-| Lock semantics | ✅ Resolved | None (design sound) |
-| Session atomicity | ✅ Resolved | None (intentional design) |
-| API complexity | ✅ Resolved | Document in README ✓ |
-| Queue message flow | ✅ Resolved | Address Y-filtering risk |
-| **Queue schema (user_id)** | 🔄 **PROPOSED** | **NEEDS DECISION** |
+| ロック セマンティクス | ✅ 解決済み | なし（設計が堅牢） |
+| セッション アトミシティ | ✅ 解決済み | なし（意図した設計） |
+| API 複雑性 | ✅ 解決済み | README に文書化 ✓ |
+| キュー メッセージフロー | ✅ 解決済み | Y フィルタリング リスク対策 |
+| **キュー スキーマ（user_id）** | 🔄 **提案中** | **決定が必要** |
 
 ---
 
-## 🔗 Related Information
+## 🔗 関連情報
 
-- **Source Code:** internal/ directory structure corresponds to package boundaries
-- **README:** [../../README.md](../../README.md) - Project overview and usage
-- **Git History:** Review commits for implementation decisions
-
----
-
-## 📝 Document Maintenance
-
-- **Last Updated:** 2026-05-17
-- **Review Cycle:** Before each major change
-- **Owner:** Architecture review team
-- **Update Process:** Add new docs to appropriate category (proposed/resolved/outdated/accepted)
+- **ソースコード：** internal/ ディレクトリ構造はパッケージ境界に対応
+- **README：** [../../README.md](../../README.md) - プロジェクト概要と使用方法
+- **Git 履歴：** 実装の決定については commit を確認
 
 ---
 
-## Questions?
+## 📝 ドキュメント保守
 
-Refer to specific documents for:
-- **How does locking work?** → LOCK_RESPONSIBILITY_ANALYSIS.md
-- **Why are methods Safe/Unsafe?** → API_DESIGN_COMPLEXITY_ANALYSIS.md
-- **Does the system loop with Y posts?** → QUEUE_MESSAGE_FLOW_SPECIFICATION.md
-- **How do we fix it?** → QUEUE_ENTRY_SCHEMA_DESIGN.md
+- **最終更新：** 2026-05-17
+- **レビュー周期：** 大きな変更の前
+- **担当者：** アーキテクチャ レビュー チーム
+- **更新プロセス：** 新しいドキュメントを適切なカテゴリ（proposed/resolved/outdated/accepted）に追加
+
+---
+
+## ご質問？
+
+以下のドキュメントを参照してください：
+- **ロック機構はどう動く？** → LOCK_RESPONSIBILITY_ANALYSIS.md
+- **なぜメソッドが Safe/Unsafe？** → API_DESIGN_COMPLEXITY_ANALYSIS.md
+- **システムは Y のポストでループしないか？** → QUEUE_MESSAGE_FLOW_SPECIFICATION.md
+- **どう修正する？** → QUEUE_ENTRY_SCHEMA_DESIGN.md

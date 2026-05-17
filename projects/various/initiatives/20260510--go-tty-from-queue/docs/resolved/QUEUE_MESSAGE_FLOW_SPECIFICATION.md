@@ -1,24 +1,24 @@
 ---
 status: resolved
 date: 2026-05-17
-source: "Code review of cmd/worker/main.go, internal/platform/queue_platform.go, internal/bridge/bridge.go"
+source: "cmd/worker/main.go、internal/platform/queue_platform.go、internal/bridge/bridge.go のコード審査"
 ---
 
-# Queue Message Flow Specification
+# キューメッセージフロー仕様書
 
-## Overview
+## 概要
 
-This document specifies how messages flow from Slack through the go-tty-from-queue system to generate agent responses and post them back to Slack.
+このドキュメントは、Slack からのメッセージが go-tty-from-queue システムを通ってエージェント回答を生成し、Slack に戻されるまでのフローを仕様化します。
 
-## Question 1: Does the system pass channel X posts to agents?
+## 質問 1：システムはチャネル X のポストをエージェントに渡すか？
 
-**Answer: YES**
+**答え：はい**
 
-**Source Code Verification:**
+**ソースコード検証：**
 
 ```go
 // cmd/worker/main.go
-messages, err := plat.FetchNewMessages()  // ← Fetch pending messages from queue
+messages, err := plat.FetchNewMessages()  // ← キューから pending メッセージを取得
 ```
 
 ```go
@@ -27,7 +27,7 @@ for _, entry := range entries {
     if entry.Status != "pending" {
         continue
     }
-    // No filtering on channel, user, or content
+    // チャネル、ユーザー、コンテンツにフィルタリングなし
     msg := message.Message{
         ID:        entry.MessageTS,
         AgentType: entry.AgentType,
@@ -38,38 +38,38 @@ for _, entry := range entries {
 }
 ```
 
-**Behavior:**
-- All entries with `Status == "pending"` are fetched
-- No additional filtering is applied
-- Messages are grouped by thread and passed to agents for execution
+**動作：**
+- `Status == "pending"` のすべてのエントリが取得される
+- 追加フィルタリングは適用されない
+- メッセージはスレッド単位でグループ化され、エージェント実行に渡される
 
-**Flow:**
+**フロー：**
 ```
-Slack Channel X
+Slack チャネル X
     ↓
-GAS (Google Apps Script)
+GAS（Google Apps Script）
     ↓
-Google Sheets Queue
+Google Sheets キュー
     ↓
 go-tty-from-queue FetchNewMessages()
     ↓
-Batch to agents (by thread)
+エージェントにバッチ化（スレッド単位）
     ↓
-Agent execution (Claude/Gemini)
+エージェント実行（Claude/Gemini）
 ```
 
 ---
 
-## Question 2: Does the system post agent responses back to channel X via user Y?
+## 質問 2：システムはエージェント回答をチャネル X にユーザー Y で投稿するか？
 
-**Answer: YES**
+**答え：はい**
 
-**Source Code Verification:**
+**ソースコード検証：**
 
 ```go
 // cmd/worker/main.go
 result, sessionID, _ := brg.Execute(msg, sess, created)
-brg.Platform.PostResponse(msg, result)  // ← Post response
+brg.Platform.PostResponse(msg, result)  // ← レスポンスをポスト
 ```
 
 ```go
@@ -81,149 +81,149 @@ func (p *QueuePlatform) PostResponse(original message.Message, response string) 
 }
 ```
 
-**Behavior (Local vs Production):**
+**動作（ローカル vs 本番）：**
 
-| Environment | Implementation |
+| 環境 | 実装 |
 |---|---|
-| **Local** | Prints to stdout |
-| **Production** | Uses Slack API to post thread reply in channel X as user Y |
+| **ローカル** | stdout に出力 |
+| **本番** | Slack API でチャネル X のスレッド返信をユーザー Y で投稿 |
 
-**Flow:**
+**フロー：**
 ```
-Agent execution (local: CLI TTY, remote: API)
+エージェント実行（ローカル：CLI TTY、リモート：API）
     ↓
-result string (Claude/Gemini response)
+result 文字列（Claude/Gemini 回答）
     ↓
 PostResponse(original_message, result)
     ↓
-Local: stdout
-Production: Slack API (channels.reply with user Y credentials)
+ローカル：stdout
+本番：Slack API（ユーザー Y 認証情報で channels.reply）
     ↓
-Slack Channel X (thread reply by user Y)
+Slack チャネル X（ユーザー Y のスレッド返信）
 ```
 
 ---
 
-## Question 3: Does the system process Y's posts back through agents? Should they be filtered?
+## 質問 3：システムは Y のポストをエージェントに戻して処理するか？フィルタリングすべきか？
 
-**Answer: CURRENTLY - No filtering. SHOULD BE - Yes, filtered.**
+**答え：現状は フィルタリングなし。本来は フィルタリングすべき。**
 
-### Current Implementation Behavior
+### 現在の実装の動作
 
-**Y's post handling:**
+**Y のポスト処理：**
 
-1. **Local execution shows Y's post would be processed IF included in queue:**
+1. **ローカル実行は、キューに含まれた場合 Y のポストが処理されることを示す：**
    ```go
    // cmd/worker/main.go
-   messages, err := plat.FetchNewMessages()  // ← Gets ALL pending, no Y-filtering
+   messages, err := plat.FetchNewMessages()  // ← すべての pending を取得、Y フィルタリングなし
    // ...
-   result, sessionID, _ := brg.Execute(msg, sess, created)  // ← Would execute Y's post
+   result, sessionID, _ := brg.Execute(msg, sess, created)  // ← Y のポストを実行
    ```
 
-2. **No Y-filtering exists in go-tty-from-queue:**
+2. **go-tty-from-queue に Y フィルタリングが存在しない：**
    ```go
    // internal/platform/queue_platform.go
-   // Only filters on: Status == "pending"
-   // No user_id check, no Y-filtering
+   // フィルタ対象：Status == "pending" のみ
+   // user_id チェックなし、Y フィルタリングなし
    ```
 
-3. **Only defense: GAS filters out Y's posts when creating queue**
-   - If GAS filter works → OK
-   - If GAS filter fails → **Infinite loop risk**
+3. **唯一の防御：GAS がキュー作成時に Y のポストを除外**
+   - GAS フィルタが動作 → OK
+   - GAS フィルタが失敗 → **無限ループリスク**
 
-### Why Y Posts Should Be Filtered
+### Y のポストがフィルタリングされるべき理由
 
-**Risk: Infinite Loop**
+**リスク：無限ループ**
 ```
-User posts "Help" in channel X
+ユーザーがチャネル X に「ヘルプ」と投稿
     ↓
-GAS creates queue entry
+GAS がキューエントリを作成
     ↓
-go-tty-from-queue executes (Claude/Gemini)
+go-tty-from-queue が実行（Claude/Gemini）
     ↓
-Posts response in channel X as user Y
+チャネル X にユーザー Y で回答をポスト
     ↓
-GAS sees Y's response
+GAS が Y の回答を検出
     ↓
-If GAS doesn't filter Y: Creates queue entry
+GAS が Y をフィルタしなかった場合：キューエントリを作成
     ↓
-go-tty-from-queue executes Y's response (AGAIN)
+go-tty-from-queue が Y の回答を実行（再度）
     ↓
-Posts another response as Y
+Y で別の回答をポスト
     ↓
-INFINITE LOOP 🔄
+無限ループ 🔄
 ```
 
-### Current Dependency
+### 現在の依存関係
 
 ```
-Architecture correctness depends on:
-    GAS Filter (Y removal)
+アーキテクチャの正確性は以下に依存：
+    GAS フィルタ（Y 除外）
         ↑
-        └─── if fails → infinite loop
+        └─── 失敗 → 無限ループ
 ```
 
-**Problem:** Single point of failure, no defense in depth.
+**問題：** 単一障害点、多層防御がない。
 
 ---
 
-## Specification (Idealized)
+## 仕様書（理想的）
 
-### Responsibility Matrix
+### 責務マトリックス
 
-| Task | GAS | go-tty-from-queue | Queue |
+| タスク | GAS | go-tty-from-queue | キュー |
 |---|---|---|---|
-| Include all Slack posts | ✓ | - | - |
-| Add user_id to Entry | ✓ | - | ✓ |
-| Filter Y posts (first) | ✓ | - | - |
-| Filter Y posts (defense) | - | ✓ | - |
-| Store audit trail | - | - | ✓ |
-| Execute non-Y posts | - | ✓ | - |
-| Post responses to X | - | ✓ | - |
+| Slack のすべてのポストを含める | ✓ | - | - |
+| Entry に user_id を追加 | ✓ | - | ✓ |
+| Y のポストをフィルタ（最初） | ✓ | - | - |
+| Y のポストをフィルタ（防御） | - | ✓ | - |
+| 監査証跡を保存 | - | - | ✓ |
+| 非 Y のポストを実行 | - | ✓ | - |
+| X に回答をポスト | - | ✓ | - |
 
-### Ideal Message Flow (with user_id)
+### 理想的なメッセージフロー（user_id 付き）
 
 ```
-Slack Channel X
+Slack チャネル X
     ↓
-GAS: Extract user_id, create Entry with user_id
+GAS：user_id を抽出、user_id 付き Entry を作成
     ↓
-Queue: Store with user_id (audit trail)
+キュー：user_id で保存（監査証跡）
     ↓
-go-tty-from-queue: Fetch pending
-    ├─ Filter: user_id == "U_AGENT_Y" → skip
-    └─ Filter: others → execute
+go-tty-from-queue：pending を取得
+    ├─ フィルタ：user_id == "U_AGENT_Y" → スキップ
+    └─ フィルタ：その他 → 実行
     ↓
-Agent execution
+エージェント実行
     ↓
-PostResponse back to X
+X に PostResponse で返信
     ↓
-GAS: New post arrives (from Y)
-    ├─ GAS Filter: user_id == "U_AGENT_Y" → skip queue
-    └─ go-tty-from-queue Filter: user_id == "U_AGENT_Y" → skip if in queue
+GAS：新しいポストが到着（Y より）
+    ├─ GAS フィルタ：user_id == "U_AGENT_Y" → キュー対象外
+    └─ go-tty-from-queue フィルタ：user_id == "U_AGENT_Y" → キューにあったらスキップ
     ↓
-✅ NO INFINITE LOOP
+✅ 無限ループなし
 ```
 
 ---
 
-## Summary
+## サマリー
 
-| Question | Current Implementation | Ideal Behavior |
+| 質問 | 現在の実装 | 理想的な動作 |
 |---|---|---|
-| **Q1: Pass X posts to agents?** | ✓ YES (all pending) | ✓ YES (all non-Y pending) |
-| **Q2: Post Y responses to X?** | ✓ YES | ✓ YES |
-| **Q3: Filter Y posts?** | ✗ NO (GAS only) | ✓ YES (multi-layer) |
+| **Q1：X のポストをエージェントに渡す？** | ✓ YES（すべての pending） | ✓ YES（非 Y の pending） |
+| **Q2：Y の回答を X にポスト？** | ✓ YES | ✓ YES |
+| **Q3：Y のポストをフィルタ？** | ✗ NO（GAS のみ） | ✓ YES（多層） |
 
 ---
 
-## Related Discussions
+## 関連ドキュメント
 
-- **Proposed Fix:** docs/proposed/QUEUE_ENTRY_SCHEMA_DESIGN.md
-- **Design Decision:** docs/outdated/CURRENT_ENTRY_SCHEMA.md
+- **提案される修正：** docs/proposed/QUEUE_ENTRY_SCHEMA_DESIGN.md
+- **設計決定：** docs/outdated/CURRENT_ENTRY_SCHEMA.md
 
 ---
 
-**Analysis Date:** 2026-05-17  
-**Status:** Complete  
-**Confidence:** High (source: direct code inspection)
+**分析日：** 2026-05-17  
+**ステータス：** 完了  
+**信頼度：** 高（ソース：直接コード検査）
