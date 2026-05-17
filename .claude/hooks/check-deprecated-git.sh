@@ -1,6 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Blocks deprecated git commands per .claude/rules/002_git_guidelines.md
 # Runs as a PreToolUse hook on Bash tool calls.
+
+set -euo pipefail
+
+# Resolve script directory for relative path resolution
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 cmd=$(cat | python3 -c "
 import sys, json
@@ -40,11 +46,11 @@ if echo "$cmd" | grep -qE '\bgit reset HEAD\b'; then
 fi
 
 # Prevent direct commit and push to main branch
-current_branch=$(cd /home/hagevvashi/hagevvashi.info-dev-hub 2>/dev/null && git rev-parse --abbrev-ref HEAD 2>/dev/null)
+current_branch=$(cd "${REPO_ROOT}" 2>/dev/null && git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
 
 # Prevent accidental commit to main
-if echo "$cmd" | grep -qE '^\s*git commit\b'; then
-  if [ "$current_branch" = "main" ]; then
+if echo "${cmd}" | grep -qE '^\s*git commit\b'; then
+  if [[ "${current_branch}" == "main" ]]; then
     cat <<'EOF'
 ❌ エラー: main ブランチへの直接コミットは禁止されています
 
@@ -68,8 +74,8 @@ EOF
 fi
 
 # Prevent accidental push to upstream/main
-if echo "$cmd" | grep -qE '^\s*git push\s*$'; then
-  if [ "$current_branch" = "main" ]; then
+if echo "${cmd}" | grep -qE '^\s*git push\s*$'; then
+  if [[ "${current_branch}" == "main" ]]; then
     cat <<'EOF'
 ❌ エラー: main ブランチからの push は禁止されています
 
