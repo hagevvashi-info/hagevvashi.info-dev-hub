@@ -62,8 +62,12 @@ GAS (doPost) → Sheets (Queue) → go-tty-from-queue
 ├── .gitignore
 ├── README.md
 ├── cmd/
+│   └── worker/
+│       └── main.go      # Worker バイナリ（エントリポイント）
 │   └── generate-test-queue/
 │       └── main.go      # テストデータ生成スクリプト
+├── internal/
+│   └── (内部パッケージ）
 └── fixtures/
     └── queue.json       # git管理外（.gitignoreに追加）
 ```
@@ -78,7 +82,7 @@ make build
 
 またはシンプルに:
 ```bash
-go build -o ./bin/go-tty-from-queue
+go build -o ./bin/go-tty-from-queue ./cmd/worker/
 ```
 
 **クリーンアップ:**
@@ -154,7 +158,7 @@ go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern mixed-agents
 ### ステップ 2: メインプログラムを実行
 
 ```bash
-QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run ./cmd/worker/
 ```
 
 **注**: 
@@ -167,25 +171,25 @@ QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
 **単一メッセージテスト:**
 ```bash
 go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern claude-single
-QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run ./cmd/worker/
 ```
 
 **複数スレッド並列実行テスト:**
 ```bash
 go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern 2
-QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run ./cmd/worker/
 ```
 
 **メッセージ結合テスト:**
 ```bash
 go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern claude-multi-msg
-QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run ./cmd/worker/
 ```
 
 **マルチエージェントテスト:**
 ```bash
 go run ./cmd/generate-test-queue -output /tmp/queue.json -pattern mixed-agents
-QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run .
+QUEUE_FILE=/tmp/queue.json REDIS_ADDR=localhost:6379 go run ./cmd/worker/
 ```
 
 期待動作:
