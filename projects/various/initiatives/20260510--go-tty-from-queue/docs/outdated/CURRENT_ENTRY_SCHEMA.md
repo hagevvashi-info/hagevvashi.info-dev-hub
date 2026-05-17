@@ -1,67 +1,67 @@
 ---
 status: outdated
 date: 2026-05-17
-reason: "Missing user_id field for Y-post filtering and audit trail"
+reason: "Y ポストフィルタリングと監査証跡に必要な user_id フィールドがない"
 ---
 
-# Current Queue Entry Schema (Outdated)
+# 現在のキューエントリスキーマ（廃棄済み）
 
-## Definition
+## 定義
 
 ```go
 type Entry struct {
-    Channel   string `json:"channel"`      // Slack channel ID
-    ThreadTS  string `json:"thread_ts"`    // Thread root timestamp
-    MessageTS string `json:"message_ts"`   // Message timestamp
-    Text      string `json:"text"`         // Post content
-    Time      string `json:"time"`         // ISO 8601 format
+    Channel   string `json:"channel"`      // Slack チャンネル ID
+    ThreadTS  string `json:"thread_ts"`    // スレッドトップのタイムスタンプ
+    MessageTS string `json:"message_ts"`   // メッセージのタイムスタンプ
+    Text      string `json:"text"`         // ポストのテキスト
+    Time      string `json:"time"`         // ISO 8601 形式
     Status    string `json:"status"`       // "pending", "processing", "completed", "failed"
-    AgentType string `json:"agent_type"`   // "claude" or "gemini"
+    AgentType string `json:"agent_type"`   // "claude" または "gemini"
 }
 ```
 
-## Issues with Current Schema
+## 現在のスキーマの問題
 
-### 1. Missing User Information
+### 1. ユーザー情報がない
 
-**Problem:** No user_id field means:
-- go-tty-from-queue cannot identify Y's posts
-- Audit trail is incomplete (cannot see who posted what)
-- Cannot implement defensive filtering on go-tty-from-queue side
+**問題：** user_id フィールドがないため：
+- go-tty-from-queue が Y のポストを特定できない
+- 監査証跡が不完全（誰が何を投稿したかが見えない）
+- go-tty-from-queue 側での防御的フィルタリングが実装できない
 
-**Current Workaround:**
-- GAS filters out Y posts when creating queue
-- If GAS filter fails, infinite loop risk
+**現在の回避策：**
+- GAS がキュー作成時に Y のポストを除外
+- GAS フィルタが失敗すると無限ループリスク
 
-### 2. Responsibility Ambiguity
+### 2. 責務の曖昧性
 
-| Component | Responsibility |
-|-----------|---|
-| GAS | Remove Y posts from queue |
-| go-tty-from-queue | Process all pending messages |
+| コンポーネント | 責務 |
+|---|---|
+| GAS | Y のポストをキューから除外 |
+| go-tty-from-queue | すべての pending メッセージを処理 |
 
-**Problem:** No defense in depth. GAS failure = infinite loop.
+**問題：** 多層防御がない。GAS が失敗 = 無限ループ。
 
-### 3. Limited Future Extensibility
+### 3. 将来の拡張性が限定的
 
-Cannot easily implement rules like:
-- Filter bot posts
-- Filter admin manual posts
-- Filter duplicate posts
-- Audit "who said what"
+以下のようなルールを簡単には実装できない：
+- ボットのポストをフィルタ
+- 管理者の手動ポストをフィルタ
+- 重複ポストをフィルタ
+- 「誰が何を言ったか」を監査
 
-## Historical Context
+## 歴史的背景
 
-- Created as minimal schema to reduce data transfer
-- GAS was trusted to filter correctly
-- No multi-level defense planned
+- データ転送を削減するための最小限スキーマとして作成
+- GAS が正しくフィルタすると信頼
+- 多層防御は計画されていなかった
 
-## Superseded By
+## 後継ドキュメント
 
-See `proposed/QUEUE_ENTRY_SCHEMA_DESIGN.md` for the improved design.
+改善設計については `proposed/QUEUE_ENTRY_SCHEMA_DESIGN.md` を参照してください。
 
 ---
 
-**Created:** 2026-05-16  
-**Marked Outdated:** 2026-05-17  
-**Reason:** Identified design gaps requiring schema enhancement
+**作成日：** 2026-05-16  
+**廃棄日：** 2026-05-17  
+**理由：** スキーマ拡張が必要な設計ギャップを特定
