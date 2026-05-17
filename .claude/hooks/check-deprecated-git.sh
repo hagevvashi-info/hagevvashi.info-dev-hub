@@ -2,7 +2,8 @@
 # Prevents dangerous git operations per .claude/rules/002_git_guidelines.md
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Get script directory in POSIX-compliant way
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 # Extract command
@@ -14,7 +15,8 @@ except:
     pass
 " 2>/dev/null || echo "")
 
-[[ -z "$cmd" ]] && exit 0
+# POSIX-compliant empty check
+[ -z "$cmd" ] && exit 0
 
 current_branch=$(cd "$REPO_ROOT" && git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
 
@@ -28,7 +30,7 @@ MSG
 fi
 
 # RULE 2: Block push from main branch (any destination)
-if echo "$cmd" | grep -E '^\s*git push' && [[ "$current_branch" == "main" ]]; then
+if echo "$cmd" | grep -E '^\s*git push' && [ "$current_branch" = "main" ]; then
   cat >&2 << 'MSG'
 ❌ Cannot push from main branch
 Create feature branch: git switch -c <name>
@@ -37,7 +39,7 @@ MSG
 fi
 
 # RULE 3: Block commit to main branch
-if echo "$cmd" | grep -E '^\s*git commit' && [[ "$current_branch" == "main" ]]; then
+if echo "$cmd" | grep -E '^\s*git commit' && [ "$current_branch" = "main" ]; then
   cat >&2 << 'MSG'
 ❌ Cannot commit to main branch
 Create feature branch: git switch -c <name>
