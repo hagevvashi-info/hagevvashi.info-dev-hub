@@ -7,5 +7,6 @@ type Entry struct {
 	Text      string `json:"text"`
 	Time      string `json:"time"`          // ISO 8601 format
 	Status    string `json:"status"`        // "pending", "processing", "completed", "failed"
-	AgentType string `json:"agent_type"` // "claude" or "gemini"
+	AgentType string `json:"agent_type"`   // "claude" or "gemini"
+	UserID    string `json:"user_id"`      // Slack user ID (U/W/B + 11-13 chars)
 }

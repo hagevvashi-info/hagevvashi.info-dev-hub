@@ -27,13 +27,14 @@ var patterns = []TestPattern{
 		Generator: func() []queue.Entry {
 			return []queue.Entry{
 				{
-					Channel:   "C_LOCAL_CLAUDE",
+					Channel:   "C024BE7LH",
 					ThreadTS:  "1715161200.000100",
 					MessageTS: "1715161200.000100",
 					Text:      "現在のディレクトリのファイル一覧を教えて",
-					Time:      time.Now().UTC().Format(time.RFC3339),
+					Time:      time.Now().UTC().Format(time.RFC3339Nano),
 					Status:    "pending",
 					AgentType: "claude",
+					UserID:    "U024BE7LH",
 				},
 			}
 		},
@@ -46,31 +47,34 @@ var patterns = []TestPattern{
 		Generator: func() []queue.Entry {
 			return []queue.Entry{
 				{
-					Channel:   "C_LOCAL_CLAUDE",
+					Channel:   "C024BE7LH",
 					ThreadTS:  "1715161200.000100",
 					MessageTS: "1715161200.000100",
 					Text:      "ファイル一覧を教えて",
-					Time:      time.Now().UTC().Format(time.RFC3339),
+					Time:      time.Now().UTC().Format(time.RFC3339Nano),
 					Status:    "pending",
 					AgentType: "claude",
+					UserID:    "U024BE7LH",
 				},
 				{
-					Channel:   "C_LOCAL_CLAUDE",
+					Channel:   "C024BE7LH",
 					ThreadTS:  "1715161300.000100",
 					MessageTS: "1715161300.000100",
 					Text:      "ディスク容量を教えて",
-					Time:      time.Now().UTC().Format(time.RFC3339),
+					Time:      time.Now().UTC().Format(time.RFC3339Nano),
 					Status:    "pending",
 					AgentType: "claude",
+					UserID:    "U024BE7LH",
 				},
 				{
-					Channel:   "C_LOCAL_CLAUDE",
+					Channel:   "C024BE7LH",
 					ThreadTS:  "1715161400.000100",
 					MessageTS: "1715161400.000100",
 					Text:      "プロセス一覧を表示して",
-					Time:      time.Now().UTC().Format(time.RFC3339),
+					Time:      time.Now().UTC().Format(time.RFC3339Nano),
 					Status:    "pending",
 					AgentType: "claude",
+					UserID:    "U024BE7LH",
 				},
 			}
 		},
@@ -83,31 +87,34 @@ var patterns = []TestPattern{
 		Generator: func() []queue.Entry {
 			return []queue.Entry{
 				{
-					Channel:   "C_LOCAL_CLAUDE",
+					Channel:   "C024BE7LH",
 					ThreadTS:  "1715161200.000100",
 					MessageTS: "1715161200.000100",
 					Text:      "現在のディレクトリのファイル一覧を教えて",
-					Time:      time.Now().UTC().Format(time.RFC3339),
+					Time:      time.Now().UTC().Format(time.RFC3339Nano),
 					Status:    "pending",
 					AgentType: "claude",
+					UserID:    "U024BE7LH",
 				},
 				{
-					Channel:   "C_LOCAL_CLAUDE",
+					Channel:   "C024BE7LH",
 					ThreadTS:  "1715161200.000100",
 					MessageTS: "1715161300.000100",
 					Text:      "それぞれのファイルサイズも教えて",
-					Time:      time.Now().UTC().Format(time.RFC3339),
+					Time:      time.Now().UTC().Format(time.RFC3339Nano),
 					Status:    "pending",
 					AgentType: "claude",
+					UserID:    "U024BE7LH",
 				},
 				{
-					Channel:   "C_LOCAL_CLAUDE",
+					Channel:   "C024BE7LH",
 					ThreadTS:  "1715161200.000100",
 					MessageTS: "1715161400.000100",
 					Text:      "総容量はいくら？",
-					Time:      time.Now().UTC().Format(time.RFC3339),
+					Time:      time.Now().UTC().Format(time.RFC3339Nano),
 					Status:    "pending",
 					AgentType: "claude",
+					UserID:    "U024BE7LH",
 				},
 			}
 		},
@@ -120,13 +127,14 @@ var patterns = []TestPattern{
 		Generator: func() []queue.Entry {
 			return []queue.Entry{
 				{
-					Channel:   "C_LOCAL_GEMINI",
+					Channel:   "C0LDKJ9RZ",
 					ThreadTS:  "1715161500.000100",
 					MessageTS: "1715161500.000100",
 					Text:      "このディレクトリ内のテキストファイルを一覧表示して",
-					Time:      time.Now().UTC().Format(time.RFC3339),
+					Time:      time.Now().UTC().Format(time.RFC3339Nano),
 					Status:    "pending",
 					AgentType: "gemini",
+					UserID:    "W024BE7LH",
 				},
 			}
 		},
@@ -139,22 +147,24 @@ var patterns = []TestPattern{
 		Generator: func() []queue.Entry {
 			return []queue.Entry{
 				{
-					Channel:   "C_LOCAL_GEMINI",
+					Channel:   "C0LDKJ9RZ",
 					ThreadTS:  "1715161500.000100",
 					MessageTS: "1715161500.000100",
 					Text:      "このディレクトリ内のテキストファイルを一覧表示して",
-					Time:      time.Now().UTC().Format(time.RFC3339),
+					Time:      time.Now().UTC().Format(time.RFC3339Nano),
 					Status:    "pending",
 					AgentType: "gemini",
+					UserID:    "W024BE7LH",
 				},
 				{
-					Channel:   "C_LOCAL_GEMINI",
+					Channel:   "C0LDKJ9RZ",
 					ThreadTS:  "1715161500.000100",
 					MessageTS: "1715161600.000100",
 					Text:      "それぞれのファイルの行数も数えて",
-					Time:      time.Now().UTC().Format(time.RFC3339),
+					Time:      time.Now().UTC().Format(time.RFC3339Nano),
 					Status:    "pending",
 					AgentType: "gemini",
+					UserID:    "W024BE7LH",
 				},
 			}
 		},
@@ -167,22 +177,24 @@ var patterns = []TestPattern{
 		Generator: func() []queue.Entry {
 			return []queue.Entry{
 				{
-					Channel:   "C_LOCAL_CLAUDE",
+					Channel:   "C024BE7LH",
 					ThreadTS:  "1715161200.000100",
 					MessageTS: "1715161200.000100",
 					Text:      "ファイル一覧を教えて（Claude）",
-					Time:      time.Now().UTC().Format(time.RFC3339),
+					Time:      time.Now().UTC().Format(time.RFC3339Nano),
 					Status:    "pending",
 					AgentType: "claude",
+					UserID:    "U024BE7LH",
 				},
 				{
-					Channel:   "C_LOCAL_GEMINI",
+					Channel:   "C0LDKJ9RZ",
 					ThreadTS:  "1715161500.000100",
 					MessageTS: "1715161500.000100",
 					Text:      "テキストファイルを列挙して（Gemini）",
-					Time:      time.Now().UTC().Format(time.RFC3339),
+					Time:      time.Now().UTC().Format(time.RFC3339Nano),
 					Status:    "pending",
 					AgentType: "gemini",
+					UserID:    "W024BE7LH",
 				},
 			}
 		},
