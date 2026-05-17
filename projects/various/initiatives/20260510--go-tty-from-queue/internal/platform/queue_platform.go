@@ -2,11 +2,14 @@ package platform
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"go-tty-from-queue/internal/message"
 	"go-tty-from-queue/internal/queue"
 )
+
+const AGENT_USER_ID = "U0K4HRSJ2"
 
 type QueuePlatform struct {
 	source queue.Source
@@ -27,6 +30,14 @@ func (p *QueuePlatform) FetchNewMessages() ([]message.Message, error) {
 	var messages []message.Message
 	for _, entry := range entries {
 		if entry.Status != "pending" {
+			continue
+		}
+
+		if entry.UserID == AGENT_USER_ID {
+			continue
+		}
+
+		if strings.HasPrefix(entry.UserID, "B_") {
 			continue
 		}
 
