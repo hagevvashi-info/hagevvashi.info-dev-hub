@@ -47,8 +47,14 @@ if echo "$cmd" | grep -E '^\s*git (status|log|diff|show|remote|branch -v)'; then
   exit 0
 fi
 
-# Allow write operations if GIT_EXPERT_OPERATION is set (git-expert delegation)
+# Allow write operations if GIT_EXPERT_OPERATION is explicitly set in hook environment
 if [ "${GIT_EXPERT_OPERATION:-}" = "1" ]; then
+  exit 0
+fi
+
+# Check if this is a chained command with export (e.g., "export GIT_EXPERT_OPERATION=1 && git commit...")
+# This allows users to explicitly authorize the operation in the same shell session
+if echo "$cmd" | grep -E 'export\s+GIT_EXPERT_OPERATION\s*=\s*1\s*&&\s*git'; then
   exit 0
 fi
 
@@ -63,9 +69,14 @@ This git operation requires:
   - Branch/remote state verification
   - Conflict resolution support
 
-👉 Delegate to git-expert:
-   Invoke the git-expert agent: /git-expert
-   Or: Agent(description: "...", subagent_type: "git-expert", prompt: "...")
+👉 How to proceed:
+   Option 1 - Delegate to git-expert agent:
+     Invoke: /git-expert
+     Or: Agent(subagent_type: "git-expert", prompt: "...")
+
+   Option 2 - Direct authorization in same shell:
+     export GIT_EXPERT_OPERATION=1
+     git commit ...
 
 Allowed direct operations (read-only):
   - git status, git log, git diff, git show, git remote -v, git branch -v

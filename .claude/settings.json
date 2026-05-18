@@ -11,7 +11,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "GIT_EXPERT_OPERATION=1 ${HOME}/${MDC_REPO_ROOT}/.claude/hooks/check-deprecated-git.sh"
+            "command": "${HOME}/${MDC_REPO_ROOT}/.claude/hooks/check-deprecated-git.sh"
           }
         ]
       }
