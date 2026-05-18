@@ -359,6 +359,7 @@ github.com/creack/pty v1.1.18  # PTY エミュレーション（Claude CLI 実�
 - Agent 実行エラーは `PostResponse` で通知（ユーザーに伝わる）
 - Queue 読み込みエラーは終了
 - JSON パースエラーは詳細を stderr に出力
+- テスト実行時は自動レビューシステムにより品質検証
 
 ## 今後の改善
 
@@ -367,3 +368,4 @@ github.com/creack/pty v1.1.18  # PTY エミュレーション（Claude CLI 実�
 3. GeminiAgent の実装
 4. エラーリトライロジック
 5. Rate limit 対応
+6. 自動レビューシステムの本格化（自動レビュー実装完了）

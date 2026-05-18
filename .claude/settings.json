@@ -21,8 +21,8 @@
         "matcher": "Edit|Write",
         "hooks": [
           {
-            "type": "agent",
-            "prompt": "ファイルが修正されました。review エージェント（subagent_type: review）を起動して、修正内容をレビューしてください。修正内容の妥当性、品質、設計の観点からレビューを行ってください。修正ファイルは git diff で自動検出してください。"
+            "type": "command",
+            "command": "modified_files=$(mktemp) && output_file=$(mktemp --suffix=.md) && { echo \"=== Files Modified ===\"; git diff --name-only 2>/dev/null || echo \"No changes\"; } > \"$modified_files\" && bash \"${HOME}/${MDC_REPO_ROOT}/.claude/hooks/run_review.sh\" \"$modified_files\" \"$output_file\" 2>&1 && bash \"${HOME}/${MDC_REPO_ROOT}/.claude/hooks/review_to_memory.sh\" \"$modified_files\" \"$output_file\""
           }
         ]
       }
