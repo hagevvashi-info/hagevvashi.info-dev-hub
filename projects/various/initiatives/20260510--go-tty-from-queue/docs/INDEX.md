@@ -38,15 +38,24 @@
 
 ---
 
-### 🔄 提案中（Proposed）
-レビュー中の設計提案。改善または変更を提案します。
+### 📌 承認済み（Accepted）
+承認され実装準備完了した決定。
 
-- **[SPREADSHEET_DESIGN.md](./proposed/SPREADSHEET_DESIGN.md)**
-  - **内容：** Google Sheets をキューストレージとする実装設計
-  - **根拠：** ローカル JSON から本番環境への段階的移行
-  - **実装範囲：** GAS append + go-tty-from-queue Read/Write
-  - **ステータス：** レビュー待機中
-  - **優先度：** 高（プロダクション化のため）
+- **[QUEUE_ENTRY_SCHEMA_DESIGN.md](./accepted/QUEUE_ENTRY_SCHEMA_DESIGN.md)**
+  - **内容：** Queue Entry 構造体に `user_id` フィールドを追加する詳細設計
+  - **根拠：** go-tty-from-queue 側での Y フィルタリング（多層防御）、完全な監査証跡
+  - **実装範囲：** GAS + go-tty-from-queue の両方の変更が必要
+  - **ステータス：** 承認完了、実装待機中
+  - **承認日：** 2026-05-17
+  - **優先度：** 高（無限ループリスク対策）
+
+- **[SPREADSHEET_DESIGN.md](./accepted/SPREADSHEET_DESIGN.md)** ⭐ **NEW**
+  - **内容：** Google Sheets をキューストレージとする実装設計（production-ready）
+  - **実装範囲：** GAS LockService、Go Read/Write API、エラーハンドリング、テスト戦略
+  - **レビュー完了：** 2026-05-30 ✅
+  - **ステータス：** 承認完了、デプロイ前チェック実施推奨
+  - **デプロイロードマップ：** フェーズ 1（2026-06-15）→ 2（06-22）→ 3（06-29）
+  - **優先度：** 高（ローカル実装後のプロダクション化）
 
 ---
 
@@ -58,19 +67,6 @@
   - 問題点：ユーザー識別がない、単一障害点フィルタリング
   - 廃棄日：2026-05-17（設計ギャップを特定）
   - 参照：QUEUE_ENTRY_SCHEMA_DESIGN.md 参照
-
----
-
-### 📌 承認済み（Accepted）
-承認され実装準備完了した決定。
-
-- **[QUEUE_ENTRY_SCHEMA_DESIGN.md](./accepted/QUEUE_ENTRY_SCHEMA_DESIGN.md)**
-  - **内容：** Queue Entry 構造体に `user_id` フィールドを追加する詳細設計
-  - **根拠：** go-tty-from-queue 側での Y フィルタリング（多層防御）、完全な監査証跡
-  - **実装範囲：** GAS + go-tty-from-queue の両方の変更が必要
-  - **ステータス：** 承認完了、実装待機中
-  - **承認日：** 2026-05-17
-  - **優先度：** 高（無限ループリスク対策）
 
 ---
 
@@ -102,7 +98,8 @@
 | セッション アトミシティ | ✅ 解決済み | なし（意図した設計） |
 | API 複雑性 | ✅ 解決済み | README に文書化 ✓ |
 | キュー メッセージフロー | ✅ 解決済み | Y フィルタリング リスク対策 |
-| **キュー スキーマ（user_id）** | 🔄 **提案中** | **決定が必要** |
+| **キュー スキーマ（user_id）** | ✅ **承認済み** | 実装開始 |
+| **Google Sheets キューストレージ** | ✅ **承認済み** | デプロイ前チェック実施 |
 
 ---
 
@@ -116,7 +113,7 @@
 
 ## 📝 ドキュメント保守
 
-- **最終更新：** 2026-05-19
+- **最終更新：** 2026-05-30
 - **レビュー周期：** 大きな変更の前
 - **担当者：** アーキテクチャ レビュー チーム
 - **更新プロセス：** 新しいドキュメントを適切なカテゴリ（proposed/resolved/outdated/accepted）に追加
@@ -129,9 +126,32 @@
 以下のドキュメントを参照してください：
 - **ロック機構はどう動く？** → LOCK_RESPONSIBILITY_ANALYSIS.md
 - **なぜメソッドが Safe/Unsafe？** → API_DESIGN_COMPLEXITY_ANALYSIS.md
-- **システムは Y のポストでループしないか？** → QUEUE_MESSAGE_FLOW_SPECIFICATION.md
-- **どう修正する？** → QUEUE_ENTRY_SCHEMA_DESIGN.md（accepted/）
+- **システムは Y のポストでループしないか？** → QUEUE_MESSAGE_FLOW_SPECIFICATION.md + QUEUE_ENTRY_SCHEMA_DESIGN.md
+- **Google Sheets キューはどう実装する？** → SPREADSHEET_DESIGN.md（accepted/）
 
 ---
 
-**Hook テスト実行完了 - review エージェント自動検証済み（修正版）**
+## 🎯 次のステップ
+
+### 実装フェーズ 1（2026-06-15 完了予定）
+- [ ] SPREADSHEET_DESIGN.md の Entry/Sheets 型実装
+- [ ] Read()/Write()/findRowByMessageTS() 実装
+- [ ] エラーハンドリング（Exponential Backoff）実装
+- [ ] ユニットテスト実装・実行
+
+### 実装フェーズ 2（2026-06-22 完了予定）
+- [ ] GAS appendQueueEntry() + LockService 実装
+- [ ] GAS テスト関数実行
+- [ ] 統合テスト（GAS + Go）実行
+
+### デプロイフェーズ 3（2026-06-29 完了予定）
+- [ ] Kubernetes Secret 作成
+- [ ] キーローテーション Cron 設定
+- [ ] 本番スプレッドシート作成
+- [ ] カナリアデプロイ開始
+
+---
+
+**✅ 設計レビュー完了（2026-05-30）**  
+**両設計ドキュメント：Production-Ready**  
+**実装準備完了**
